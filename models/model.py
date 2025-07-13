@@ -158,35 +158,35 @@ class SDT_Generator(nn.Module):
 
         # QUERY: [char_emb, seq_emb]
         
-        print_once("SDT_Generator::forward [Decoder] seq:", seq.shape)
+        print_once(f"SDT_Generator::forward [Decoder] seq: [{seq.shape[0]}, T, {seq.shape[2]}] (T : length of the sequence)")
         # seq: [T, B, 5], T is the length of the sequence
         seq_emb = self.SeqtoEmb(seq).permute(1, 0, 2)
         T, N, C = seq_emb.shape
-        print_once("SDT_Generator::forward [Decoder] seq_emb:", seq_emb.shape)
+        print_once(f"SDT_Generator::forward [Decoder] seq_emb: [T, {N}, {C}]")
 
         char_emb = self.content_encoder(char_img) # [4, N, 512]
-        print_once("SDT_Generator::forward [Content Encoder] char_emb:", char_emb.shape)
+        print_once(f"SDT_Generator::forward [Content Encoder] char_emb: [4, T, {char_emb.shape[1]}]")
         char_emb = torch.mean(char_emb, 0) #[N, 512]
-        print_once("SDT_Generator::forward [Decoder] char_emb after mean:", char_emb.shape)
+        print_once(f"SDT_Generator::forward [Decoder] char_emb after mean: [T, {char_emb.shape[1]}]")
         char_emb = repeat(char_emb, 'n c -> t n c', t = 1)
-        print_once("SDT_Generator::forward [Decoder] char_emb after repeat:", char_emb.shape)
+        print_once(f"SDT_Generator::forward [Decoder] char_emb after repeat: [1, T, {char_emb.shape[1]}]")
         tgt = torch.cat((char_emb, seq_emb), 0) # [1+T], put the content token as the first token
-        print_once("SDT_Generator::forward [Decoder] tgt:", tgt.shape)
+        print_once(f"SDT_Generator::forward [Decoder] tgt: [T, {tgt.shape[1]}, {tgt.shape[2]}] (T=T+1 : length of the sequence + 1 for content token)")
         tgt_mask = generate_square_subsequent_mask(sz=(T+1)).to(tgt)
         tgt = self.add_position(tgt)
-        print_once("SDT_Generator::forward [Decoder] tgt after masking & add_position:", tgt.shape)
+        print_once(f"SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, {tgt.shape[1]}, {tgt.shape[2]}]")
 
         # [wri_dec_layers, T, B, C]
         wri_hs = self.wri_decoder(tgt, writer_style, tgt_mask=tgt_mask)
-        print_once("SDT_Generator::forward [Writer Decoder] wri_hs:", wri_hs.shape)
+        print_once(f"SDT_Generator::forward [Writer Decoder] wri_hs: {wri_hs.shape[0]}, T, {wri_hs.shape[2]}, {wri_hs.shape[3]}] (wri_dec_layers, T, B, C)")
         # [gly_dec_layers, T, B, C]
         hs = self.gly_decoder(wri_hs[-1], glyph_style, tgt_mask=tgt_mask) 
-        print_once("SDT_Generator::forward [Glyph Decoder] hs:", hs.shape)
+        print_once(f"SDT_Generator::forward [Glyph Decoder] hs: [{hs.shape[0]}, T, {hs.shape[2]}, {hs.shape[3]}] (gly_dec_layers, T, B, C)")
 
         h = hs.transpose(1, 2)[-1]  # B T C
-        print_once("SDT_Generator::forward [Decoder] h after transpose:", h.shape)
+        print_once(f"SDT_Generator::forward [Decoder] h after transpose: {h.shape[0]}, T, {h.shape[2]}] (B, T, C)")
         pred_sequence = self.EmbtoSeq(h)
-        print_once("SDT_Generator::forward [Decoder Output] pred_sequence:", pred_sequence.shape)
+        print_once(f"SDT_Generator::forward [Decoder Output] pred_sequence: [{pred_sequence.shape[0]}, T, {pred_sequence.shape[2]}] (B, T, C)")
         return pred_sequence, nce_emb, nce_emb_patch
 
     # style_imgs: [B, N, C, H, W]

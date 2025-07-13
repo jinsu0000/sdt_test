@@ -102,8 +102,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--pretrained_model', default='',
                         dest='pretrained_model', required=False, help='continue to train model')
-    parser.add_argument('--content_pretrained', default='model_zoo/position_layer2_dim512_iter138k_test_acc0.9443.pth',
-                        dest='content_pretrained', required=False, help='continue to train content encoder')
+    # parser.add_argument('--content_pretrained', default='model_zoo/position_layer2_dim512_iter138k_test_acc0.9443.pth',
+    #                   dest='content_pretrained', required=False, help='continue to train content encoder')
+    parser.add_argument('--content_pretrained', default='',
+                       dest='content_pretrained', required=False, help='continue to train content encoder')
     parser.add_argument('--cfg', dest='cfg_file', default='configs/CHINESE_CASIA.yml',
                         help='Config file for training (and optionally testing)')
     parser.add_argument('--log', default='debug',

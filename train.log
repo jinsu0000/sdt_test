@@ -1,236 +1,213 @@
-BrushDataset initialized with 136 writers, split at 80.0%.
-Loading BrushDataset:   0%|          | 0/136 [00:00<?, ?it/s]Loading BrushDataset:   1%|          | 1/136 [00:01<03:38,  1.62s/it]Loading BrushDataset:   1%|▏         | 2/136 [00:03<03:35,  1.61s/it]Loading BrushDataset:   2%|▏         | 3/136 [00:04<03:30,  1.58s/it]Loading BrushDataset:   3%|▎         | 4/136 [00:06<03:37,  1.65s/it]Loading BrushDataset:   4%|▎         | 5/136 [00:08<03:33,  1.63s/it]Loading BrushDataset:   4%|▍         | 6/136 [00:09<03:29,  1.61s/it]Loading BrushDataset:   5%|▌         | 7/136 [00:11<03:24,  1.58s/it]Loading BrushDataset:   6%|▌         | 8/136 [00:12<03:24,  1.60s/it]Loading BrushDataset:   7%|▋         | 9/136 [00:14<03:23,  1.60s/it]Loading BrushDataset:   7%|▋         | 10/136 [00:16<03:22,  1.60s/it]Loading BrushDataset:   8%|▊         | 11/136 [00:17<03:28,  1.67s/it]Loading BrushDataset:   9%|▉         | 12/136 [00:19<03:25,  1.65s/it]Loading BrushDataset:  10%|▉         | 13/136 [00:20<03:07,  1.53s/it]Loading BrushDataset:  10%|█         | 14/136 [00:22<03:05,  1.52s/it]Loading BrushDataset:  11%|█         | 15/136 [00:23<03:06,  1.55s/it]Loading BrushDataset:  12%|█▏        | 16/136 [00:25<03:08,  1.57s/it]Loading BrushDataset:  12%|█▎        | 17/136 [00:27<03:08,  1.58s/it]Loading BrushDataset:  13%|█▎        | 18/136 [00:28<03:05,  1.58s/it]Loading BrushDataset:  14%|█▍        | 19/136 [00:30<03:11,  1.64s/it]Loading BrushDataset:  15%|█▍        | 20/136 [00:32<03:08,  1.62s/it]Loading BrushDataset:  15%|█▌        | 21/136 [00:33<03:05,  1.62s/it]Loading BrushDataset:  16%|█▌        | 22/136 [00:35<03:03,  1.61s/it]Loading BrushDataset:  17%|█▋        | 23/136 [00:36<03:01,  1.61s/it]Loading BrushDataset:  18%|█▊        | 24/136 [00:38<02:59,  1.60s/it]Loading BrushDataset:  18%|█▊        | 25/136 [00:40<02:58,  1.60s/it]Loading BrushDataset:  19%|█▉        | 26/136 [00:41<02:55,  1.60s/it]Loading BrushDataset:  20%|█▉        | 27/136 [00:43<02:54,  1.60s/it]Loading BrushDataset:  21%|██        | 28/136 [00:44<02:52,  1.60s/it]Loading BrushDataset:  21%|██▏       | 29/136 [00:46<03:00,  1.68s/it]Loading BrushDataset:  22%|██▏       | 30/136 [00:48<02:55,  1.65s/it]Loading BrushDataset:  23%|██▎       | 31/136 [00:49<02:51,  1.64s/it]Loading BrushDataset:  24%|██▎       | 32/136 [00:51<02:48,  1.62s/it]Loading BrushDataset:  24%|██▍       | 33/136 [00:53<02:46,  1.62s/it]Loading BrushDataset:  25%|██▌       | 34/136 [00:54<02:44,  1.62s/it]Loading BrushDataset:  26%|██▌       | 35/136 [00:56<02:42,  1.60s/it]Loading BrushDataset:  26%|██▋       | 36/136 [00:57<02:37,  1.58s/it]Loading BrushDataset:  27%|██▋       | 37/136 [00:59<02:37,  1.59s/it]Loading BrushDataset:  28%|██▊       | 38/136 [01:00<02:36,  1.60s/it]Loading BrushDataset:  29%|██▊       | 39/136 [01:02<02:34,  1.59s/it]Loading BrushDataset:  29%|██▉       | 40/136 [01:04<02:33,  1.60s/it]Loading BrushDataset:  30%|███       | 41/136 [01:05<02:32,  1.60s/it]Loading BrushDataset:  31%|███       | 42/136 [01:07<02:40,  1.71s/it]Loading BrushDataset:  32%|███▏      | 43/136 [01:09<02:34,  1.66s/it]Loading BrushDataset:  32%|███▏      | 44/136 [01:10<02:30,  1.64s/it]Loading BrushDataset:  33%|███▎      | 45/136 [01:12<02:27,  1.62s/it]Loading BrushDataset:  34%|███▍      | 46/136 [01:14<02:25,  1.61s/it]Loading BrushDataset:  35%|███▍      | 47/136 [01:15<02:21,  1.59s/it]Loading BrushDataset:  35%|███▌      | 48/136 [01:17<02:20,  1.60s/it]Loading BrushDataset:  36%|███▌      | 49/136 [01:18<02:18,  1.59s/it]Loading BrushDataset:  37%|███▋      | 50/136 [01:20<02:16,  1.59s/it]Loading BrushDataset:  38%|███▊      | 51/136 [01:21<02:14,  1.59s/it]Loading BrushDataset:  38%|███▊      | 52/136 [01:23<02:10,  1.56s/it]Loading BrushDataset:  39%|███▉      | 53/136 [01:25<02:10,  1.57s/it]Loading BrushDataset:  40%|███▉      | 54/136 [01:26<02:09,  1.58s/it]Loading BrushDataset:  40%|████      | 55/136 [01:27<02:01,  1.50s/it]Loading BrushDataset:  41%|████      | 56/136 [01:29<02:02,  1.53s/it]Loading BrushDataset:  42%|████▏     | 57/136 [01:31<02:01,  1.54s/it]Loading BrushDataset:  43%|████▎     | 58/136 [01:33<02:11,  1.69s/it]Loading BrushDataset:  43%|████▎     | 59/136 [01:34<02:08,  1.66s/it]Loading BrushDataset:  44%|████▍     | 60/136 [01:36<02:04,  1.64s/it]Loading BrushDataset:  45%|████▍     | 61/136 [01:37<02:00,  1.60s/it]Loading BrushDataset:  46%|████▌     | 62/136 [01:39<01:58,  1.61s/it]Loading BrushDataset:  46%|████▋     | 63/136 [01:41<01:57,  1.61s/it]Loading BrushDataset:  47%|████▋     | 64/136 [01:42<01:55,  1.61s/it]Loading BrushDataset:  48%|████▊     | 65/136 [01:44<01:54,  1.61s/it]Loading BrushDataset:  49%|████▊     | 66/136 [01:45<01:51,  1.59s/it]Loading BrushDataset:  49%|████▉     | 67/136 [01:47<01:49,  1.59s/it]Loading BrushDataset:  50%|█████     | 68/136 [01:49<01:48,  1.60s/it]Loading BrushDataset:  51%|█████     | 69/136 [01:50<01:46,  1.59s/it]Loading BrushDataset:  51%|█████▏    | 70/136 [01:51<01:38,  1.49s/it]Loading BrushDataset:  52%|█████▏    | 71/136 [01:53<01:38,  1.52s/it]Loading BrushDataset:  53%|█████▎    | 72/136 [01:55<01:38,  1.54s/it]Loading BrushDataset:  54%|█████▎    | 73/136 [01:56<01:38,  1.56s/it]Loading BrushDataset:  54%|█████▍    | 74/136 [01:58<01:35,  1.54s/it]Loading BrushDataset:  55%|█████▌    | 75/136 [01:59<01:34,  1.55s/it]Loading BrushDataset:  56%|█████▌    | 76/136 [02:01<01:33,  1.56s/it]Loading BrushDataset:  57%|█████▋    | 77/136 [02:02<01:30,  1.53s/it]Loading BrushDataset:  57%|█████▋    | 78/136 [02:04<01:30,  1.56s/it]Loading BrushDataset:  58%|█████▊    | 79/136 [02:06<01:39,  1.74s/it]Loading BrushDataset:  59%|█████▉    | 80/136 [02:08<01:34,  1.69s/it]Loading BrushDataset:  60%|█████▉    | 81/136 [02:09<01:31,  1.67s/it]Loading BrushDataset:  60%|██████    | 82/136 [02:11<01:28,  1.64s/it]Loading BrushDataset:  61%|██████    | 83/136 [02:12<01:26,  1.63s/it]Loading BrushDataset:  62%|██████▏   | 84/136 [02:14<01:24,  1.62s/it]Loading BrushDataset:  62%|██████▎   | 85/136 [02:16<01:22,  1.61s/it]Loading BrushDataset:  63%|██████▎   | 86/136 [02:17<01:20,  1.61s/it]Loading BrushDataset:  64%|██████▍   | 87/136 [02:19<01:17,  1.59s/it]Loading BrushDataset:  65%|██████▍   | 88/136 [02:20<01:15,  1.58s/it]Loading BrushDataset:  65%|██████▌   | 89/136 [02:22<01:14,  1.58s/it]Loading BrushDataset:  66%|██████▌   | 90/136 [02:24<01:13,  1.59s/it]Loading BrushDataset:  67%|██████▋   | 91/136 [02:25<01:10,  1.57s/it]Loading BrushDataset:  68%|██████▊   | 92/136 [02:27<01:09,  1.58s/it]Loading BrushDataset:  68%|██████▊   | 93/136 [02:28<01:06,  1.56s/it]Loading BrushDataset:  69%|██████▉   | 94/136 [02:30<01:05,  1.55s/it]Loading BrushDataset:  70%|██████▉   | 95/136 [02:31<01:02,  1.53s/it]Loading BrushDataset:  71%|███████   | 96/136 [02:33<01:01,  1.55s/it]Loading BrushDataset:  71%|███████▏  | 97/136 [02:34<00:59,  1.53s/it]Loading BrushDataset:  72%|███████▏  | 98/136 [02:36<00:58,  1.55s/it]Loading BrushDataset:  73%|███████▎  | 99/136 [02:37<00:57,  1.55s/it]Loading BrushDataset:  74%|███████▎  | 100/136 [02:39<00:56,  1.56s/it]Loading BrushDataset:  74%|███████▍  | 101/136 [02:41<00:54,  1.56s/it]Loading BrushDataset:  75%|███████▌  | 102/136 [02:42<00:53,  1.58s/it]Loading BrushDataset:  76%|███████▌  | 103/136 [02:44<00:52,  1.59s/it]Loading BrushDataset:  76%|███████▋  | 104/136 [02:45<00:49,  1.55s/it]Loading BrushDataset:  77%|███████▋  | 105/136 [02:48<00:55,  1.78s/it]Loading BrushDataset:  78%|███████▊  | 106/136 [02:49<00:50,  1.70s/it]Loading BrushDataset:  79%|███████▊  | 107/136 [02:51<00:48,  1.66s/it]Loading BrushDataset:  79%|███████▉  | 108/136 [02:52<00:45,  1.63s/it]Loading BrushDataset:  80%|████████  | 109/136 [02:54<00:43,  1.60s/it]Loading BrushDataset:  81%|████████  | 110/136 [02:55<00:41,  1.60s/it]Loading BrushDataset:  82%|████████▏ | 111/136 [02:57<00:39,  1.60s/it]Loading BrushDataset:  82%|████████▏ | 112/136 [02:58<00:38,  1.59s/it]Loading BrushDataset:  83%|████████▎ | 113/136 [03:00<00:36,  1.59s/it]Loading BrushDataset:  84%|████████▍ | 114/136 [03:02<00:35,  1.59s/it]Loading BrushDataset:  85%|████████▍ | 115/136 [03:03<00:33,  1.59s/it]Loading BrushDataset:  85%|████████▌ | 116/136 [03:05<00:31,  1.59s/it]Loading BrushDataset:  86%|████████▌ | 117/136 [03:06<00:30,  1.58s/it]Loading BrushDataset:  87%|████████▋ | 118/136 [03:08<00:28,  1.59s/it]Loading BrushDataset:  88%|████████▊ | 119/136 [03:10<00:26,  1.59s/it]Loading BrushDataset:  88%|████████▊ | 120/136 [03:11<00:25,  1.59s/it]Loading BrushDataset:  89%|████████▉ | 121/136 [03:13<00:23,  1.59s/it]Loading BrushDataset:  90%|████████▉ | 122/136 [03:14<00:22,  1.57s/it]Loading BrushDataset:  90%|█████████ | 123/136 [03:16<00:20,  1.57s/it]Loading BrushDataset:  91%|█████████ | 124/136 [03:17<00:18,  1.56s/it]Loading BrushDataset:  92%|█████████▏| 125/136 [03:19<00:17,  1.56s/it]Loading BrushDataset:  93%|█████████▎| 126/136 [03:21<00:15,  1.57s/it]Loading BrushDataset:  93%|█████████▎| 127/136 [03:22<00:14,  1.59s/it]Loading BrushDataset:  94%|█████████▍| 128/136 [03:24<00:12,  1.59s/it]Loading BrushDataset:  95%|█████████▍| 129/136 [03:25<00:10,  1.55s/it]Loading BrushDataset:  96%|█████████▌| 130/136 [03:27<00:09,  1.57s/it]Loading BrushDataset:  96%|█████████▋| 131/136 [03:28<00:07,  1.56s/it]Loading BrushDataset:  97%|█████████▋| 132/136 [03:30<00:06,  1.57s/it]Loading BrushDataset:  98%|█████████▊| 133/136 [03:32<00:04,  1.58s/it]Loading BrushDataset:  99%|█████████▊| 134/136 [03:33<00:03,  1.57s/it]Loading BrushDataset:  99%|█████████▉| 135/136 [03:35<00:01,  1.59s/it]Loading BrushDataset: 100%|██████████| 136/136 [03:37<00:00,  1.87s/it]Loading BrushDataset: 100%|██████████| 136/136 [03:37<00:00,  1.60s/it]BrushDataset Loaded 350461 samples from 136 writers.
+BrushDataset initialized [TRAIN] with 136 writers, split at 80.0%.
+Loading BrushDataset:   0%|          | 0/136 [00:00<?, ?it/s]Loading BrushDataset:   1%|          | 1/136 [00:00<00:52,  2.58it/s][SKIP] Flat trajectory in writer 60, char .
+Loading BrushDataset:   1%|▏         | 2/136 [00:00<00:52,  2.57it/s][SKIP] Short trajectory in writer 37, char '
+[SKIP] Flat trajectory in writer 37, char .
+Loading BrushDataset:   2%|▏         | 3/136 [00:01<00:51,  2.57it/s]Loading BrushDataset:   3%|▎         | 4/136 [00:01<00:52,  2.51it/s]Loading BrushDataset:   4%|▎         | 5/136 [00:01<00:52,  2.51it/s]Loading BrushDataset:   4%|▍         | 6/136 [00:02<00:50,  2.56it/s]Loading BrushDataset:   5%|▌         | 7/136 [00:02<01:00,  2.14it/s][SKIP] Flat trajectory in writer 81, char .
+Loading BrushDataset:   6%|▌         | 8/136 [00:03<00:56,  2.27it/s]Loading BrushDataset:   7%|▋         | 9/136 [00:03<00:53,  2.37it/s][SKIP] Flat trajectory in writer 125, char .
+Loading BrushDataset:   7%|▋         | 10/136 [00:04<00:51,  2.45it/s]Loading BrushDataset:   8%|▊         | 11/136 [00:04<00:50,  2.49it/s]Loading BrushDataset:   9%|▉         | 12/136 [00:04<00:49,  2.48it/s]Loading BrushDataset:  10%|▉         | 13/136 [00:05<00:45,  2.69it/s]Loading BrushDataset:  10%|█         | 14/136 [00:05<00:44,  2.73it/s]Loading BrushDataset:  11%|█         | 15/136 [00:05<00:44,  2.70it/s]Loading BrushDataset:  12%|█▏        | 16/136 [00:06<00:44,  2.69it/s]Loading BrushDataset:  12%|█▎        | 17/136 [00:06<00:44,  2.66it/s][SKIP] Flat trajectory in writer 90, char .
+Loading BrushDataset:  13%|█▎        | 18/136 [00:07<00:43,  2.69it/s]Loading BrushDataset:  14%|█▍        | 19/136 [00:07<00:43,  2.70it/s]Loading BrushDataset:  15%|█▍        | 20/136 [00:08<00:50,  2.29it/s]Loading BrushDataset:  15%|█▌        | 21/136 [00:08<00:48,  2.37it/s][SKIP] Flat trajectory in writer 157, char .
+Loading BrushDataset:  16%|█▌        | 22/136 [00:08<00:46,  2.46it/s][SKIP] Flat trajectory in writer 132, char .
+Loading BrushDataset:  17%|█▋        | 23/136 [00:09<00:44,  2.51it/s]Loading BrushDataset:  18%|█▊        | 24/136 [00:09<00:43,  2.56it/s][SKIP] Flat trajectory in writer 20, char .
+Loading BrushDataset:  18%|█▊        | 25/136 [00:09<00:42,  2.59it/s]Loading BrushDataset:  19%|█▉        | 26/136 [00:10<00:42,  2.62it/s][SKIP] Short trajectory in writer 113, char .
+Loading BrushDataset:  20%|█▉        | 27/136 [00:10<00:41,  2.62it/s]Loading BrushDataset:  21%|██        | 28/136 [00:11<00:41,  2.63it/s][SKIP] Short trajectory in writer 80, char d
+Loading BrushDataset:  21%|██▏       | 29/136 [00:11<00:40,  2.63it/s][SKIP] Flat trajectory in writer 137, char .
+Loading BrushDataset:  22%|██▏       | 30/136 [00:11<00:39,  2.65it/s]Loading BrushDataset:  23%|██▎       | 31/136 [00:12<00:39,  2.66it/s]Loading BrushDataset:  24%|██▎       | 32/136 [00:12<00:38,  2.67it/s]Loading BrushDataset:  24%|██▍       | 33/136 [00:12<00:38,  2.66it/s]Loading BrushDataset:  25%|██▌       | 34/136 [00:13<00:38,  2.65it/s]Loading BrushDataset:  26%|██▌       | 35/136 [00:13<00:45,  2.24it/s]Loading BrushDataset:  26%|██▋       | 36/136 [00:14<00:42,  2.35it/s]Loading BrushDataset:  27%|██▋       | 37/136 [00:14<00:40,  2.42it/s][SKIP] Short trajectory in writer 47, char '
+[SKIP] Flat trajectory in writer 47, char .
+Loading BrushDataset:  28%|██▊       | 38/136 [00:15<00:39,  2.48it/s]Loading BrushDataset:  29%|██▊       | 39/136 [00:15<00:38,  2.54it/s]Loading BrushDataset:  29%|██▉       | 40/136 [00:15<00:37,  2.55it/s]Loading BrushDataset:  30%|███       | 41/136 [00:16<00:36,  2.58it/s]Loading BrushDataset:  31%|███       | 42/136 [00:16<00:36,  2.59it/s][SKIP] Flat trajectory in writer 7, char '
+[SKIP] Flat trajectory in writer 7, char r
+[SKIP] Flat trajectory in writer 7, char s
+[SKIP] Flat trajectory in writer 7, char .
+[SKIP] Flat trajectory in writer 7, char ,
+[SKIP] Flat trajectory in writer 7, char -
+Loading BrushDataset:  32%|███▏      | 43/136 [00:16<00:35,  2.61it/s]Loading BrushDataset:  32%|███▏      | 44/136 [00:17<00:35,  2.63it/s]Loading BrushDataset:  33%|███▎      | 45/136 [00:17<00:34,  2.65it/s][SKIP] Flat trajectory in writer 95, char .
+Loading BrushDataset:  34%|███▍      | 46/136 [00:18<00:34,  2.65it/s][SKIP] Flat trajectory in writer 169, char .
+Loading BrushDataset:  35%|███▍      | 47/136 [00:18<00:33,  2.67it/s]Loading BrushDataset:  35%|███▌      | 48/136 [00:18<00:33,  2.64it/s]Loading BrushDataset:  36%|███▌      | 49/136 [00:19<00:33,  2.61it/s]Loading BrushDataset:  37%|███▋      | 50/136 [00:19<00:32,  2.62it/s]Loading BrushDataset:  38%|███▊      | 51/136 [00:19<00:32,  2.63it/s]Loading BrushDataset:  38%|███▊      | 52/136 [00:20<00:31,  2.67it/s]Loading BrushDataset:  39%|███▉      | 53/136 [00:20<00:31,  2.67it/s][SKIP] Short trajectory in writer 30, char '
+[SKIP] Short trajectory in writer 30, char  
+Loading BrushDataset:  40%|███▉      | 54/136 [00:21<00:30,  2.68it/s][SKIP] Flat trajectory in writer 59, char .
+Loading BrushDataset:  40%|████      | 55/136 [00:21<00:28,  2.82it/s]Loading BrushDataset:  41%|████      | 56/136 [00:22<00:36,  2.21it/s]Loading BrushDataset:  42%|████▏     | 57/136 [00:22<00:33,  2.33it/s]Loading BrushDataset:  43%|████▎     | 58/136 [00:22<00:32,  2.41it/s][SKIP] Flat trajectory in writer 163, char .
+Loading BrushDataset:  43%|████▎     | 59/136 [00:23<00:31,  2.47it/s]Loading BrushDataset:  44%|████▍     | 60/136 [00:23<00:29,  2.54it/s]Loading BrushDataset:  45%|████▍     | 61/136 [00:23<00:28,  2.60it/s]Loading BrushDataset:  46%|████▌     | 62/136 [00:24<00:28,  2.62it/s]Loading BrushDataset:  46%|████▋     | 63/136 [00:24<00:27,  2.62it/s][SKIP] Flat trajectory in writer 155, char .
+Loading BrushDataset:  47%|████▋     | 64/136 [00:25<00:27,  2.61it/s]Loading BrushDataset:  48%|████▊     | 65/136 [00:25<00:27,  2.59it/s]Loading BrushDataset:  49%|████▊     | 66/136 [00:25<00:26,  2.62it/s][SKIP] Flat trajectory in writer 122, char ,
+[SKIP] Flat trajectory in writer 122, char .
+Loading BrushDataset:  49%|████▉     | 67/136 [00:26<00:26,  2.63it/s][SKIP] Short trajectory in writer 44, char '
+Loading BrushDataset:  50%|█████     | 68/136 [00:26<00:25,  2.62it/s][SKIP] Flat trajectory in writer 64, char .
+Loading BrushDataset:  51%|█████     | 69/136 [00:26<00:25,  2.63it/s][SKIP] Flat trajectory in writer 144, char ,
+Loading BrushDataset:  51%|█████▏    | 70/136 [00:27<00:23,  2.82it/s]Loading BrushDataset:  52%|█████▏    | 71/136 [00:27<00:23,  2.76it/s][SKIP] Flat trajectory in writer 101, char '
+[SKIP] Flat trajectory in writer 101, char .
+Loading BrushDataset:  53%|█████▎    | 72/136 [00:28<00:23,  2.73it/s]Loading BrushDataset:  54%|█████▎    | 73/136 [00:28<00:23,  2.69it/s]Loading BrushDataset:  54%|█████▍    | 74/136 [00:28<00:22,  2.70it/s]Loading BrushDataset:  55%|█████▌    | 75/136 [00:29<00:22,  2.69it/s]Loading BrushDataset:  56%|█████▌    | 76/136 [00:29<00:22,  2.68it/s][SKIP] Short trajectory in writer 8, char e
+[SKIP] Flat trajectory in writer 8, char '
+Loading BrushDataset:  57%|█████▋    | 77/136 [00:29<00:21,  2.73it/s]Loading BrushDataset:  57%|█████▋    | 78/136 [00:30<00:21,  2.69it/s][SKIP] Short trajectory in writer 36, char '
+Loading BrushDataset:  58%|█████▊    | 79/136 [00:30<00:21,  2.66it/s]Loading BrushDataset:  59%|█████▉    | 80/136 [00:31<00:20,  2.67it/s][SKIP] Short trajectory in writer 31, char '
+[SKIP] Flat trajectory in writer 31, char .
+Loading BrushDataset:  60%|█████▉    | 81/136 [00:31<00:26,  2.06it/s][SKIP] Short trajectory in writer 126, char I
+Loading BrushDataset:  60%|██████    | 82/136 [00:32<00:24,  2.21it/s]Loading BrushDataset:  61%|██████    | 83/136 [00:32<00:22,  2.33it/s]Loading BrushDataset:  62%|██████▏   | 84/136 [00:32<00:21,  2.42it/s][SKIP] Flat trajectory in writer 66, char .
+[SKIP] Flat trajectory in writer 66, char ,
+Loading BrushDataset:  62%|██████▎   | 85/136 [00:33<00:20,  2.49it/s]Loading BrushDataset:  63%|██████▎   | 86/136 [00:33<00:19,  2.53it/s]Loading BrushDataset:  64%|██████▍   | 87/136 [00:34<00:18,  2.59it/s][SKIP] Flat trajectory in writer 2, char "
+Loading BrushDataset:  65%|██████▍   | 88/136 [00:34<00:18,  2.62it/s]Loading BrushDataset:  65%|██████▌   | 89/136 [00:34<00:17,  2.63it/s]Loading BrushDataset:  66%|██████▌   | 90/136 [00:35<00:17,  2.64it/s]Loading BrushDataset:  67%|██████▋   | 91/136 [00:35<00:16,  2.67it/s]Loading BrushDataset:  68%|██████▊   | 92/136 [00:35<00:16,  2.65it/s][SKIP] Short trajectory in writer 68, char s
+Loading BrushDataset:  68%|██████▊   | 93/136 [00:36<00:15,  2.71it/s][SKIP] Flat trajectory in writer 139, char '
+[SKIP] Flat trajectory in writer 139, char .
+[SKIP] Flat trajectory in writer 139, char ,
+[SKIP] Flat trajectory in writer 139, char -
+Loading BrushDataset:  69%|██████▉   | 94/136 [00:36<00:15,  2.69it/s]Loading BrushDataset:  70%|██████▉   | 95/136 [00:36<00:15,  2.73it/s][SKIP] Flat trajectory in writer 116, char .
+Loading BrushDataset:  71%|███████   | 96/136 [00:37<00:14,  2.70it/s]Loading BrushDataset:  71%|███████▏  | 97/136 [00:37<00:14,  2.75it/s][SKIP] Flat trajectory in writer 19, char .
+Loading BrushDataset:  72%|███████▏  | 98/136 [00:38<00:14,  2.71it/s]Loading BrushDataset:  73%|███████▎  | 99/136 [00:38<00:13,  2.71it/s]Loading BrushDataset:  74%|███████▎  | 100/136 [00:38<00:13,  2.69it/s]Loading BrushDataset:  74%|███████▍  | 101/136 [00:39<00:13,  2.69it/s]Loading BrushDataset:  75%|███████▌  | 102/136 [00:39<00:12,  2.66it/s][SKIP] Flat trajectory in writer 57, char .
+Loading BrushDataset:  76%|███████▌  | 103/136 [00:39<00:12,  2.64it/s]Loading BrushDataset:  76%|███████▋  | 104/136 [00:40<00:11,  2.70it/s][SKIP] Short trajectory in writer 53, char a
+[SKIP] Flat trajectory in writer 53, char .
+Loading BrushDataset:  77%|███████▋  | 105/136 [00:40<00:11,  2.71it/s][SKIP] Flat trajectory in writer 34, char '
+Loading BrushDataset:  78%|███████▊  | 106/136 [00:41<00:11,  2.70it/s]Loading BrushDataset:  79%|███████▊  | 107/136 [00:41<00:10,  2.66it/s][SKIP] Flat trajectory in writer 21, char .
+Loading BrushDataset:  79%|███████▉  | 108/136 [00:41<00:10,  2.65it/s]Loading BrushDataset:  80%|████████  | 109/136 [00:42<00:10,  2.68it/s][SKIP] Flat trajectory in writer 88, char .
+Loading BrushDataset:  81%|████████  | 110/136 [00:42<00:09,  2.67it/s][SKIP] Short trajectory in writer 27, char '
+Loading BrushDataset:  82%|████████▏ | 111/136 [00:42<00:09,  2.66it/s][SKIP] Flat trajectory in writer 65, char .
+Loading BrushDataset:  82%|████████▏ | 112/136 [00:43<00:12,  1.96it/s][SKIP] Flat trajectory in writer 164, char .
+Loading BrushDataset:  83%|████████▎ | 113/136 [00:44<00:10,  2.12it/s][SKIP] Flat trajectory in writer 14, char .
+Loading BrushDataset:  84%|████████▍ | 114/136 [00:44<00:09,  2.26it/s]Loading BrushDataset:  85%|████████▍ | 115/136 [00:44<00:08,  2.38it/s]Loading BrushDataset:  85%|████████▌ | 116/136 [00:45<00:08,  2.46it/s]Loading BrushDataset:  86%|████████▌ | 117/136 [00:45<00:07,  2.52it/s]Loading BrushDataset:  87%|████████▋ | 118/136 [00:46<00:07,  2.56it/s]Loading BrushDataset:  88%|████████▊ | 119/136 [00:46<00:06,  2.59it/s]Loading BrushDataset:  88%|████████▊ | 120/136 [00:46<00:06,  2.60it/s]Loading BrushDataset:  89%|████████▉ | 121/136 [00:47<00:05,  2.63it/s][SKIP] Short trajectory in writer 107, char '
+Loading BrushDataset:  90%|████████▉ | 122/136 [00:47<00:05,  2.68it/s]Loading BrushDataset:  90%|█████████ | 123/136 [00:47<00:04,  2.70it/s]Loading BrushDataset:  91%|█████████ | 124/136 [00:48<00:04,  2.72it/s][SKIP] Flat trajectory in writer 58, char .
+Loading BrushDataset:  92%|█████████▏| 125/136 [00:48<00:04,  2.72it/s]Loading BrushDataset:  93%|█████████▎| 126/136 [00:48<00:03,  2.70it/s][SKIP] Short trajectory in writer 16, char '
+Loading BrushDataset:  93%|█████████▎| 127/136 [00:49<00:03,  2.68it/s][SKIP] Short trajectory in writer 51, char e
+[SKIP] Flat trajectory in writer 51, char .
+Loading BrushDataset:  94%|█████████▍| 128/136 [00:49<00:02,  2.67it/s]Loading BrushDataset:  95%|█████████▍| 129/136 [00:50<00:02,  2.73it/s][SKIP] Flat trajectory in writer 159, char .
+Loading BrushDataset:  96%|█████████▌| 130/136 [00:50<00:02,  2.71it/s][SKIP] Short trajectory in writer 25, char e
+Loading BrushDataset:  96%|█████████▋| 131/136 [00:50<00:01,  2.70it/s]Loading BrushDataset:  97%|█████████▋| 132/136 [00:51<00:01,  2.68it/s]Loading BrushDataset:  98%|█████████▊| 133/136 [00:51<00:01,  2.67it/s][SKIP] Short trajectory in writer 33, char e
+Loading BrushDataset:  99%|█████████▊| 134/136 [00:51<00:00,  2.68it/s]Loading BrushDataset:  99%|█████████▉| 135/136 [00:52<00:00,  2.66it/s]Loading BrushDataset: 100%|██████████| 136/136 [00:52<00:00,  2.67it/s]Loading BrushDataset: 100%|██████████| 136/136 [00:52<00:00,  2.58it/s][INFO] Trajectory length stats: min=2, max=304, mean=17.69
+[INFO] Writer 114 has 2588 valid samples
+[INFO] Writer 60 has 2615 valid samples
+[INFO] Writer 37 has 2516 valid samples
+[INFO] Writer 147 has 2635 valid samples
+[INFO] Writer 166 has 2603 valid samples
+[INFO] Writer 70 has 2582 valid samples
+[INFO] Writer 9 has 2500 valid samples
+[INFO] Writer 81 has 2655 valid samples
+[INFO] Writer 152 has 2646 valid samples
+[INFO] Writer 125 has 2636 valid samples
+[INFO] Writer 128 has 2646 valid samples
+[INFO] Writer 61 has 2659 valid samples
+[INFO] Writer 3 has 2024 valid samples
+[INFO] Writer 32 has 2457 valid samples
+[INFO] Writer 10 has 2592 valid samples
+[INFO] Writer 11 has 2639 valid samples
+[INFO] Writer 130 has 2648 valid samples
+[INFO] Writer 90 has 2531 valid samples
+[INFO] Writer 145 has 2502 valid samples
+[INFO] Writer 160 has 2599 valid samples
+[INFO] Writer 29 has 2627 valid samples
+[INFO] Writer 157 has 2611 valid samples
+[INFO] Writer 132 has 2607 valid samples
+[INFO] Writer 138 has 2605 valid samples
+[INFO] Writer 20 has 2622 valid samples
+[INFO] Writer 0 has 2572 valid samples
+[INFO] Writer 113 has 2620 valid samples
+[INFO] Writer 136 has 2632 valid samples
+[INFO] Writer 80 has 2636 valid samples
+[INFO] Writer 137 has 2592 valid samples
+[INFO] Writer 115 has 2608 valid samples
+[INFO] Writer 50 has 2577 valid samples
+[INFO] Writer 46 has 2640 valid samples
+[INFO] Writer 167 has 2640 valid samples
+[INFO] Writer 142 has 2572 valid samples
+[INFO] Writer 39 has 2468 valid samples
+[INFO] Writer 94 has 2634 valid samples
+[INFO] Writer 47 has 2642 valid samples
+[INFO] Writer 100 has 2603 valid samples
+[INFO] Writer 73 has 2665 valid samples
+[INFO] Writer 79 has 2642 valid samples
+[INFO] Writer 127 has 2641 valid samples
+[INFO] Writer 7 has 2526 valid samples
+[INFO] Writer 110 has 2604 valid samples
+[INFO] Writer 67 has 2566 valid samples
+[INFO] Writer 95 has 2620 valid samples
+[INFO] Writer 169 has 2544 valid samples
+[INFO] Writer 156 has 2637 valid samples
+[INFO] Writer 4 has 2609 valid samples
+[INFO] Writer 146 has 2579 valid samples
+[INFO] Writer 153 has 2594 valid samples
+[INFO] Writer 63 has 2454 valid samples
+[INFO] Writer 35 has 2629 valid samples
+[INFO] Writer 30 has 2607 valid samples
+[INFO] Writer 59 has 2153 valid samples
+[INFO] Writer 83 has 2606 valid samples
+[INFO] Writer 112 has 2594 valid samples
+[INFO] Writer 69 has 2643 valid samples
+[INFO] Writer 163 has 2645 valid samples
+[INFO] Writer 165 has 2557 valid samples
+[INFO] Writer 40 has 2502 valid samples
+[INFO] Writer 78 has 2636 valid samples
+[INFO] Writer 120 has 2641 valid samples
+[INFO] Writer 155 has 2633 valid samples
+[INFO] Writer 158 has 2641 valid samples
+[INFO] Writer 54 has 2563 valid samples
+[INFO] Writer 122 has 2608 valid samples
+[INFO] Writer 44 has 2628 valid samples
+[INFO] Writer 64 has 2587 valid samples
+[INFO] Writer 144 has 2037 valid samples
+[INFO] Writer 74 has 2623 valid samples
+[INFO] Writer 101 has 2613 valid samples
+[INFO] Writer 38 has 2605 valid samples
+[INFO] Writer 87 has 2437 valid samples
+[INFO] Writer 135 has 2589 valid samples
+[INFO] Writer 98 has 2588 valid samples
+[INFO] Writer 8 has 2398 valid samples
+[INFO] Writer 77 has 2652 valid samples
+[INFO] Writer 36 has 2647 valid samples
+[INFO] Writer 84 has 2596 valid samples
+[INFO] Writer 31 has 2656 valid samples
+[INFO] Writer 126 has 2569 valid samples
+[INFO] Writer 6 has 2619 valid samples
+[INFO] Writer 117 has 2651 valid samples
+[INFO] Writer 66 has 2617 valid samples
+[INFO] Writer 168 has 2642 valid samples
+[INFO] Writer 106 has 2514 valid samples
+[INFO] Writer 2 has 2557 valid samples
+[INFO] Writer 72 has 2623 valid samples
+[INFO] Writer 26 has 2619 valid samples
+[INFO] Writer 129 has 2525 valid samples
+[INFO] Writer 22 has 2649 valid samples
+[INFO] Writer 68 has 2460 valid samples
+[INFO] Writer 139 has 2511 valid samples
+[INFO] Writer 140 has 2402 valid samples
+[INFO] Writer 116 has 2615 valid samples
+[INFO] Writer 5 has 2422 valid samples
+[INFO] Writer 19 has 2634 valid samples
+[INFO] Writer 150 has 2544 valid samples
+[INFO] Writer 99 has 2575 valid samples
+[INFO] Writer 56 has 2598 valid samples
+[INFO] Writer 109 has 2638 valid samples
+[INFO] Writer 57 has 2639 valid samples
+[INFO] Writer 55 has 2395 valid samples
+[INFO] Writer 53 has 2570 valid samples
+[INFO] Writer 34 has 2494 valid samples
+[INFO] Writer 124 has 2581 valid samples
+[INFO] Writer 21 has 2585 valid samples
+[INFO] Writer 102 has 2499 valid samples
+[INFO] Writer 88 has 2617 valid samples
+[INFO] Writer 27 has 2611 valid samples
+[INFO] Writer 65 has 2592 valid samples
+[INFO] Writer 164 has 2645 valid samples
+[INFO] Writer 14 has 2611 valid samples
+[INFO] Writer 45 has 2587 valid samples
+[INFO] Writer 48 has 2629 valid samples
+[INFO] Writer 17 has 2558 valid samples
+[INFO] Writer 18 has 2641 valid samples
+[INFO] Writer 41 has 2605 valid samples
+[INFO] Writer 131 has 2646 valid samples
+[INFO] Writer 96 has 2583 valid samples
+[INFO] Writer 107 has 2530 valid samples
+[INFO] Writer 141 has 2527 valid samples
+[INFO] Writer 52 has 2527 valid samples
+[INFO] Writer 58 has 2574 valid samples
+[INFO] Writer 111 has 2628 valid samples
+[INFO] Writer 16 has 2639 valid samples
+[INFO] Writer 51 has 2614 valid samples
+[INFO] Writer 108 has 2407 valid samples
+[INFO] Writer 159 has 2641 valid samples
+[INFO] Writer 25 has 2556 valid samples
+[INFO] Writer 28 has 2600 valid samples
+[INFO] Writer 12 has 2613 valid samples
+[INFO] Writer 33 has 2535 valid samples
+[INFO] Writer 86 has 2649 valid samples
+[INFO] Writer 92 has 2573 valid samples
+BrushDataset Loaded 350461 samples from 136 writers.
 number of training images:  350461
-BrushDataset initialized with 34 writers, split at 80.0%.
+BrushDataset initialized [TEST] with 34 writers, split at 80.0%.
 
-Loading BrushDataset:   0%|          | 0/34 [00:00<?, ?it/s]Loading BrushDataset:   3%|▎         | 1/34 [00:01<00:52,  1.60s/it]Loading BrushDataset:   6%|▌         | 2/34 [00:03<00:50,  1.57s/it]Loading BrushDataset:   9%|▉         | 3/34 [00:04<00:48,  1.57s/it]Loading BrushDataset:  12%|█▏        | 4/34 [00:06<00:47,  1.58s/it]Loading BrushDataset:  15%|█▍        | 5/34 [00:07<00:45,  1.58s/it]Loading BrushDataset:  18%|█▊        | 6/34 [00:09<00:43,  1.55s/it]Loading BrushDataset:  21%|██        | 7/34 [00:10<00:42,  1.56s/it]Loading BrushDataset:  24%|██▎       | 8/34 [00:12<00:40,  1.57s/it]Loading BrushDataset:  26%|██▋       | 9/34 [00:14<00:39,  1.57s/it]Loading BrushDataset:  29%|██▉       | 10/34 [00:15<00:37,  1.58s/it]Loading BrushDataset:  32%|███▏      | 11/34 [00:17<00:36,  1.58s/it]Loading BrushDataset:  35%|███▌      | 12/34 [00:18<00:34,  1.58s/it]Loading BrushDataset:  38%|███▊      | 13/34 [00:20<00:33,  1.57s/it]Loading BrushDataset:  41%|████      | 14/34 [00:22<00:31,  1.58s/it]Loading BrushDataset:  44%|████▍     | 15/34 [00:23<00:30,  1.59s/it]Loading BrushDataset:  47%|████▋     | 16/34 [00:25<00:28,  1.56s/it]Loading BrushDataset:  50%|█████     | 17/34 [00:26<00:26,  1.55s/it]Loading BrushDataset:  53%|█████▎    | 18/34 [00:28<00:25,  1.57s/it]Loading BrushDataset:  56%|█████▌    | 19/34 [00:29<00:23,  1.57s/it]Loading BrushDataset:  59%|█████▉    | 20/34 [00:31<00:21,  1.57s/it]Loading BrushDataset:  62%|██████▏   | 21/34 [00:33<00:20,  1.58s/it]Loading BrushDataset:  65%|██████▍   | 22/34 [00:34<00:18,  1.57s/it]Loading BrushDataset:  68%|██████▊   | 23/34 [00:36<00:17,  1.57s/it]Loading BrushDataset:  71%|███████   | 24/34 [00:37<00:15,  1.58s/it]Loading BrushDataset:  74%|███████▎  | 25/34 [00:39<00:14,  1.58s/it]Loading BrushDataset:  76%|███████▋  | 26/34 [00:40<00:12,  1.59s/it]Loading BrushDataset:  79%|███████▉  | 27/34 [00:42<00:11,  1.59s/it]Loading BrushDataset:  82%|████████▏ | 28/34 [00:44<00:09,  1.59s/it]Loading BrushDataset:  85%|████████▌ | 29/34 [00:45<00:07,  1.58s/it]Loading BrushDataset:  88%|████████▊ | 30/34 [00:47<00:06,  1.58s/it]Loading BrushDataset:  91%|█████████ | 31/34 [00:48<00:04,  1.58s/it]Loading BrushDataset:  94%|█████████▍| 32/34 [00:50<00:03,  1.58s/it]Loading BrushDataset:  97%|█████████▋| 33/34 [00:52<00:01,  1.59s/it]Loading BrushDataset: 100%|██████████| 34/34 [00:53<00:00,  1.59s/it]Loading BrushDataset: 100%|██████████| 34/34 [00:53<00:00,  1.58s/it]BrushDataset Loaded 88124 samples from 34 writers.
-Number of test images: 88124, Number of train images: 350461
-load content pretrained model from model_zoo/position_layer2_dim512_iter138k_test_acc0.9443.pth
-
-/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
-  warnings.warn(
-/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
-  warnings.warn(msg)
-SDT_Generator::forward, style_imgs: torch.Size([32, 30, 1, 64, 64])
-SDT_Generator::forward, batch_size: 32 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
-SDT_Generator::forward style_imgs.view(): torch.Size([960, 1, 64, 64])
-SDT_Generator::forward Feat_Encoder_ResNet output: torch.Size([960, 512, 2, 2])
-SDT_Generator::forward style_embe.view(): torch.Size([4, 960, 512])
-SDT_Generator::forward base_encoder output memory: torch.Size([4, 960, 512])
-SDT_Generator::forward WRITER memory: torch.Size([4, 960, 512]) , GLYPH memory: torch.Size([4, 960, 512])
-SDT_Generator::forward rearrange writer_memory: torch.Size([4, 64, 15, 512]) , glyph_memory: torch.Size([4, 64, 15, 512])
-SDT_Generator::forward [writer] memory_fea: torch.Size([60, 64, 512]) , compact_fea: torch.Size([64, 512])
-SDT_Generator::forward [writer] pro_emb: torch.Size([64, 256])
-SDT_Generator::forward [writer] query_emb: torch.Size([32, 256])
-SDT_Generator::forward [writer] pos_emb: torch.Size([32, 256])
-SDT_Generator::forward [writer] nce_emb: torch.Size([32, 2, 256])
-SDT_Generator::forward [writer] normalize NCE nce_emb: torch.Size([32, 2, 256])
-SDT_Generator::forward [glyph] patch_emb: torch.Size([4, 32, 15, 512])
-SDT_Generator::forward [glyph] random_double_sampling result anc: torch.Size([32, 15, 1, 512]) , positive: torch.Size([32, 15, 1, 512]) , n_channels: 512
-SDT_Generator::forward [glyph] anc reshape: torch.Size([32, 15, 512])
-SDT_Generator::forward [glyph] anc_compact: torch.Size([32, 1, 512])
-SDT_Generator::forward [glyph] anc_compact after pro_mlp_character: torch.Size([32, 1, 256])
-SDT_Generator::forward [glyph] positive reshape: torch.Size([32, 15, 512])
-SDT_Generator::forward [glyph] positive_compact: torch.Size([32, 1, 512])
-SDT_Generator::forward [glyph] NCE anc_compact: torch.Size([32, 1, 256]) , positive_compact: torch.Size([32, 1, 256])
-SDT_Generator::forward [glyph] normalize nce_emb_patch: torch.Size([32, 2, 256])
-Content_TR:: Feat_Encoder input: torch.Size([32, 1, 64, 64])
-[Step 0] --- GMM Debug ---
-  NLL loss (mean): 1.1411
-  pen state loss : 0.9486
-  result0 max pdf: 7.8605
-  result1 avg pre-log: 0.0768
-  z_pi max: 0.5531, mean: 0.0500
-  sigma1 min/max: 0.0336/18.9814
-  sigma2 min/max: 0.0378/28.5596
-  corr range: -0.9964 ~ 0.9977
-iter:0 loss:14.473 ETA:31 days, 23:20:52.983856
- # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
- # _visualize_input_images_tb writer_id: torch.Size([64])
-iter:1 loss:15.099 ETA:7 days, 11:51:32.509134
-iter:2 loss:13.253 ETA:20:37:13.552548
-iter:3 loss:12.366 ETA:19:49:12.842045
-iter:4 loss:12.190 ETA:18:12:03.696748
-iter:5 loss:10.937 ETA:18:17:48.018404
-iter:6 loss:10.049 ETA:17:10:25.041861
-iter:7 loss:9.442 ETA:16:34:39.660483
-iter:8 loss:9.114 ETA:2 days, 11:59:31.842882
-iter:9 loss:8.599 ETA:19:18:03.205055
-iter:10 loss:8.127 ETA:19:33:28.686039
-iter:11 loss:7.705 ETA:18:34:56.573782
-iter:12 loss:7.857 ETA:17:01:24.345714
-iter:13 loss:7.440 ETA:17:05:40.513309
-iter:14 loss:7.140 ETA:17:20:27.155977
-iter:15 loss:7.150 ETA:16:47:15.625832
-iter:16 loss:6.841 ETA:21:39:36.759254
-iter:17 loss:6.848 ETA:17:25:57.879238
-iter:18 loss:6.718 ETA:17:25:00.969945
-iter:19 loss:6.688 ETA:17:50:37.118177
-iter:20 loss:6.411 ETA:18:43:14.049182
-iter:21 loss:6.731 ETA:17:22:13.821367
-iter:22 loss:6.548 ETA:19:00:36.770825
-iter:23 loss:6.454 ETA:18:36:11.228850
-iter:24 loss:6.533 ETA:23:38:24.599073
-iter:25 loss:6.435 ETA:2 days, 23:04:13.901410
-iter:26 loss:6.082 ETA:19:38:59.417945
-iter:27 loss:6.310 ETA:17:37:13.903910
-iter:28 loss:6.248 ETA:18:38:14.325191
-iter:29 loss:6.125 ETA:18:59:26.006741
-iter:30 loss:6.286 ETA:17:51:24.694076
-iter:31 loss:6.168 ETA:18:18:18.883668
-iter:32 loss:6.074 ETA:1 day, 20:16:01.609726
-iter:33 loss:6.242 ETA:20:15:39.565921
-iter:34 loss:5.981 ETA:19:41:35.395456
-iter:35 loss:6.095 ETA:18:14:40.690223
-iter:36 loss:6.194 ETA:18:25:25.358633
-iter:37 loss:6.112 ETA:18:29:44.426047
-iter:38 loss:6.159 ETA:17:31:00.459244
-iter:39 loss:6.015 ETA:17:29:20.170629
-iter:40 loss:5.832 ETA:21:53:23.940115
-iter:41 loss:6.087 ETA:17:49:17.396337
-iter:42 loss:5.925 ETA:17:21:07.853193
-iter:43 loss:5.975 ETA:17:27:22.635601
-iter:44 loss:5.982 ETA:16:31:20.071753
-iter:45 loss:5.867 ETA:18:15:01.289780
-iter:46 loss:5.867 ETA:19:59:06.854026
-iter:47 loss:5.915 ETA:17:40:03.280535
-iter:48 loss:5.804 ETA:22:46:20.241817
-iter:49 loss:5.635 ETA:3 days, 0:11:14.364494
-iter:50 loss:5.622 ETA:18:07:20.043104
-iter:51 loss:5.760 ETA:18:28:50.138184
-iter:52 loss:5.642 ETA:20:04:28.431045
-iter:53 loss:5.685 ETA:18:52:05.091240
-iter:54 loss:5.743 ETA:19:15:06.729212
-iter:55 loss:5.852 ETA:18:59:36.329124
-iter:56 loss:5.808 ETA:1 day, 20:03:00.853861
-iter:57 loss:5.650 ETA:19:33:15.142389
-iter:58 loss:5.798 ETA:19:09:03.528256
-iter:59 loss:5.468 ETA:19:11:14.179635
-iter:60 loss:5.707 ETA:17:54:05.658746
-iter:61 loss:5.585 ETA:19:08:24.787488
-iter:62 loss:5.551 ETA:17:41:24.122573
-iter:63 loss:5.611 ETA:19:08:39.733562
-iter:64 loss:5.679 ETA:21:20:52.135132
-iter:65 loss:5.721 ETA:18:11:25.597697
-iter:66 loss:5.679 ETA:19:12:39.279737
-iter:67 loss:5.650 ETA:18:54:56.038520
-iter:68 loss:5.609 ETA:18:24:55.534661
-iter:69 loss:5.249 ETA:19:44:45.143523
-iter:70 loss:5.499 ETA:21:25:46.031733
-iter:71 loss:5.549 ETA:18:45:02.654634
-iter:72 loss:5.528 ETA:3 days, 4:26:53.597233
-iter:73 loss:5.444 ETA:20:52:15.214788
-iter:74 loss:5.383 ETA:19:01:53.306465
-iter:75 loss:5.413 ETA:18:57:38.428216
-iter:76 loss:5.585 ETA:3 days, 1:35:16.326151
-iter:77 loss:5.472 ETA:18:32:29.565796
-iter:78 loss:5.555 ETA:18:17:06.673538
-iter:79 loss:5.274 ETA:19:03:00.564081
-iter:80 loss:5.390 ETA:1 day, 13:59:36.694050
-iter:81 loss:5.598 ETA:18:42:31.137336
-iter:82 loss:5.185 ETA:19:23:34.275173
-iter:83 loss:5.494 ETA:21:22:18.491459
-iter:84 loss:5.242 ETA:21:14:58.790388
-iter:85 loss:5.406 ETA:21:34:28.211793
-iter:86 loss:5.364 ETA:20:50:57.261512
-iter:87 loss:5.570 ETA:3 days, 1:06:43.852113
-iter:88 loss:5.407 ETA:1 day, 0:03:39.394798
-iter:89 loss:5.394 ETA:21:06:50.195362
-iter:90 loss:5.338 ETA:3 days, 1:59:35.590935
-iter:91 loss:5.351 ETA:19:00:54.528175
-iter:92 loss:5.331 ETA:17:42:32.065049
-iter:93 loss:5.396 ETA:17:40:40.694747
-iter:94 loss:5.322 ETA:3 days, 1:11:44.053157
-iter:95 loss:5.319 ETA:18:57:58.432993
-iter:96 loss:5.343 ETA:3 days, 4:14:34.083260
-iter:97 loss:5.358 ETA:19:02:06.252196
-iter:98 loss:5.195 ETA:18:08:19.923234
-iter:99 loss:5.255 ETA:17:09:48.714396
-iter:100 loss:5.242 ETA:10 days, 19:52:52.905517
-iter:101 loss:5.478 ETA:19:17:47.683916
-iter:102 loss:5.258 ETA:19:51:45.109245
-iter:103 loss:5.320 ETA:17:30:51.827831
-iter:104 loss:5.215 ETA:22:19:58.072603
-iter:105 loss:5.409 ETA:17:22:13.528385
-iter:106 loss:5.318 ETA:17:43:03.725451
-iter:107 loss:5.403 ETA:17:48:13.804253
-iter:108 loss:5.335 ETA:19:14:19.082955
-iter:109 loss:5.319 ETA:18:14:34.875313
-iter:110 loss:5.327 ETA:19:52:35.338025
-iter:111 loss:5.256 ETA:18:56:03.547073
-iter:112 loss:5.144 ETA:1 day, 0:09:47.011322
-iter:113 loss:5.345 ETA:19:47:30.976391
-iter:114 loss:5.199 ETA:19:00:00.330167
-iter:115 loss:5.403 ETA:18:47:51.513804
-iter:116 loss:5.153 ETA:22:30:01.671118
-iter:117 loss:5.266 ETA:18:17:37.294437
-iter:118 loss:5.071 ETA:18:27:26.226235
-iter:119 loss:5.106 ETA:17:59:10.030736
-iter:120 loss:5.140 ETA:2 days, 15:12:43.565664
-iter:121 loss:5.241 ETA:19:17:49.788063
-iter:122 loss:5.207 ETA:18:52:25.111894
-iter:123 loss:5.172 ETA:17:05:40.498444
-iter:124 loss:5.430 ETA:18:33:49.706106
-iter:125 loss:5.106 ETA:19:27:29.108416
-iter:126 loss:5.224 ETA:18:44:24.117922
-iter:127 loss:5.219 ETA:18:25:47.593942
-iter:128 loss:5.022 ETA:1 day, 0:10:05.924149
-iter:129 loss:5.067 ETA:18:16:21.670635
-iter:130 loss:5.228 ETA:18:57:48.861225
-iter:131 loss:5.141 ETA:18:27:45.302050
-iter:132 loss:5.192 ETA:19:27:24.367856
-iter:133 loss:5.158 ETA:18:18:38.973839
-iter:134 loss:5.105 ETA:18:57:16.807221
-iter:135 loss:5.203 ETA:17:00:55.040249
-iter:136 loss:5.245 ETA:21:16:39.450111
-iter:137 loss:4.965 ETA:17:55:32.772044
-iter:138 loss:5.160 ETA:17:00:16.190754
-iter:139 loss:5.009 ETA:17:16:02.463147
-iter:140 loss:5.204 ETA:17:35:00.471025
-iter:141 loss:5.004 ETA:17:25:12.866833
-iter:142 loss:5.175 ETA:17:29:12.136545
-iter:143 loss:5.139 ETA:16:33:21.004845
-iter:144 loss:4.913 ETA:19:51:25.654118
-iter:145 loss:5.222 ETA:17:30:20.711695
-iter:146 loss:5.255 ETA:2 days, 21:37:52.321386
-iter:147 loss:5.207 ETA:17:20:15.752971
-iter:148 loss:5.051 ETA:17:14:40.615146
-iter:149 loss:4.960 ETA:19:31:04.786710
-iter:150 loss:5.154 ETA:3 days, 1:51:34.827700
-iter:151 loss:5.126 ETA:17:25:55.804317
-iter:152 loss:5.158 ETA:3 days, 2:30:09.454113
-iter:153 loss:5.184 ETA:16:55:33.384149
-iter:154 loss:4.851 ETA:19:10:10.627403
-iter:155 loss:4.843 ETA:20:23:36.940416
-iter:156 loss:5.088 ETA:19:44:42.989313
-iter:157 loss:5.050 ETA:17:31:01.381692
-iter:158 loss:4.938 ETA:18:19:13.991093
-iter:159 loss:5.031 ETA:19:14:31.286268
-iter:160 loss:4.942 ETA:2 days, 1:00:57.031822
-iter:161 loss:4.998 ETA:19:08:52.501740
-iter:162 loss:5.012 ETA:19:01:53.308795
-iter:163 loss:5.317 ETA:17:20:57.686219
-iter:164 loss:4.850 ETA:17:55:14.763448
-iter:165 loss:4.965 ETA:17:18:33.222759
-iter:166 loss:4.976 ETA:17:59:08.431643
-iter:167 loss:5.037 ETA:17:10:00.903627
-iter:168 loss:5.102 ETA:19:02:06.354771
-iter:169 loss:5.067 ETA:17:11:16.848082
-iter:170 loss:5.044 ETA:17:05:46.895242
-iter:171 loss:5.069 ETA:18:31:37.361450
-iter:172 loss:5.137 ETA:19:06:46.122710
-iter:173 loss:4.959 ETA:18:29:23.485561
-iter:174 loss:4.937 ETA:17:28:37.807151
-iter:175 loss:4.981 ETA:17:07:42.935698
-iter:176 loss:5.039 ETA:20:16:32.646160
-iter:177 loss:5.004 ETA:17:08:37.820894
-iter:178 loss:5.016 ETA:3 days, 0:11:15.878628
-iter:179 loss:5.039 ETA:17:32:27.673003
-iter:180 loss:4.808 ETA:17:19:28.668098
-iter:181 loss:4.966 ETA:17:23:24.033835
-iter:182 loss:4.865 ETA:20:21:19.154813
-iter:183 loss:5.019 ETA:16:37:21.854407
-iter:184 loss:4.916 ETA:1 day, 0:30:24.184652
-iter:185 loss:4.880 ETA:20:27:28.833697
-iter:186 loss:4.940 ETA:18:34:16.996530
-iter:187 loss:4.826 ETA:19:33:31.398651
+Loading BrushDataset:   0%|          | 0/34 [00:00<?, ?it/s]Loading BrushDataset:   3%|▎         | 1/34 [00:00<00:12,  2.66it/s]Loading BrushDataset:   6%|▌         | 2/34 [00:00<00:11,  2.69it/s][SKIP] Flat trajectory in writer 133, char ,
+[SKIP] Flat trajectory in writer 133, char .
+Loading BrushDataset:   9%|▉         | 3/34 [00:01<00:11,  2.66it/s]

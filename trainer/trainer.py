@@ -63,6 +63,7 @@ class Trainer:
 
         # calculate loss
         gt_coords = coords[:, 1:, :]
+        print_once(f"train_iter GT coords : {gt_coords.shape[0]}, T, {gt_coords.shape[1]}, {gt_coords.shape[2]}], preds : {preds.shape[0]}, T, {preds.shape[1]}, {preds.shape[2]}]")
         nce_loss_writer = self.nce_criterion(nce_emb, labels=writer_id)
         nce_loss_glyph = self.nce_criterion(nce_emb_patch)
         preds = preds.view(-1, 123)
@@ -119,15 +120,19 @@ class Trainer:
             test_data['writer_id'].long().cuda(), \
             test_data['img_list'].cuda(), \
             test_data['char_img'].cuda()
+        
+        print_once(f"valid_iter GT coords : {coords.shape[0]}, T, {coords.shape[1]}, {coords.shape[2]}], img_list : {img_list.shape}, char_img : {char_img.shape}")
+        print_once(f"valid_iter character_id : {character_id.shape}, writer_id : {writer_id.shape}")
          # forward
         with torch.no_grad():
             preds = self.model.module.inference(img_list, char_img, 120)
             bs = character_id.shape[0]
+            print_once(f"bs : {bs}, preds shape : {preds.shape}")
             SOS = torch.tensor(bs * [[0, 0, 1, 0, 0]]).unsqueeze(1).to(preds)
             preds = torch.cat((SOS, preds), 1)  # add the first token
             preds = preds.cpu().numpy()
             gt_coords = coords.cpu().numpy()  # [N, T, C]
-            self._vis_genarate_samples(gt_coords, preds, character_id, step)
+            self._vis_genarate_samples(gt_coords, preds, character_id, char_img, step)
 
     def train(self, start_step=0):
         """start training iterations"""    
@@ -171,20 +176,35 @@ class Trainer:
         }, model_path)
         print('✅ Saved full checkpoint to {}'.format(model_path))
 
-    def _vis_genarate_samples(self, gt_coords, preds, character_id, step):
+    def _vis_genarate_samples(self, gt_coords, preds, character_id, char_img_batch, step):
         img_tensors = []
         batch_idx = 0
+        font = ImageFont.load_default()
         for i, _ in enumerate(gt_coords):
             gt_img = coords_render(gt_coords[i], split=True, width=64, height=64, thickness=1)
             pred_img = coords_render(preds[i], split=True, width=64, height=64, thickness=1)
-            example_img = Image.new("RGB", (cfg.TEST.IMG_W * 2, cfg.TEST.IMG_H),
-                                    (255, 255, 255))
-            example_img.paste(pred_img, (0, 0)) # gererated character
-            example_img.paste(gt_img, (cfg.TEST.IMG_W, 0)) # gt character
 
+            # char_img: torch.Tensor -> PIL
+            char_img_np = (char_img_batch[i].cpu().numpy().squeeze() * 255).astype('uint8')
+            char_img_pil = Image.fromarray(char_img_np).convert("RGB").resize((64, 64))
+
+            # 하나로 붙이기: [Content | Pred | GT]
+            example_img = Image.new("RGB", (cfg.TEST.IMG_W * 3, cfg.TEST.IMG_H + 12), (255, 255, 255))
+            example_img.paste(char_img_pil, (0, 0))                      # Content image
+            example_img.paste(pred_img, (cfg.TEST.IMG_W, 0))            # Generated image
+            example_img.paste(gt_img, (cfg.TEST.IMG_W * 2, 0))          # Ground-truth image
+
+            # 문자 텍스트 쓰기
             character = self.char_dict[character_id[i].item()]
-            save_path = os.path.join(self.save_sample_dir, 'ite.' + str(step//100000)
-                 + '-'+ str(step//100000 + 100000), character + '_' + str(step) + '_.jpg')
+            draw = ImageDraw.Draw(example_img)
+            draw.text((2, cfg.TEST.IMG_H), character, fill=(0, 0, 0), font=font)
+
+            # 저장
+            save_path = os.path.join(
+                self.save_sample_dir,
+                f'ite.{step//100000}-{step//100000 + 100000}',
+                f'{character}_{step}_.jpg'
+            )
             os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
             try:
@@ -192,13 +212,7 @@ class Trainer:
             except Exception as e:
                 print(f"[Save Error] {save_path}, error: {e}")
 
-            # try:
-            #     if self.tb_summary is not None:
-            #         img_tensor = ToTensor()(example_img)
-            #         self.tb_summary.add_image(f"Samples/{character}_{step}", img_tensor, step)
-            # except Exception as e:
-            #     print(f"[TensorBoard Error] {character} @ step {step}, error: {e}")            
-    
+            # TensorBoard용 버퍼
             if self.tb_summary is not None:
                 try:
                     img_tensor = ToTensor()(example_img)
@@ -206,7 +220,7 @@ class Trainer:
                 except Exception as e:
                     print(f"[ToTensor Error] {save_path}, error: {e}")
 
-            # ✨ 10개씩 묶어서 TensorBoard에 기록
+            # 10개씩 TensorBoard에 기록
             if len(img_tensors) == 10:
                 try:
                     grid = make_grid(img_tensors, nrow=5, padding=4)
@@ -214,16 +228,15 @@ class Trainer:
                     batch_idx += 1
                 except Exception as e:
                     print(f"[Grid Write Error] step {step} batch {batch_idx}, error: {e}")
-                img_tensors = []  # ✨ 버퍼 초기화
+                img_tensors = []
 
-        # ✨ 루프 후 남은 이미지가 있다면 마지막 batch로 기록
+        # 마지막 버퍼 처리
         if self.tb_summary is not None and img_tensors:
             try:
                 grid = make_grid(img_tensors, nrow=5, padding=4)
                 self.tb_summary.add_image(f"Samples/Step_{step}_batch{batch_idx}", grid, step)
             except Exception as e:
                 print(f"[Final Grid Write Error] step {step} batch {batch_idx}, error: {e}")
-
 
     def _plot_nce_embedding_2d(self, nce_emb, labels, step, var_threshold=1e-2):
         tag = "WriterNCE/query_vs_positive"

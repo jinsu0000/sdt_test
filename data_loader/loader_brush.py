@@ -8,7 +8,7 @@ from torchvision import transforms
 from utils.util import normalize_xys_for_brush
 from utils.logger import print_once
 from tqdm import tqdm
-
+from collections import defaultdict
 
 def delta_to_absolute(traj):
     abs_xy = np.cumsum(traj[:, :2], axis=0)
@@ -54,6 +54,10 @@ class BrushDataset(Dataset):
         self.char_dict = CharDict(pickle.load(open(os.path.join(self.root_dir, 'character_dict.pkl'), 'rb')).keys())
         self.content_dict = pickle.load(open(os.path.join(self.root_dir, 'content_handwriting_img.pkl'), 'rb'))
 
+        self.content_img_dict = {}
+        for char, img in self.content_dict.items():
+            self.content_img_dict[char] = transform_data(img)
+
         writer_files = [f for f in os.listdir(self.char_root_dir) if f.endswith('.pkl')]
         writer_files.sort()
         random.seed(seed)
@@ -63,6 +67,8 @@ class BrushDataset(Dataset):
 
         self.writer_dict = {os.path.splitext(f)[0]: idx for idx, f in enumerate(writer_files)}
         print_once(f"BrushDataset initialized [{'TRAIN' if is_train else 'TEST'}] with {len(writer_files)} writers, split at {split_ratio * 100:.1f}%.")
+        traj_lengths = []
+        writer_sample_counter = defaultdict(int)
         for writer_file in tqdm(writer_files, desc="Loading BrushDataset"):
             writer_id = os.path.splitext(writer_file)[0]
             with open(os.path.join(self.char_root_dir, writer_file), 'rb') as f:
@@ -74,15 +80,17 @@ class BrushDataset(Dataset):
                     traj = delta_to_absolute(traj)
 
                     if traj.shape[0] < 2:
+                        print_once(f"[SKIP] Short trajectory in writer {writer_id}, char {char}")
                         continue
                     if np.allclose(traj[:, 0], traj[0, 0]) and np.allclose(traj[:, 1], traj[0, 1]):
+                        print_once(f"[SKIP] Flat trajectory in writer {writer_id}, char {char}")
                         continue
 
-                    try:
-                        traj = normalize_xys_for_brush(traj)
-                    except Exception as e:
-                        print_once(f"[Warn] Normalize 실패: {e}")
-                        continue
+                    # try:
+                    #     traj = normalize_xys_for_brush(traj)
+                    # except Exception as e:
+                    #     print_once(f"[Warn] Normalize 실패: {e}")
+                    #     continue
                     traj[1:, :2] -= traj[:-1, :2]
 
                     eos_col = traj[:, 2] if traj.shape[1] >= 3 else np.zeros(traj.shape[0])
@@ -92,18 +100,24 @@ class BrushDataset(Dataset):
                     new_state[eos_col == 1, 1] = 1
                     traj = np.concatenate([traj[:, :2], new_state], axis=1)
 
-                    if char not in self.content_dict or char not in self.char_dict.char2id:
+                    if char not in self.content_img_dict or char not in self.char_dict.char2id:
+                        print_once(f"[SKIP] Missing content image or character ID for char {char} in writer {writer_id}")
                         continue
-
-                    content_img = self.content_dict[char]
-                    content_img = transform_data(content_img)
 
                     self.samples.append({
                         'coords': torch.tensor(traj),
-                        'char_img': content_img,
+                        'char_img': self.content_img_dict[char],
                         'writer_id': writer_id,
                         'character': char,
                     })
+                    traj_lengths.append(traj.shape[0])
+                    writer_sample_counter[writer_id] += 1
+        # 통계 출력
+        if traj_lengths:
+            print_once(f"[INFO] Trajectory length stats: min={np.min(traj_lengths)}, max={np.max(traj_lengths)}, mean={np.mean(traj_lengths):.2f}")
+
+        for writer_id, count in writer_sample_counter.items():
+            print_once(f"[INFO] Writer {writer_id} has {count} valid samples")
 
         print_once(f"BrushDataset Loaded {len(self.samples)} samples from {len(writer_files)} writers.")
 

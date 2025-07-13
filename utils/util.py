@@ -11,26 +11,38 @@ transform_data = transforms.Compose([
 ])
 
 def normalize_xys_for_brush(xys):
-    # xys: (T, 3), 절대 좌표 [x, y, eos]
-    xy = xys[:, :2]
-    eos = xys[:, 2]
+    xy, eos = xys[:, :2], xys[:, 2]
+    stroke_ids = np.cumsum(eos)  # stroke 인덱스 분리
+    valid_pairs = stroke_ids[:-1] == stroke_ids[1:]
 
-    # 유효한 길이 체크
-    if len(xy) < 2 or np.allclose(xy[:, 0], xy[0, 0]) and np.allclose(xy[:, 1], xy[0, 1]):
-        raise Exception("Broken online characters")
+    px_sum = py_sum = len_sum = 0
+    for i in range(len(xy)-1):
+        if not valid_pairs[i]:
+            continue
+        temp_len = np.linalg.norm(xy[i+1] - xy[i])
+        temp_px = temp_len * (xy[i][0] + xy[i+1][0]) / 2
+        temp_py = temp_len * (xy[i][1] + xy[i+1][1]) / 2
+        px_sum += temp_px
+        py_sum += temp_py
+        len_sum += temp_len
+    if len_sum < 1e-6:
+        raise Exception("Broken character")
 
-    # 중심화
-    mux, muy = xy[:, 0].mean(), xy[:, 1].mean()
-    xy[:, 0] -= mux
-    xy[:, 1] -= muy
+    mux, muy = px_sum / len_sum, py_sum / len_sum
 
-    # 정규화 (스케일)
-    std = np.std(xy)
-    if std < 1e-6:
-        raise Exception("Broken online characters")
-    xy /= std
-
+    dx_sum = dy_sum = 0
+    for i in range(len(xy)-1):
+        if not valid_pairs[i]:
+            continue
+        temp_len = np.linalg.norm(xy[i+1] - xy[i])
+        temp_dx = temp_len * ((xy[i][0]-mux)**2 + (xy[i+1][0]-mux)**2 + (xy[i][0]-mux)*(xy[i+1][0]-mux)) / 3
+        temp_dy = temp_len * ((xy[i][1]-muy)**2 + (xy[i+1][1]-muy)**2 + (xy[i][1]-muy)*(xy[i+1][1]-muy)) / 3
+        dx_sum += temp_dx
+        dy_sum += temp_dy
+    sigma = np.sqrt(dx_sum / len_sum) or np.sqrt(dy_sum / len_sum)
+    xy = (xy - [mux, muy]) / sigma
     return np.concatenate([xy, eos[:, None]], axis=1)
+
 
 '''
 description: Normalize the xy-coordinates into a standard interval.
