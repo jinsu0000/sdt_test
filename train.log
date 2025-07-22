@@ -1,213 +1,203 @@
-BrushDataset initialized [TRAIN] with 136 writers, split at 80.0%.
-Loading BrushDataset:   0%|          | 0/136 [00:00<?, ?it/s]Loading BrushDataset:   1%|          | 1/136 [00:00<00:52,  2.58it/s][SKIP] Flat trajectory in writer 60, char .
-Loading BrushDataset:   1%|▏         | 2/136 [00:00<00:52,  2.57it/s][SKIP] Short trajectory in writer 37, char '
-[SKIP] Flat trajectory in writer 37, char .
-Loading BrushDataset:   2%|▏         | 3/136 [00:01<00:51,  2.57it/s]Loading BrushDataset:   3%|▎         | 4/136 [00:01<00:52,  2.51it/s]Loading BrushDataset:   4%|▎         | 5/136 [00:01<00:52,  2.51it/s]Loading BrushDataset:   4%|▍         | 6/136 [00:02<00:50,  2.56it/s]Loading BrushDataset:   5%|▌         | 7/136 [00:02<01:00,  2.14it/s][SKIP] Flat trajectory in writer 81, char .
-Loading BrushDataset:   6%|▌         | 8/136 [00:03<00:56,  2.27it/s]Loading BrushDataset:   7%|▋         | 9/136 [00:03<00:53,  2.37it/s][SKIP] Flat trajectory in writer 125, char .
-Loading BrushDataset:   7%|▋         | 10/136 [00:04<00:51,  2.45it/s]Loading BrushDataset:   8%|▊         | 11/136 [00:04<00:50,  2.49it/s]Loading BrushDataset:   9%|▉         | 12/136 [00:04<00:49,  2.48it/s]Loading BrushDataset:  10%|▉         | 13/136 [00:05<00:45,  2.69it/s]Loading BrushDataset:  10%|█         | 14/136 [00:05<00:44,  2.73it/s]Loading BrushDataset:  11%|█         | 15/136 [00:05<00:44,  2.70it/s]Loading BrushDataset:  12%|█▏        | 16/136 [00:06<00:44,  2.69it/s]Loading BrushDataset:  12%|█▎        | 17/136 [00:06<00:44,  2.66it/s][SKIP] Flat trajectory in writer 90, char .
-Loading BrushDataset:  13%|█▎        | 18/136 [00:07<00:43,  2.69it/s]Loading BrushDataset:  14%|█▍        | 19/136 [00:07<00:43,  2.70it/s]Loading BrushDataset:  15%|█▍        | 20/136 [00:08<00:50,  2.29it/s]Loading BrushDataset:  15%|█▌        | 21/136 [00:08<00:48,  2.37it/s][SKIP] Flat trajectory in writer 157, char .
-Loading BrushDataset:  16%|█▌        | 22/136 [00:08<00:46,  2.46it/s][SKIP] Flat trajectory in writer 132, char .
-Loading BrushDataset:  17%|█▋        | 23/136 [00:09<00:44,  2.51it/s]Loading BrushDataset:  18%|█▊        | 24/136 [00:09<00:43,  2.56it/s][SKIP] Flat trajectory in writer 20, char .
-Loading BrushDataset:  18%|█▊        | 25/136 [00:09<00:42,  2.59it/s]Loading BrushDataset:  19%|█▉        | 26/136 [00:10<00:42,  2.62it/s][SKIP] Short trajectory in writer 113, char .
-Loading BrushDataset:  20%|█▉        | 27/136 [00:10<00:41,  2.62it/s]Loading BrushDataset:  21%|██        | 28/136 [00:11<00:41,  2.63it/s][SKIP] Short trajectory in writer 80, char d
-Loading BrushDataset:  21%|██▏       | 29/136 [00:11<00:40,  2.63it/s][SKIP] Flat trajectory in writer 137, char .
-Loading BrushDataset:  22%|██▏       | 30/136 [00:11<00:39,  2.65it/s]Loading BrushDataset:  23%|██▎       | 31/136 [00:12<00:39,  2.66it/s]Loading BrushDataset:  24%|██▎       | 32/136 [00:12<00:38,  2.67it/s]Loading BrushDataset:  24%|██▍       | 33/136 [00:12<00:38,  2.66it/s]Loading BrushDataset:  25%|██▌       | 34/136 [00:13<00:38,  2.65it/s]Loading BrushDataset:  26%|██▌       | 35/136 [00:13<00:45,  2.24it/s]Loading BrushDataset:  26%|██▋       | 36/136 [00:14<00:42,  2.35it/s]Loading BrushDataset:  27%|██▋       | 37/136 [00:14<00:40,  2.42it/s][SKIP] Short trajectory in writer 47, char '
-[SKIP] Flat trajectory in writer 47, char .
-Loading BrushDataset:  28%|██▊       | 38/136 [00:15<00:39,  2.48it/s]Loading BrushDataset:  29%|██▊       | 39/136 [00:15<00:38,  2.54it/s]Loading BrushDataset:  29%|██▉       | 40/136 [00:15<00:37,  2.55it/s]Loading BrushDataset:  30%|███       | 41/136 [00:16<00:36,  2.58it/s]Loading BrushDataset:  31%|███       | 42/136 [00:16<00:36,  2.59it/s][SKIP] Flat trajectory in writer 7, char '
-[SKIP] Flat trajectory in writer 7, char r
-[SKIP] Flat trajectory in writer 7, char s
-[SKIP] Flat trajectory in writer 7, char .
-[SKIP] Flat trajectory in writer 7, char ,
-[SKIP] Flat trajectory in writer 7, char -
-Loading BrushDataset:  32%|███▏      | 43/136 [00:16<00:35,  2.61it/s]Loading BrushDataset:  32%|███▏      | 44/136 [00:17<00:35,  2.63it/s]Loading BrushDataset:  33%|███▎      | 45/136 [00:17<00:34,  2.65it/s][SKIP] Flat trajectory in writer 95, char .
-Loading BrushDataset:  34%|███▍      | 46/136 [00:18<00:34,  2.65it/s][SKIP] Flat trajectory in writer 169, char .
-Loading BrushDataset:  35%|███▍      | 47/136 [00:18<00:33,  2.67it/s]Loading BrushDataset:  35%|███▌      | 48/136 [00:18<00:33,  2.64it/s]Loading BrushDataset:  36%|███▌      | 49/136 [00:19<00:33,  2.61it/s]Loading BrushDataset:  37%|███▋      | 50/136 [00:19<00:32,  2.62it/s]Loading BrushDataset:  38%|███▊      | 51/136 [00:19<00:32,  2.63it/s]Loading BrushDataset:  38%|███▊      | 52/136 [00:20<00:31,  2.67it/s]Loading BrushDataset:  39%|███▉      | 53/136 [00:20<00:31,  2.67it/s][SKIP] Short trajectory in writer 30, char '
-[SKIP] Short trajectory in writer 30, char  
-Loading BrushDataset:  40%|███▉      | 54/136 [00:21<00:30,  2.68it/s][SKIP] Flat trajectory in writer 59, char .
-Loading BrushDataset:  40%|████      | 55/136 [00:21<00:28,  2.82it/s]Loading BrushDataset:  41%|████      | 56/136 [00:22<00:36,  2.21it/s]Loading BrushDataset:  42%|████▏     | 57/136 [00:22<00:33,  2.33it/s]Loading BrushDataset:  43%|████▎     | 58/136 [00:22<00:32,  2.41it/s][SKIP] Flat trajectory in writer 163, char .
-Loading BrushDataset:  43%|████▎     | 59/136 [00:23<00:31,  2.47it/s]Loading BrushDataset:  44%|████▍     | 60/136 [00:23<00:29,  2.54it/s]Loading BrushDataset:  45%|████▍     | 61/136 [00:23<00:28,  2.60it/s]Loading BrushDataset:  46%|████▌     | 62/136 [00:24<00:28,  2.62it/s]Loading BrushDataset:  46%|████▋     | 63/136 [00:24<00:27,  2.62it/s][SKIP] Flat trajectory in writer 155, char .
-Loading BrushDataset:  47%|████▋     | 64/136 [00:25<00:27,  2.61it/s]Loading BrushDataset:  48%|████▊     | 65/136 [00:25<00:27,  2.59it/s]Loading BrushDataset:  49%|████▊     | 66/136 [00:25<00:26,  2.62it/s][SKIP] Flat trajectory in writer 122, char ,
-[SKIP] Flat trajectory in writer 122, char .
-Loading BrushDataset:  49%|████▉     | 67/136 [00:26<00:26,  2.63it/s][SKIP] Short trajectory in writer 44, char '
-Loading BrushDataset:  50%|█████     | 68/136 [00:26<00:25,  2.62it/s][SKIP] Flat trajectory in writer 64, char .
-Loading BrushDataset:  51%|█████     | 69/136 [00:26<00:25,  2.63it/s][SKIP] Flat trajectory in writer 144, char ,
-Loading BrushDataset:  51%|█████▏    | 70/136 [00:27<00:23,  2.82it/s]Loading BrushDataset:  52%|█████▏    | 71/136 [00:27<00:23,  2.76it/s][SKIP] Flat trajectory in writer 101, char '
-[SKIP] Flat trajectory in writer 101, char .
-Loading BrushDataset:  53%|█████▎    | 72/136 [00:28<00:23,  2.73it/s]Loading BrushDataset:  54%|█████▎    | 73/136 [00:28<00:23,  2.69it/s]Loading BrushDataset:  54%|█████▍    | 74/136 [00:28<00:22,  2.70it/s]Loading BrushDataset:  55%|█████▌    | 75/136 [00:29<00:22,  2.69it/s]Loading BrushDataset:  56%|█████▌    | 76/136 [00:29<00:22,  2.68it/s][SKIP] Short trajectory in writer 8, char e
-[SKIP] Flat trajectory in writer 8, char '
-Loading BrushDataset:  57%|█████▋    | 77/136 [00:29<00:21,  2.73it/s]Loading BrushDataset:  57%|█████▋    | 78/136 [00:30<00:21,  2.69it/s][SKIP] Short trajectory in writer 36, char '
-Loading BrushDataset:  58%|█████▊    | 79/136 [00:30<00:21,  2.66it/s]Loading BrushDataset:  59%|█████▉    | 80/136 [00:31<00:20,  2.67it/s][SKIP] Short trajectory in writer 31, char '
-[SKIP] Flat trajectory in writer 31, char .
-Loading BrushDataset:  60%|█████▉    | 81/136 [00:31<00:26,  2.06it/s][SKIP] Short trajectory in writer 126, char I
-Loading BrushDataset:  60%|██████    | 82/136 [00:32<00:24,  2.21it/s]Loading BrushDataset:  61%|██████    | 83/136 [00:32<00:22,  2.33it/s]Loading BrushDataset:  62%|██████▏   | 84/136 [00:32<00:21,  2.42it/s][SKIP] Flat trajectory in writer 66, char .
-[SKIP] Flat trajectory in writer 66, char ,
-Loading BrushDataset:  62%|██████▎   | 85/136 [00:33<00:20,  2.49it/s]Loading BrushDataset:  63%|██████▎   | 86/136 [00:33<00:19,  2.53it/s]Loading BrushDataset:  64%|██████▍   | 87/136 [00:34<00:18,  2.59it/s][SKIP] Flat trajectory in writer 2, char "
-Loading BrushDataset:  65%|██████▍   | 88/136 [00:34<00:18,  2.62it/s]Loading BrushDataset:  65%|██████▌   | 89/136 [00:34<00:17,  2.63it/s]Loading BrushDataset:  66%|██████▌   | 90/136 [00:35<00:17,  2.64it/s]Loading BrushDataset:  67%|██████▋   | 91/136 [00:35<00:16,  2.67it/s]Loading BrushDataset:  68%|██████▊   | 92/136 [00:35<00:16,  2.65it/s][SKIP] Short trajectory in writer 68, char s
-Loading BrushDataset:  68%|██████▊   | 93/136 [00:36<00:15,  2.71it/s][SKIP] Flat trajectory in writer 139, char '
-[SKIP] Flat trajectory in writer 139, char .
-[SKIP] Flat trajectory in writer 139, char ,
-[SKIP] Flat trajectory in writer 139, char -
-Loading BrushDataset:  69%|██████▉   | 94/136 [00:36<00:15,  2.69it/s]Loading BrushDataset:  70%|██████▉   | 95/136 [00:36<00:15,  2.73it/s][SKIP] Flat trajectory in writer 116, char .
-Loading BrushDataset:  71%|███████   | 96/136 [00:37<00:14,  2.70it/s]Loading BrushDataset:  71%|███████▏  | 97/136 [00:37<00:14,  2.75it/s][SKIP] Flat trajectory in writer 19, char .
-Loading BrushDataset:  72%|███████▏  | 98/136 [00:38<00:14,  2.71it/s]Loading BrushDataset:  73%|███████▎  | 99/136 [00:38<00:13,  2.71it/s]Loading BrushDataset:  74%|███████▎  | 100/136 [00:38<00:13,  2.69it/s]Loading BrushDataset:  74%|███████▍  | 101/136 [00:39<00:13,  2.69it/s]Loading BrushDataset:  75%|███████▌  | 102/136 [00:39<00:12,  2.66it/s][SKIP] Flat trajectory in writer 57, char .
-Loading BrushDataset:  76%|███████▌  | 103/136 [00:39<00:12,  2.64it/s]Loading BrushDataset:  76%|███████▋  | 104/136 [00:40<00:11,  2.70it/s][SKIP] Short trajectory in writer 53, char a
-[SKIP] Flat trajectory in writer 53, char .
-Loading BrushDataset:  77%|███████▋  | 105/136 [00:40<00:11,  2.71it/s][SKIP] Flat trajectory in writer 34, char '
-Loading BrushDataset:  78%|███████▊  | 106/136 [00:41<00:11,  2.70it/s]Loading BrushDataset:  79%|███████▊  | 107/136 [00:41<00:10,  2.66it/s][SKIP] Flat trajectory in writer 21, char .
-Loading BrushDataset:  79%|███████▉  | 108/136 [00:41<00:10,  2.65it/s]Loading BrushDataset:  80%|████████  | 109/136 [00:42<00:10,  2.68it/s][SKIP] Flat trajectory in writer 88, char .
-Loading BrushDataset:  81%|████████  | 110/136 [00:42<00:09,  2.67it/s][SKIP] Short trajectory in writer 27, char '
-Loading BrushDataset:  82%|████████▏ | 111/136 [00:42<00:09,  2.66it/s][SKIP] Flat trajectory in writer 65, char .
-Loading BrushDataset:  82%|████████▏ | 112/136 [00:43<00:12,  1.96it/s][SKIP] Flat trajectory in writer 164, char .
-Loading BrushDataset:  83%|████████▎ | 113/136 [00:44<00:10,  2.12it/s][SKIP] Flat trajectory in writer 14, char .
-Loading BrushDataset:  84%|████████▍ | 114/136 [00:44<00:09,  2.26it/s]Loading BrushDataset:  85%|████████▍ | 115/136 [00:44<00:08,  2.38it/s]Loading BrushDataset:  85%|████████▌ | 116/136 [00:45<00:08,  2.46it/s]Loading BrushDataset:  86%|████████▌ | 117/136 [00:45<00:07,  2.52it/s]Loading BrushDataset:  87%|████████▋ | 118/136 [00:46<00:07,  2.56it/s]Loading BrushDataset:  88%|████████▊ | 119/136 [00:46<00:06,  2.59it/s]Loading BrushDataset:  88%|████████▊ | 120/136 [00:46<00:06,  2.60it/s]Loading BrushDataset:  89%|████████▉ | 121/136 [00:47<00:05,  2.63it/s][SKIP] Short trajectory in writer 107, char '
-Loading BrushDataset:  90%|████████▉ | 122/136 [00:47<00:05,  2.68it/s]Loading BrushDataset:  90%|█████████ | 123/136 [00:47<00:04,  2.70it/s]Loading BrushDataset:  91%|█████████ | 124/136 [00:48<00:04,  2.72it/s][SKIP] Flat trajectory in writer 58, char .
-Loading BrushDataset:  92%|█████████▏| 125/136 [00:48<00:04,  2.72it/s]Loading BrushDataset:  93%|█████████▎| 126/136 [00:48<00:03,  2.70it/s][SKIP] Short trajectory in writer 16, char '
-Loading BrushDataset:  93%|█████████▎| 127/136 [00:49<00:03,  2.68it/s][SKIP] Short trajectory in writer 51, char e
-[SKIP] Flat trajectory in writer 51, char .
-Loading BrushDataset:  94%|█████████▍| 128/136 [00:49<00:02,  2.67it/s]Loading BrushDataset:  95%|█████████▍| 129/136 [00:50<00:02,  2.73it/s][SKIP] Flat trajectory in writer 159, char .
-Loading BrushDataset:  96%|█████████▌| 130/136 [00:50<00:02,  2.71it/s][SKIP] Short trajectory in writer 25, char e
-Loading BrushDataset:  96%|█████████▋| 131/136 [00:50<00:01,  2.70it/s]Loading BrushDataset:  97%|█████████▋| 132/136 [00:51<00:01,  2.68it/s]Loading BrushDataset:  98%|█████████▊| 133/136 [00:51<00:01,  2.67it/s][SKIP] Short trajectory in writer 33, char e
-Loading BrushDataset:  99%|█████████▊| 134/136 [00:51<00:00,  2.68it/s]Loading BrushDataset:  99%|█████████▉| 135/136 [00:52<00:00,  2.66it/s]Loading BrushDataset: 100%|██████████| 136/136 [00:52<00:00,  2.67it/s]Loading BrushDataset: 100%|██████████| 136/136 [00:52<00:00,  2.58it/s][INFO] Trajectory length stats: min=2, max=304, mean=17.69
-[INFO] Writer 114 has 2588 valid samples
-[INFO] Writer 60 has 2615 valid samples
-[INFO] Writer 37 has 2516 valid samples
-[INFO] Writer 147 has 2635 valid samples
-[INFO] Writer 166 has 2603 valid samples
-[INFO] Writer 70 has 2582 valid samples
-[INFO] Writer 9 has 2500 valid samples
-[INFO] Writer 81 has 2655 valid samples
-[INFO] Writer 152 has 2646 valid samples
-[INFO] Writer 125 has 2636 valid samples
-[INFO] Writer 128 has 2646 valid samples
-[INFO] Writer 61 has 2659 valid samples
-[INFO] Writer 3 has 2024 valid samples
-[INFO] Writer 32 has 2457 valid samples
-[INFO] Writer 10 has 2592 valid samples
-[INFO] Writer 11 has 2639 valid samples
-[INFO] Writer 130 has 2648 valid samples
-[INFO] Writer 90 has 2531 valid samples
-[INFO] Writer 145 has 2502 valid samples
-[INFO] Writer 160 has 2599 valid samples
-[INFO] Writer 29 has 2627 valid samples
-[INFO] Writer 157 has 2611 valid samples
-[INFO] Writer 132 has 2607 valid samples
-[INFO] Writer 138 has 2605 valid samples
-[INFO] Writer 20 has 2622 valid samples
-[INFO] Writer 0 has 2572 valid samples
-[INFO] Writer 113 has 2620 valid samples
-[INFO] Writer 136 has 2632 valid samples
-[INFO] Writer 80 has 2636 valid samples
-[INFO] Writer 137 has 2592 valid samples
-[INFO] Writer 115 has 2608 valid samples
-[INFO] Writer 50 has 2577 valid samples
-[INFO] Writer 46 has 2640 valid samples
-[INFO] Writer 167 has 2640 valid samples
-[INFO] Writer 142 has 2572 valid samples
-[INFO] Writer 39 has 2468 valid samples
-[INFO] Writer 94 has 2634 valid samples
-[INFO] Writer 47 has 2642 valid samples
-[INFO] Writer 100 has 2603 valid samples
-[INFO] Writer 73 has 2665 valid samples
-[INFO] Writer 79 has 2642 valid samples
-[INFO] Writer 127 has 2641 valid samples
-[INFO] Writer 7 has 2526 valid samples
-[INFO] Writer 110 has 2604 valid samples
-[INFO] Writer 67 has 2566 valid samples
-[INFO] Writer 95 has 2620 valid samples
-[INFO] Writer 169 has 2544 valid samples
-[INFO] Writer 156 has 2637 valid samples
-[INFO] Writer 4 has 2609 valid samples
-[INFO] Writer 146 has 2579 valid samples
-[INFO] Writer 153 has 2594 valid samples
-[INFO] Writer 63 has 2454 valid samples
-[INFO] Writer 35 has 2629 valid samples
-[INFO] Writer 30 has 2607 valid samples
-[INFO] Writer 59 has 2153 valid samples
-[INFO] Writer 83 has 2606 valid samples
-[INFO] Writer 112 has 2594 valid samples
-[INFO] Writer 69 has 2643 valid samples
-[INFO] Writer 163 has 2645 valid samples
-[INFO] Writer 165 has 2557 valid samples
-[INFO] Writer 40 has 2502 valid samples
-[INFO] Writer 78 has 2636 valid samples
-[INFO] Writer 120 has 2641 valid samples
-[INFO] Writer 155 has 2633 valid samples
-[INFO] Writer 158 has 2641 valid samples
-[INFO] Writer 54 has 2563 valid samples
-[INFO] Writer 122 has 2608 valid samples
-[INFO] Writer 44 has 2628 valid samples
-[INFO] Writer 64 has 2587 valid samples
-[INFO] Writer 144 has 2037 valid samples
-[INFO] Writer 74 has 2623 valid samples
-[INFO] Writer 101 has 2613 valid samples
-[INFO] Writer 38 has 2605 valid samples
-[INFO] Writer 87 has 2437 valid samples
-[INFO] Writer 135 has 2589 valid samples
-[INFO] Writer 98 has 2588 valid samples
-[INFO] Writer 8 has 2398 valid samples
-[INFO] Writer 77 has 2652 valid samples
-[INFO] Writer 36 has 2647 valid samples
-[INFO] Writer 84 has 2596 valid samples
-[INFO] Writer 31 has 2656 valid samples
-[INFO] Writer 126 has 2569 valid samples
-[INFO] Writer 6 has 2619 valid samples
-[INFO] Writer 117 has 2651 valid samples
-[INFO] Writer 66 has 2617 valid samples
-[INFO] Writer 168 has 2642 valid samples
-[INFO] Writer 106 has 2514 valid samples
-[INFO] Writer 2 has 2557 valid samples
-[INFO] Writer 72 has 2623 valid samples
-[INFO] Writer 26 has 2619 valid samples
-[INFO] Writer 129 has 2525 valid samples
-[INFO] Writer 22 has 2649 valid samples
-[INFO] Writer 68 has 2460 valid samples
-[INFO] Writer 139 has 2511 valid samples
-[INFO] Writer 140 has 2402 valid samples
-[INFO] Writer 116 has 2615 valid samples
-[INFO] Writer 5 has 2422 valid samples
-[INFO] Writer 19 has 2634 valid samples
-[INFO] Writer 150 has 2544 valid samples
-[INFO] Writer 99 has 2575 valid samples
-[INFO] Writer 56 has 2598 valid samples
-[INFO] Writer 109 has 2638 valid samples
-[INFO] Writer 57 has 2639 valid samples
-[INFO] Writer 55 has 2395 valid samples
-[INFO] Writer 53 has 2570 valid samples
-[INFO] Writer 34 has 2494 valid samples
-[INFO] Writer 124 has 2581 valid samples
-[INFO] Writer 21 has 2585 valid samples
-[INFO] Writer 102 has 2499 valid samples
-[INFO] Writer 88 has 2617 valid samples
-[INFO] Writer 27 has 2611 valid samples
-[INFO] Writer 65 has 2592 valid samples
-[INFO] Writer 164 has 2645 valid samples
-[INFO] Writer 14 has 2611 valid samples
-[INFO] Writer 45 has 2587 valid samples
-[INFO] Writer 48 has 2629 valid samples
-[INFO] Writer 17 has 2558 valid samples
-[INFO] Writer 18 has 2641 valid samples
-[INFO] Writer 41 has 2605 valid samples
-[INFO] Writer 131 has 2646 valid samples
-[INFO] Writer 96 has 2583 valid samples
-[INFO] Writer 107 has 2530 valid samples
-[INFO] Writer 141 has 2527 valid samples
-[INFO] Writer 52 has 2527 valid samples
-[INFO] Writer 58 has 2574 valid samples
-[INFO] Writer 111 has 2628 valid samples
-[INFO] Writer 16 has 2639 valid samples
-[INFO] Writer 51 has 2614 valid samples
-[INFO] Writer 108 has 2407 valid samples
-[INFO] Writer 159 has 2641 valid samples
-[INFO] Writer 25 has 2556 valid samples
-[INFO] Writer 28 has 2600 valid samples
-[INFO] Writer 12 has 2613 valid samples
-[INFO] Writer 33 has 2535 valid samples
-[INFO] Writer 86 has 2649 valid samples
-[INFO] Writer 92 has 2573 valid samples
-BrushDataset Loaded 350461 samples from 136 writers.
-number of training images:  350461
-BrushDataset initialized [TEST] with 34 writers, split at 80.0%.
-
-Loading BrushDataset:   0%|          | 0/34 [00:00<?, ?it/s]Loading BrushDataset:   3%|▎         | 1/34 [00:00<00:12,  2.66it/s]Loading BrushDataset:   6%|▌         | 2/34 [00:00<00:11,  2.69it/s][SKIP] Flat trajectory in writer 133, char ,
-[SKIP] Flat trajectory in writer 133, char .
-Loading BrushDataset:   9%|▉         | 3/34 [00:01<00:11,  2.66it/s]
+Filter the characters containing more than max_len points
+number of training images:  50557
+Filter the characters containing more than max_len points
+Number of test images: 12634, Number of train images: 50557
+Content_TR:: __init__ d_model: 512 , nhead: 2 , num_encoder_layers: 3 , dim_feedforward: 2048 , dropout: 0.1 , activation: relu , normalize_before: True
+[TransformerDecoderLayer]: d_model=512, nhead=8, dim_feedforward=2048, dropout=0.1, activation=relu, normalize_before=True
+TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
+  (self_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (linear1): Linear(in_features=512, out_features=2048, bias=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (linear2): Linear(in_features=2048, out_features=512, bias=True)
+  (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (dropout1): Dropout(p=0.1, inplace=False)
+  (dropout2): Dropout(p=0.1, inplace=False)
+  (dropout3): Dropout(p=0.1, inplace=False)
+) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
+TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
+  (self_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (linear1): Linear(in_features=512, out_features=2048, bias=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (linear2): Linear(in_features=2048, out_features=512, bias=True)
+  (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (dropout1): Dropout(p=0.1, inplace=False)
+  (dropout2): Dropout(p=0.1, inplace=False)
+  (dropout3): Dropout(p=0.1, inplace=False)
+) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
+/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+SDT_Generator::forward, style_imgs: torch.Size([16, 30, 1, 64, 64])
+SDT_Generator::forward, batch_size: 16 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
+SDT_Generator::forward style_imgs.view(): torch.Size([480, 1, 64, 64])
+SDT_Generator::forward Feat_Encoder_ResNet output: torch.Size([480, 512, 2, 2])
+SDT_Generator::forward style_embe.view(): torch.Size([4, 480, 512])
+SDT_Generator::forward base_encoder output memory: torch.Size([4, 480, 512])
+SDT_Generator::forward WRITER memory: torch.Size([4, 480, 512]) , GLYPH memory: torch.Size([4, 480, 512])
+SDT_Generator::forward rearrange writer_memory: torch.Size([4, 32, 15, 512]) , glyph_memory: torch.Size([4, 32, 15, 512])
+SDT_Generator::forward [writer] memory_fea: torch.Size([60, 32, 512]) , compact_fea: torch.Size([32, 512])
+SDT_Generator::forward [writer] pro_emb: torch.Size([32, 256])
+SDT_Generator::forward [writer] query_emb: torch.Size([16, 256])
+SDT_Generator::forward [writer] pos_emb: torch.Size([16, 256])
+SDT_Generator::forward [writer] nce_emb: torch.Size([16, 2, 256])
+SDT_Generator::forward [writer] normalize NCE nce_emb: torch.Size([16, 2, 256])
+SDT_Generator::forward [glyph] patch_emb: torch.Size([4, 16, 15, 512])
+SDT_Generator::forward [glyph] random_double_sampling result anc: torch.Size([16, 15, 1, 512]) , positive: torch.Size([16, 15, 1, 512]) , n_channels: 512
+SDT_Generator::forward [glyph] anc reshape: torch.Size([16, 15, 512])
+SDT_Generator::forward [glyph] anc_compact: torch.Size([16, 1, 512])
+SDT_Generator::forward [glyph] anc_compact after pro_mlp_character: torch.Size([16, 1, 256])
+SDT_Generator::forward [glyph] positive reshape: torch.Size([16, 15, 512])
+SDT_Generator::forward [glyph] positive_compact: torch.Size([16, 1, 512])
+SDT_Generator::forward [glyph] NCE anc_compact: torch.Size([16, 1, 256]) , positive_compact: torch.Size([16, 1, 256])
+SDT_Generator::forward [glyph] normalize nce_emb_patch: torch.Size([16, 2, 256])
+SDT_Generator::forward [KV] writer_style: torch.Size([60, 16, 512])
+SDT_Generator::forward [KV] glyph_style: torch.Size([4, 16, 15, 512])
+SDT_Generator::forward [KV] glyph_style rearranged: torch.Size([60, 16, 512])
+SDT_Generator::forward [Decoder] seq: [16, T, 5] (T : length of the sequence)
+SDT_Generator::forward [Decoder] seq_emb: [T, 16, 512]
+Content_TR:: Feat_Encoder input: torch.Size([16, 1, 64, 64])
+Content_TR:: Feat_Encoder Feat_Encoder(conv2d+resnet) output: torch.Size([16, 512, 2, 2])
+Content_TR:: rearrange output: torch.Size([4, 16, 512])
+Content_TR:: encoder output: torch.Size([4, 16, 512])
+SDT_Generator::forward [Content Encoder] char_emb: [4, T, 16]
+SDT_Generator::forward [Content Encoder] char_emb after mean: [T, 512]
+SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, 16]
+SDT_Generator::forward [Decoder] tgt: [T, 16, 512] (T=T+1 : length of the sequence + 1 for content token)
+generate_square_subsequent_mask: torch.Size([27, 27])
+SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 16, 512]
+[TransformerDecoder] *** forward: memory.shape=[1][B][512], tgt.shape=[C][B][512]
+[TransformerDecoderLayer] *** forward_pre: memory.shape=[1][B][512], tgt.shape=[C][B][512]
+[TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][512] after self_attn
+[TransformerDecoderLayer] forward_pre tgt.shape=[C][B][512] after sum with dropout1, norm2
+[TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][512] after multihead_attn
+[TransformerDecoderLayer] *** forward_pre tgt.shape=[C][B][512] after linear
+[TransformerDecoder] forward: layer[0] output.shape=[C][B][512]
+[TransformerDecoder] forward: layer[1] output.shape=[C][B][512]
+[TransformerDecoder] *** forward: output=[C][B][512]
+SDT_Generator::forward [Writer Decoder] wri_hs: 2, T, 16, 512] (wri_dec_layers, T, B, C)
+SDT_Generator::forward [Glyph Decoder] hs: [2, T, 16, 512] (gly_dec_layers, T, B, C)
+SDT_Generator::forward [Decoder] h after transpose: 16, T, 512] (B, T, C)
+SDT_Generator::forward [Decoder Output] pred_sequence: [16, T, 123] (B, T, C)
+train_iter preds : torch.Size([64, 27, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 27, 5], preds : 64, T, 27, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1728, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1728, 5])
+[Step 0] --- GMM Debug ---
+  NLL loss (mean): 1.7940
+  pen state loss : 1.2306
+  result0 max pdf: 21.4724
+  result1 avg pre-log: 0.0633
+  z_pi max: 0.5873, mean: 0.0500
+  sigma1 min/max: 0.0232/30.6030
+  sigma2 min/max: 0.0361/30.2590
+  corr range: -0.9941 ~ 0.9992
+iter:0 loss:15.592 ETA:33 days, 6:52:34.389572
+ # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
+ # _visualize_input_images_tb writer_id: torch.Size([64])
+generate_square_subsequent_mask: torch.Size([34, 34])
+train_iter preds : torch.Size([64, 34, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 34, 5], preds : 64, T, 34, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2176, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2176, 5])
+iter:1 loss:19.617 ETA:13 days, 4:51:40.358787
+generate_square_subsequent_mask: torch.Size([25, 25])
+train_iter preds : torch.Size([64, 25, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 25, 5], preds : 64, T, 25, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1600, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1600, 5])
+iter:2 loss:15.010 ETA:1 day, 3:13:02.618873
+iter:3 loss:13.298 ETA:1 day, 1:18:29.101254
+generate_square_subsequent_mask: torch.Size([29, 29])
+train_iter preds : torch.Size([64, 29, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 29, 5], preds : 64, T, 29, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1856, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1856, 5])
+iter:4 loss:11.698 ETA:1 day, 1:59:25.786118
+iter:5 loss:11.477 ETA:1 day, 7:50:22.016122
+generate_square_subsequent_mask: torch.Size([37, 37])
+train_iter preds : torch.Size([64, 37, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 37, 5], preds : 64, T, 37, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2368, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2368, 5])
+iter:6 loss:11.875 ETA:23:21:30.189621
+generate_square_subsequent_mask: torch.Size([45, 45])
+train_iter preds : torch.Size([64, 45, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 45, 5], preds : 64, T, 45, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2880, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2880, 5])
+iter:7 loss:10.821 ETA:1 day, 0:23:41.175419
+iter:8 loss:10.498 ETA:1 day, 0:59:54.931400
+iter:9 loss:10.565 ETA:1 day, 2:37:50.901146
+generate_square_subsequent_mask: torch.Size([26, 26])
+train_iter preds : torch.Size([64, 26, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 26, 5], preds : 64, T, 26, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1664, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1664, 5])
+iter:10 loss:10.894 ETA:1 day, 2:21:20.700369
+iter:11 loss:10.818 ETA:1 day, 2:11:01.277671
+generate_square_subsequent_mask: torch.Size([28, 28])
+train_iter preds : torch.Size([64, 28, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 28, 5], preds : 64, T, 28, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1792, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1792, 5])
+iter:12 loss:10.833 ETA:1 day, 1:01:58.055269
+iter:13 loss:11.253 ETA:1 day, 2:38:10.010793
+generate_square_subsequent_mask: torch.Size([32, 32])
+train_iter preds : torch.Size([64, 32, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 32, 5], preds : 64, T, 32, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2048, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2048, 5])
+iter:14 loss:10.203 ETA:1 day, 1:14:48.908632
+generate_square_subsequent_mask: torch.Size([23, 23])
+train_iter preds : torch.Size([64, 23, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 23, 5], preds : 64, T, 23, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1472, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1472, 5])
+iter:15 loss:10.471 ETA:1 day, 1:29:03.597459
+iter:16 loss:9.953 ETA:1 day, 1:22:32.735676
+iter:17 loss:10.948 ETA:1 day, 8:41:24.850674
+iter:18 loss:9.934 ETA:2 days, 15:04:01.742062
+iter:19 loss:9.132 ETA:1 day, 2:54:33.997695
+generate_square_subsequent_mask: torch.Size([24, 24])
+train_iter preds : torch.Size([64, 24, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 24, 5], preds : 64, T, 24, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1536, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1536, 5])
+iter:20 loss:9.611 ETA:1 day, 1:09:39.749179
+iter:21 loss:10.689 ETA:2 days, 16:10:37.673922
+generate_square_subsequent_mask: torch.Size([30, 30])
+train_iter preds : torch.Size([64, 30, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 30, 5], preds : 64, T, 30, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1920, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1920, 5])
+iter:22 loss:9.441 ETA:1 day, 1:11:28.932879
+generate_square_subsequent_mask: torch.Size([48, 48])
+train_iter preds : torch.Size([64, 48, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 48, 5], preds : 64, T, 48, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3072, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3072, 5])
+iter:23 loss:8.941 ETA:1 day, 1:19:17.633190
+generate_square_subsequent_mask: torch.Size([43, 43])
+train_iter preds : torch.Size([64, 43, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 43, 5], preds : 64, T, 43, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2752, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2752, 5])
+iter:24 loss:8.767 ETA:2 days, 12:11:47.304609
+generate_square_subsequent_mask: torch.Size([31, 31])
+train_iter preds : torch.Size([64, 31, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 31, 5], preds : 64, T, 31, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1984, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1984, 5])
+iter:25 loss:9.254 ETA:1 day, 3:12:28.179370
+iter:26 loss:9.478 ETA:1 day, 2:43:06.148350
+iter:27 loss:9.688 ETA:2 days, 14:32:07.579824
+iter:28 loss:9.303 ETA:1 day, 8:35:44.733530
+iter:29 loss:8.553 ETA:1 day, 1:55:02.070587
+iter:30 loss:8.849 ETA:2 days, 15:31:54.676757
+iter:31 loss:9.192 ETA:1 day, 2:32:44.475600
+iter:32 loss:9.040 ETA:1 day, 2:16:35.171951
+iter:33 loss:9.436 ETA:2 days, 16:22:17.422298
+generate_square_subsequent_mask: torch.Size([53, 53])
+train_iter preds : torch.Size([64, 53, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 53, 5], preds : 64, T, 53, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3392, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3392, 5])

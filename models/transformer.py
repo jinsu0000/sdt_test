@@ -11,6 +11,7 @@ import math
 import torch
 import torch.nn.functional as F
 from torch import nn, Tensor
+from utils.logger import print_once
 
 
 class Transformer(nn.Module):
@@ -84,6 +85,7 @@ class TransformerDecoder(nn.Module):
 
     def __init__(self, decoder_layer, num_layers, norm=None, return_intermediate=False):
         super().__init__()
+        print("TransformerDecoder:: __init__ decoder_layer:", decoder_layer, ", num_layers:", num_layers, ", norm:", norm, ", return_intermediate:", return_intermediate)
         self.layers = _get_clones(decoder_layer, num_layers)
         self.num_layers = num_layers
         self.norm = norm
@@ -96,16 +98,21 @@ class TransformerDecoder(nn.Module):
                 memory_key_padding_mask: Optional[Tensor] = None,
                 pos: Optional[Tensor] = None,
                 query_pos: Optional[Tensor] = None):
+        print_once(f"[TransformerDecoder] *** forward: memory.shape=[1][B][{memory.shape[2]}], tgt.shape=[C][B][{tgt.shape[2]}]")
+        output = tgt
         output = tgt
 
         intermediate = []
-
+   
+        layer_idx = 0
         for layer in self.layers:
             output = layer(output, memory, tgt_mask=tgt_mask,
                            memory_mask=memory_mask,
                            tgt_key_padding_mask=tgt_key_padding_mask,
                            memory_key_padding_mask=memory_key_padding_mask,
                            pos=pos, query_pos=query_pos)
+            print_once(f"[TransformerDecoder] forward: layer[{layer_idx}] output.shape=[C][B][{output.shape[2]}]")
+            layer_idx+=1
             if self.return_intermediate:
                 intermediate.append(self.norm(output))
 
@@ -115,6 +122,7 @@ class TransformerDecoder(nn.Module):
                 intermediate.pop()
                 intermediate.append(output)
 
+        print_once(f"[TransformerDecoder] *** forward: output=[C][B][{output.shape[2]}]")
         if self.return_intermediate:
             return torch.stack(intermediate)
 
@@ -186,6 +194,7 @@ class TransformerDecoderLayer(nn.Module):
     def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1,
                  activation="relu", normalize_before=False):
         super().__init__()
+        print_once(f"[TransformerDecoderLayer]: d_model={d_model}, nhead={nhead}, dim_feedforward={dim_feedforward}, dropout={dropout}, activation={activation}, normalize_before={normalize_before}")
         self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
         self.multihead_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout)
         # Implementation of Feedforward model
@@ -213,20 +222,26 @@ class TransformerDecoderLayer(nn.Module):
                      memory_key_padding_mask: Optional[Tensor] = None,
                      pos: Optional[Tensor] = None,
                      query_pos: Optional[Tensor] = None):
+        print_once(f"[TransformerDecoderLayer] *** forward_post: memory.shape=[1][B][{memory.shape[2]}], tgt.shape=[C][B][{tgt.shape[2]}]")
         q = k = self.with_pos_embed(tgt, query_pos)
         tgt2 = self.self_attn(q, k, value=tgt, attn_mask=tgt_mask,
                               key_padding_mask=tgt_key_padding_mask)[0]
+        print_once(f"[TransformerDecoderLayer] forward_post tgt2.shape=[C][B][{tgt2.shape[2]}] after self_attn")
         tgt = tgt + self.dropout1(tgt2)
         tgt = self.norm1(tgt)
+        print_once(f"[TransformerDecoderLayer] forward_post tgt.shape=[C][B][{tgt.shape[2]}] after sum with dropout1, norm1")
         tgt2 = self.multihead_attn(query=self.with_pos_embed(tgt, query_pos),
                                    key=self.with_pos_embed(memory, pos),
                                    value=memory, attn_mask=memory_mask,
                                    key_padding_mask=memory_key_padding_mask)[0]
+        print_once(f"[TransformerDecoderLayer] forward_post tgt2.shape=[C][B][{tgt2.shape[2]}] after multihead_attn")
         tgt = tgt + self.dropout2(tgt2)
         tgt = self.norm2(tgt)
+        print_once(f"[TransformerDecoderLayer] forward_post tgt.shape={tgt.shape} after sum with dropout1, norm1")
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt))))
         tgt = tgt + self.dropout3(tgt2)
         tgt = self.norm3(tgt)
+        print_once(f"[TransformerDecoderLayer] *** forward_post tgt.shape=[C][B][{tgt.shape[2]}] after linear")
         return tgt
 
     def forward_pre(self, tgt, memory,
@@ -236,20 +251,25 @@ class TransformerDecoderLayer(nn.Module):
                     memory_key_padding_mask: Optional[Tensor] = None,
                     pos: Optional[Tensor] = None,
                     query_pos: Optional[Tensor] = None):
+        print_once(f"[TransformerDecoderLayer] *** forward_pre: memory.shape=[1][B][{memory.shape[2]}], tgt.shape=[C][B][{tgt.shape[2]}]")
         tgt2 = self.norm1(tgt)
         q = k = self.with_pos_embed(tgt2, query_pos)
         tgt2 = self.self_attn(q, k, value=tgt2, attn_mask=tgt_mask,
                               key_padding_mask=tgt_key_padding_mask)[0]
+        print_once(f"[TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][{tgt2.shape[2]}] after self_attn")
         tgt = tgt + self.dropout1(tgt2)
         tgt2 = self.norm2(tgt)
+        print_once(f"[TransformerDecoderLayer] forward_pre tgt.shape=[C][B][{tgt.shape[2]}] after sum with dropout1, norm2")
         tgt2 = self.multihead_attn(query=self.with_pos_embed(tgt2, query_pos),
                                    key=self.with_pos_embed(memory, pos),
                                    value=memory, attn_mask=memory_mask,
                                    key_padding_mask=memory_key_padding_mask)[0]
+        print_once(f"[TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][{tgt2.shape[2]}] after multihead_attn")
         tgt = tgt + self.dropout2(tgt2)
         tgt2 = self.norm3(tgt)
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt2))))
         tgt = tgt + self.dropout3(tgt2)
+        print_once(f"[TransformerDecoderLayer] *** forward_pre tgt.shape=[C][B][{tgt.shape[2]}] after linear")
         return tgt
 
     def forward(self, tgt, memory,

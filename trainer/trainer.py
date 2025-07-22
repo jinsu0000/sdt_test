@@ -57,6 +57,7 @@ class Trainer:
             print(" # Style img_list shape from PNG:", img_list.shape)
 
         preds, nce_emb, nce_emb_patch = self.model(img_list, input_seq, char_img)
+        print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
         
         if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
             self._plot_nce_embedding_2d(nce_emb, writer_id, step)
@@ -68,6 +69,7 @@ class Trainer:
         nce_loss_glyph = self.nce_criterion(nce_emb_patch)
         preds = preds.view(-1, 123)
         gt_coords = gt_coords.reshape(-1, 5)
+        print_once(f"train_iter preds w/view(-1, 123) : {preds.shape}, gt_coords w/reshape(-1, 5) : {gt_coords.shape}")
         [o_pi, o_mu1, o_mu2, o_sigma1, o_sigma2, o_corr, o_pen_logits] = get_mixture_coef(preds)
         moving_loss_all, state_loss = self.pen_criterion(o_pi, o_mu1, o_mu2, o_sigma1, o_sigma2, \
                                       o_corr, o_pen_logits, gt_coords[:,0].unsqueeze(-1), gt_coords[:,1].unsqueeze(-1), gt_coords[:,2:], step)
@@ -224,7 +226,7 @@ class Trainer:
             if len(img_tensors) == 10:
                 try:
                     grid = make_grid(img_tensors, nrow=5, padding=4)
-                    self.tb_summary.add_image(f"Samples/Step_{step}_batch{batch_idx}", grid, step)
+                    self.tb_summary.Fadd_image(f"Samples/Step_{step}_batch{batch_idx}", grid, step)
                     batch_idx += 1
                 except Exception as e:
                     print(f"[Grid Write Error] step {step} batch {batch_idx}, error: {e}")

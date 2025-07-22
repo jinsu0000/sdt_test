@@ -11,6 +11,7 @@ class Content_TR(nn.Module):
                  dim_feedforward=2048, dropout=0.1, activation="relu",
                  normalize_before=True):
         super(Content_TR, self).__init__()
+        print_once("Content_TR:: __init__ d_model:", d_model, ", nhead:", nhead, ", num_encoder_layers:", num_encoder_layers, ", dim_feedforward:", dim_feedforward, ", dropout:", dropout, ", activation:", activation, ", normalize_before:", normalize_before)
         self.Feat_Encoder = nn.Sequential(*([nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)] +list(models.resnet18(pretrained=True).children())[1:-2]))
         encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward,
                                                 dropout, activation, normalize_before)
@@ -21,10 +22,13 @@ class Content_TR(nn.Module):
     def forward(self, x):
         print_once("Content_TR:: Feat_Encoder input:", x.shape)
         x = self.Feat_Encoder(x)
+        print_once("Content_TR:: Feat_Encoder Feat_Encoder(conv2d+resnet) output:", x.shape)
         #x = self.recti_channel(x)
         x = rearrange(x, 'n c h w -> (h w) n c')
+        print_once("Content_TR:: rearrange output:", x.shape)
         x = self.add_position(x)
         x = self.encoder(x)
+        print_once("Content_TR:: encoder output:", x.shape)
         return x
 
 ### For the training of Chinese handwriting generation task, 

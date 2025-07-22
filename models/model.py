@@ -167,9 +167,9 @@ class SDT_Generator(nn.Module):
         char_emb = self.content_encoder(char_img) # [4, N, 512]
         print_once(f"SDT_Generator::forward [Content Encoder] char_emb: [4, T, {char_emb.shape[1]}]")
         char_emb = torch.mean(char_emb, 0) #[N, 512]
-        print_once(f"SDT_Generator::forward [Decoder] char_emb after mean: [T, {char_emb.shape[1]}]")
+        print_once(f"SDT_Generator::forward [Content Encoder] char_emb after mean: [T, {char_emb.shape[1]}]")
         char_emb = repeat(char_emb, 'n c -> t n c', t = 1)
-        print_once(f"SDT_Generator::forward [Decoder] char_emb after repeat: [1, T, {char_emb.shape[1]}]")
+        print_once(f"SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, {char_emb.shape[1]}]")
         tgt = torch.cat((char_emb, seq_emb), 0) # [1+T], put the content token as the first token
         print_once(f"SDT_Generator::forward [Decoder] tgt: [T, {tgt.shape[1]}, {tgt.shape[2]}] (T=T+1 : length of the sequence + 1 for content token)")
         tgt_mask = generate_square_subsequent_mask(sz=(T+1)).to(tgt)
@@ -277,4 +277,5 @@ def generate_square_subsequent_mask(sz: int) -> Tensor:
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = mask.float().masked_fill(mask == 0, float(
         '-inf')).masked_fill(mask == 1, float(0.0))
+    print_once("generate_square_subsequent_mask:", mask.shape)
     return mask
