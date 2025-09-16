@@ -56,15 +56,16 @@ class Trainer:
         if (step+1) > cfg.TRAIN.SNAPSHOT_BEGIN and (step+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
             print(" # Style img_list shape from PNG:", img_list.shape)
 
-        vq_loss = 0.0
-        out = self.model(img_list, input_seq, char_img)
+        vq_alpha = min(1.0, step / cfg.SOLVER.WARMUP_ITERS)
+        out = self.model(img_list, input_seq, char_img, vq_alpha)
+
         if isinstance(out, (tuple, list)) and len(out) >= 5:
             preds, nce_emb, nce_emb_patch, vq_loss, vq_codes = out[:5]
         else:
             preds, nce_emb, nce_emb_patch = out
         print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
         
-        if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
+        if step % 10000 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
             self._plot_nce_embedding_2d(nce_emb, writer_id, step)
 
         # calculate loss
@@ -89,10 +90,7 @@ class Trainer:
 
         loss = pen_loss + lambda_writer * nce_loss_writer + lambda_glyph * nce_loss_glyph + lambda_vq * vq_loss
 
-
-
         #loss = pen_loss + nce_loss_writer + nce_loss_glyph
-
         
         # nan/infinity 체크 추가
         if (torch.isnan(loss) | torch.isinf(loss)).any():
@@ -117,10 +115,10 @@ class Trainer:
             torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
         self.optimizer.step()
 
-        # log file
+        # log files
         loss_dict = {"pen_loss": pen_loss.item(), "moving_loss": moving_loss.item(),
-                    "state_loss": state_loss.item(), "nce_loss_writer":nce_loss_writer.item(), 
-                    "nce_loss_glyph":nce_loss_glyph.item()}
+                    "state_loss": state_loss.item(), "nce_loss_writer": nce_loss_writer.item(),
+                    "nce_loss_glyph": nce_loss_glyph.item(), "vq_loss": float(vq_loss)}
         self.tb_summary.add_scalars("loss", loss_dict, step)
         iter_left = cfg.SOLVER.MAX_ITER - step
         time_left = datetime.timedelta(
@@ -164,6 +162,7 @@ class Trainer:
     def train(self, start_step=0):
         """start training iterations"""    
         train_loader_iter = iter(self.data_loader)
+        
         for step in range(start_step, cfg.SOLVER.MAX_ITER):
             try:
                 data = next(train_loader_iter)

@@ -55,10 +55,12 @@ class SDT_Generator(nn.Module):
         # [VQ-PATCH] VQ 토크나이저 + 프로젝션/프로토타입 헤드
         self.vq = VectorQuantizerEMA(K=self.vq_K, D=self.vq_dim, beta=self.vq_beta, decay=0.99)
 
+        self.vq_norm = nn.LayerNorm(d_model)      # VQ 입력 정규화
         self.vq_proj = nn.Linear(d_model, self.vq_dim)
-
         self.proto_head = nn.Linear(self.vq_dim, 2)    # Δx_base, Δy_base
 
+        nn.init.zeros_(self.proto_head.weight)
+        nn.init.zeros_(self.proto_head.bias)
 
         self.SeqtoEmb = SeqtoEmb(hid_dim=d_model)
         self.EmbtoSeq = EmbtoSeq(hid_dim=d_model)
@@ -93,7 +95,7 @@ class SDT_Generator(nn.Module):
         return x_anchor, x_pos
 
     # the shape of style_imgs is [B, 2*N, C, H, W] during training
-    def forward(self, style_imgs, seq, char_img):
+    def forward(self, style_imgs, seq, char_img, vq_alpha=1.0):
         print_once("SDT_Generator::forward, style_imgs:", style_imgs.shape)
         batch_size, num_imgs, in_planes, h, w = style_imgs.shape
         print_once("SDT_Generator::forward, batch_size:", batch_size, ", num_imgs:", num_imgs, ", in_planes:", in_planes, ", h:", h, ", w:", w)
@@ -202,9 +204,10 @@ class SDT_Generator(nn.Module):
         print_once(f"SDT_Generator::forward [Decoder] h after transpose: {h.shape[0]}, T, {h.shape[2]}] (B, T, C)")
 
         # [VQ-PATCH] 디코더 히든 -> VQ 임베딩 -> 코드북 양자화 -> 프로토타입 r_t
-        z_e = self.vq_proj(h)                                 # [B,T,vq_dim]
+        z_e = self.vq_proj(self.vq_norm(h))                                 # [B,T,vq_dim]
         z_q, vq_loss, vq_codes = self.vq(z_e)                 # [B,T,vq_dim], scalar, [B,T]
-        r_t = self.proto_head(z_q) * self.proto_scale         # [B,T,2]  (Δx_base, Δy_base)
+        r_raw = self.proto_head(z_q)
+        r_t = torch.tanh(r_raw) * self.proto_scale * vq_alpha         # [B,T,2]  (Δx_base, Δy_base)
 
         pred_sequence = self.EmbtoSeq(h)                      # [B,T,123] (기존)
         # [VQ-PATCH] pred_sequence를 재조립: μ에 r_t를 더해 "프로토타입+잔차"
@@ -269,8 +272,21 @@ class SDT_Generator(nn.Module):
             hs = self.gly_decoder(wri_hs[-1], memory_glyph, tgt_mask=tgt_mask)
 
             output_hid = hs[-1][i]
-            gmm_pred = self.EmbtoSeq(output_hid)
-            pred_sequence[i] = get_seq_from_gmm(gmm_pred)
+            gmm_pred = self.EmbtoSeq(output_hid)             # [B, 3+6M]
+            # --- VQ로 r_t 산출 ---
+            z_e  = self.vq_proj(output_hid)                  # [B, vq_dim]
+            z_q, _, _ = self.vq(z_e)
+            r_t  = torch.tanh(self.proto_head(z_q)) * self.proto_scale
+            # --- μ 재조립 (학습과 동일) ---
+            B = gmm_pred.size(0); M = (gmm_pred.size(1)-3)//6
+            pen = gmm_pred[:, :3]
+            mix = gmm_pred[:, 3:].view(B, 6, M)
+            pi, mu1_r, mu2_r, s1, s2, corr = mix[0], mix[1], mix[2], mix[3], mix[4], mix[5]
+            mu1 = mu1_r + r_t[:, 0].unsqueeze(-1).expand_as(mu1_r)
+            mu2 = mu2_r + r_t[:, 1].unsqueeze(-1).expand_as(mu2_r)
+            gmm_fixed = torch.cat([pen, torch.stack([pi, mu1, mu2, s1, s2, corr], dim=0).reshape(B, 6*M)], dim=1)
+            pred_sequence[i] = get_seq_from_gmm_with_sigma(gmm_fixed)  # 혹은 get_seq_from_gmm
+            
             pen_state = pred_sequence[i, :, 2:]
             seq_emb = self.SeqtoEmb(pred_sequence[i])
             src_tensor[i + 1] = seq_emb

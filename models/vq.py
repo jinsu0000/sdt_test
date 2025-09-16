@@ -52,7 +52,7 @@ class VectorQuantizerEMA(nn.Module):
                 self.embedding.copy_(embed_normalized)
 
         # VQ 손실 (EMA엔 codebook 항 생략해도 되지만 commit 모니터링 위해 유지)
-        commit_loss = F.mse_loss(z_e.detach(), z_q)
+        commit_loss = F.mse_loss(z_e, z_q.detach())
         vq_loss = self.beta * commit_loss
 
         # Straight-Through
