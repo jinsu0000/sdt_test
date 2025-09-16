@@ -226,7 +226,7 @@ class Trainer:
             if len(img_tensors) == 10:
                 try:
                     grid = make_grid(img_tensors, nrow=5, padding=4)
-                    self.tb_summary.Fadd_image(f"Samples/Step_{step}_batch{batch_idx}", grid, step)
+                    self.tb_summary.add_image(f"Samples/Step_{step}_batch{batch_idx}", grid, step)
                     batch_idx += 1
                 except Exception as e:
                     print(f"[Grid Write Error] step {step} batch {batch_idx}, error: {e}")

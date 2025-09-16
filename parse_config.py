@@ -109,7 +109,7 @@ __C.DATA_LOADER.TYPE = 'ScriptDataset'
 
 __C.DATA_LOADER.DATASET = 'CHINESE'
 
-__C.DATA_LOADER.DATASET_NAME = 'BRUSH'
+__C.DATA_LOADER.DATASET_NAME = 'CASIA'
 
 
 # ---------------------------------------------------------------------------- #

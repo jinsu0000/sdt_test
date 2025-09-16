@@ -29,6 +29,6 @@ DATA_LOADER:
   NUM_THREADS: 8
   CONCAT_GRID: True
   TYPE: ScriptDataset
-  PATH: /home/jinsu0000/1_git/sdt_connected_dataset/data_eng
+  PATH: ./data_eng
   DATASET: ENGLISH
   DATASET_NAME: CASIA # BRUSH

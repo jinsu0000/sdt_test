@@ -5,7 +5,6 @@ from models.loss import SupConLoss, get_pen_loss
 from models.model import SDT_Generator
 from utils.logger import set_log
 from data_loader.loader import ScriptDataset
-from data_loader.loader_brush import BrushDataset
 import argparse
 import os
 import re
@@ -14,19 +13,12 @@ from trainer.trainer import Trainer
 from utils.logger import print_once
 
 def get_dataset(cfg, is_train_dataset=True):
-    if cfg.DATA_LOADER.DATASET_NAME.upper() == "BRUSH":
-        dataset = BrushDataset(
-            root_dir=cfg.DATA_LOADER.PATH,
-            is_train = cfg.TRAIN.ISTRAIN if is_train_dataset else cfg.TEST.ISTRAIN,
-            num_img=cfg.MODEL.NUM_IMGS
-        )
-    else:
-        dataset = ScriptDataset(
-            root=cfg.DATA_LOADER.PATH,
-            dataset=cfg.DATA_LOADER.DATASET,
-            is_train = cfg.TRAIN.ISTRAIN if is_train_dataset else cfg.TEST.ISTRAIN,
-            num_img=cfg.MODEL.NUM_IMGS
-        )
+    dataset = ScriptDataset(
+        root=cfg.DATA_LOADER.PATH,
+        dataset=cfg.DATA_LOADER.DATASET,
+        is_train = cfg.TRAIN.ISTRAIN if is_train_dataset else cfg.TEST.ISTRAIN,
+        num_img=cfg.MODEL.NUM_IMGS
+    )
     return dataset
 
 def main(opt):

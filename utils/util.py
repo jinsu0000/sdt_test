@@ -10,40 +10,6 @@ transform_data = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))# SDT와 동일하게 [-1, 1] 범위로 변환
 ])
 
-def normalize_xys_for_brush(xys):
-    xy, eos = xys[:, :2], xys[:, 2]
-    stroke_ids = np.cumsum(eos)  # stroke 인덱스 분리
-    valid_pairs = stroke_ids[:-1] == stroke_ids[1:]
-
-    px_sum = py_sum = len_sum = 0
-    for i in range(len(xy)-1):
-        if not valid_pairs[i]:
-            continue
-        temp_len = np.linalg.norm(xy[i+1] - xy[i])
-        temp_px = temp_len * (xy[i][0] + xy[i+1][0]) / 2
-        temp_py = temp_len * (xy[i][1] + xy[i+1][1]) / 2
-        px_sum += temp_px
-        py_sum += temp_py
-        len_sum += temp_len
-    if len_sum < 1e-6:
-        raise Exception("Broken character")
-
-    mux, muy = px_sum / len_sum, py_sum / len_sum
-
-    dx_sum = dy_sum = 0
-    for i in range(len(xy)-1):
-        if not valid_pairs[i]:
-            continue
-        temp_len = np.linalg.norm(xy[i+1] - xy[i])
-        temp_dx = temp_len * ((xy[i][0]-mux)**2 + (xy[i+1][0]-mux)**2 + (xy[i][0]-mux)*(xy[i+1][0]-mux)) / 3
-        temp_dy = temp_len * ((xy[i][1]-muy)**2 + (xy[i+1][1]-muy)**2 + (xy[i][1]-muy)*(xy[i+1][1]-muy)) / 3
-        dx_sum += temp_dx
-        dy_sum += temp_dy
-    sigma = np.sqrt(dx_sum / len_sum) or np.sqrt(dy_sum / len_sum)
-    xy = (xy - [mux, muy]) / sigma
-    return np.concatenate([xy, eos[:, None]], axis=1)
-
-
 '''
 description: Normalize the xy-coordinates into a standard interval.
 Refer to "Drawing and Recognizing Chinese Characters with Recurrent Neural Network".

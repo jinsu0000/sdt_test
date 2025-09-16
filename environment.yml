@@ -1,4 +1,4 @@
-name: sdt_with_connected_dataset
+name: sdt_test
 channels:
   - pytorch
   - nvidia
