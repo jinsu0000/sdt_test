@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision.models as models
 from models.transformer import *
 from models.encoder import Content_TR
+from models.vq import VectorQuantizerEMA
 from einops import rearrange, repeat
 from utils.logger import print_once, log_stats
 from models.gmm import get_seq_from_gmm, get_seq_from_gmm_with_sigma
@@ -44,6 +45,20 @@ class SDT_Generator(nn.Module):
             nn.Linear(512, 4096), nn.GELU(), nn.Linear(4096, 256))
         self.pro_mlp_character = nn.Sequential(
             nn.Linear(512, 4096), nn.GELU(), nn.Linear(4096, 256))
+
+        # [VQ-PATCH] 하이퍼파라미터 (원하면 cfg로 빼세요)
+        self.vq_dim   = 64
+        self.vq_K     = 1024
+        self.vq_beta  = 0.25
+        self.proto_scale = 1.0   # r_t 크기 조절용(불안정하면 0.5로 시작)
+
+        # [VQ-PATCH] VQ 토크나이저 + 프로젝션/프로토타입 헤드
+        self.vq = VectorQuantizerEMA(K=self.vq_K, D=self.vq_dim, beta=self.vq_beta, decay=0.99)
+
+        self.vq_proj = nn.Linear(d_model, self.vq_dim)
+
+        self.proto_head = nn.Linear(self.vq_dim, 2)    # Δx_base, Δy_base
+
 
         self.SeqtoEmb = SeqtoEmb(hid_dim=d_model)
         self.EmbtoSeq = EmbtoSeq(hid_dim=d_model)
@@ -185,9 +200,39 @@ class SDT_Generator(nn.Module):
 
         h = hs.transpose(1, 2)[-1]  # B T C
         print_once(f"SDT_Generator::forward [Decoder] h after transpose: {h.shape[0]}, T, {h.shape[2]}] (B, T, C)")
-        pred_sequence = self.EmbtoSeq(h)
+
+        # [VQ-PATCH] 디코더 히든 -> VQ 임베딩 -> 코드북 양자화 -> 프로토타입 r_t
+        z_e = self.vq_proj(h)                                 # [B,T,vq_dim]
+        z_q, vq_loss, vq_codes = self.vq(z_e)                 # [B,T,vq_dim], scalar, [B,T]
+        r_t = self.proto_head(z_q) * self.proto_scale         # [B,T,2]  (Δx_base, Δy_base)
+
+        pred_sequence = self.EmbtoSeq(h)                      # [B,T,123] (기존)
+        # [VQ-PATCH] pred_sequence를 재조립: μ에 r_t를 더해 "프로토타입+잔차"
+        B, T, Ctot = pred_sequence.shape
+        assert (Ctot - 3) % 6 == 0, "GMM 파라미터 차원이 3 + 6*M 형태여야 합니다."
+        M = (Ctot - 3) // 6
+
+        pred = pred_sequence.view(B, T, 3 + 6*M)
+        pen_logits = pred[:, :, :3]                     # [B,T,3]
+        mix = pred[:, :, 3:].view(B, T, 6, M)           # [B,T,6,M]
+        pi, mu1_r, mu2_r, s1, s2, corr = mix[:, :, 0], mix[:, :, 1], mix[:, :, 2], mix[:, :, 3], mix[:, :, 4], mix[:, :, 5]
+
+        # r_t(Δx_base, Δy_base)를  M개의 mixture로 broadcast
+        rx = r_t[..., 0].unsqueeze(-1).expand_as(mu1_r) # [B,T,M]
+        ry = r_t[..., 1].unsqueeze(-1).expand_as(mu2_r) # [B,T,M]
+        mu1 = mu1_r + rx
+        mu2 = mu2_r + ry
+
+        out = torch.cat([
+            pen_logits,
+            torch.stack([pi, mu1, mu2, s1, s2, corr], dim=2).reshape(B, T, 6*M)
+        ], dim=-1).contiguous()                          # [B,T,3+6*M] == [B,T,123]
+        pred_sequence = out
+
         print_once(f"SDT_Generator::forward [Decoder Output] pred_sequence: [{pred_sequence.shape[0]}, T, {pred_sequence.shape[2]}] (B, T, C)")
-        return pred_sequence, nce_emb, nce_emb_patch
+
+        # [VQ-PATCH] vq_loss / codes를 로깅용으로 보낼 수 있게 추가 반환
+        return pred_sequence, nce_emb, nce_emb_patch, vq_loss, vq_codes
 
     # style_imgs: [B, N, C, H, W]
     def inference(self, style_imgs, char_img, max_len):

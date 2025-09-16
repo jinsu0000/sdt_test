@@ -56,7 +56,12 @@ class Trainer:
         if (step+1) > cfg.TRAIN.SNAPSHOT_BEGIN and (step+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
             print(" # Style img_list shape from PNG:", img_list.shape)
 
-        preds, nce_emb, nce_emb_patch = self.model(img_list, input_seq, char_img)
+        vq_loss = 0.0
+        out = self.model(img_list, input_seq, char_img)
+        if isinstance(out, (tuple, list)) and len(out) >= 5:
+            preds, nce_emb, nce_emb_patch, vq_loss, vq_codes = out[:5]
+        else:
+            preds, nce_emb, nce_emb_patch = out
         print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
         
         if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
@@ -75,7 +80,18 @@ class Trainer:
                                       o_corr, o_pen_logits, gt_coords[:,0].unsqueeze(-1), gt_coords[:,1].unsqueeze(-1), gt_coords[:,2:], step)
         moving_loss = torch.sum(moving_loss_all) / torch.sum(coords_len)
         pen_loss = moving_loss + 2*state_loss
-        loss = pen_loss + nce_loss_writer + nce_loss_glyph
+        
+                
+        # [VQ-PATCH] 가중치
+        lambda_vq     = getattr(cfg.TRAIN, "LAMBDA_VQ", 0.25)
+        lambda_writer = getattr(cfg.TRAIN, "LAMBDA_WRITER_NCE", 1.0)   # 없으면 1.0
+        lambda_glyph  = getattr(cfg.TRAIN, "LAMBDA_GLYPH_NCE", 1.0)
+
+        loss = pen_loss + lambda_writer * nce_loss_writer + lambda_glyph * nce_loss_glyph + lambda_vq * vq_loss
+
+
+
+        #loss = pen_loss + nce_loss_writer + nce_loss_glyph
 
         
         # nan/infinity 체크 추가
@@ -84,6 +100,15 @@ class Trainer:
             print(f"moving_loss: {moving_loss.item()}, state_loss: {state_loss.item()}")
             print(f"nce_loss_writer: {nce_loss_writer.item()}, nce_loss_glyph: {nce_loss_glyph.item()}")
             raise ValueError("NaN detected in loss at step {}".format(step))
+        if not torch.isfinite(loss):
+            print(f"[!!! NaN/Inf] step={step}")
+            print(f"moving_loss={moving_loss.item():.6f}, state_loss={state_loss.item():.6f}")
+            print(f"nce_writer={nce_loss_writer.item():.6f}, nce_glyph={nce_loss_glyph.item():.6f}, vq_loss={float(vq_loss):.6f}")
+            # (선택) GMM 파라미터 요약
+            for name, t in [("sigma1", o_sigma1), ("sigma2", o_sigma2), ("corr", o_corr)]:
+                t_ = t.detach()
+                print(f"  {name}: min={t_.min().item():.4e}, max={t_.max().item():.4e}, mean={t_.mean().item():.4e}")
+            raise ValueError("Non-finite loss")
 
         # backward and update trainable parameters
         self.model.zero_grad()

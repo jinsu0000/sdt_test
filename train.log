@@ -38,49 +38,49 @@ TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
   (dropout2): Dropout(p=0.1, inplace=False)
   (dropout3): Dropout(p=0.1, inplace=False)
 ) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
-/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
   warnings.warn(
-/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
   warnings.warn(msg)
-SDT_Generator::forward, style_imgs: torch.Size([16, 30, 1, 64, 64])
-SDT_Generator::forward, batch_size: 16 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
-SDT_Generator::forward style_imgs.view(): torch.Size([480, 1, 64, 64])
-SDT_Generator::forward Feat_Encoder_ResNet output: torch.Size([480, 512, 2, 2])
-SDT_Generator::forward style_embe.view(): torch.Size([4, 480, 512])
-SDT_Generator::forward base_encoder output memory: torch.Size([4, 480, 512])
-SDT_Generator::forward WRITER memory: torch.Size([4, 480, 512]) , GLYPH memory: torch.Size([4, 480, 512])
-SDT_Generator::forward rearrange writer_memory: torch.Size([4, 32, 15, 512]) , glyph_memory: torch.Size([4, 32, 15, 512])
-SDT_Generator::forward [writer] memory_fea: torch.Size([60, 32, 512]) , compact_fea: torch.Size([32, 512])
-SDT_Generator::forward [writer] pro_emb: torch.Size([32, 256])
-SDT_Generator::forward [writer] query_emb: torch.Size([16, 256])
-SDT_Generator::forward [writer] pos_emb: torch.Size([16, 256])
-SDT_Generator::forward [writer] nce_emb: torch.Size([16, 2, 256])
-SDT_Generator::forward [writer] normalize NCE nce_emb: torch.Size([16, 2, 256])
-SDT_Generator::forward [glyph] patch_emb: torch.Size([4, 16, 15, 512])
-SDT_Generator::forward [glyph] random_double_sampling result anc: torch.Size([16, 15, 1, 512]) , positive: torch.Size([16, 15, 1, 512]) , n_channels: 512
-SDT_Generator::forward [glyph] anc reshape: torch.Size([16, 15, 512])
-SDT_Generator::forward [glyph] anc_compact: torch.Size([16, 1, 512])
-SDT_Generator::forward [glyph] anc_compact after pro_mlp_character: torch.Size([16, 1, 256])
-SDT_Generator::forward [glyph] positive reshape: torch.Size([16, 15, 512])
-SDT_Generator::forward [glyph] positive_compact: torch.Size([16, 1, 512])
-SDT_Generator::forward [glyph] NCE anc_compact: torch.Size([16, 1, 256]) , positive_compact: torch.Size([16, 1, 256])
-SDT_Generator::forward [glyph] normalize nce_emb_patch: torch.Size([16, 2, 256])
-SDT_Generator::forward [KV] writer_style: torch.Size([60, 16, 512])
-SDT_Generator::forward [KV] glyph_style: torch.Size([4, 16, 15, 512])
-SDT_Generator::forward [KV] glyph_style rearranged: torch.Size([60, 16, 512])
-SDT_Generator::forward [Decoder] seq: [16, T, 5] (T : length of the sequence)
-SDT_Generator::forward [Decoder] seq_emb: [T, 16, 512]
-Content_TR:: Feat_Encoder input: torch.Size([16, 1, 64, 64])
-Content_TR:: Feat_Encoder Feat_Encoder(conv2d+resnet) output: torch.Size([16, 512, 2, 2])
-Content_TR:: rearrange output: torch.Size([4, 16, 512])
-Content_TR:: encoder output: torch.Size([4, 16, 512])
-SDT_Generator::forward [Content Encoder] char_emb: [4, T, 16]
+SDT_Generator::forward, style_imgs: torch.Size([64, 30, 1, 64, 64])
+SDT_Generator::forward, batch_size: 64 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
+SDT_Generator::forward style_imgs.view(): torch.Size([1920, 1, 64, 64])
+SDT_Generator::forward Feat_Encoder_ResNet output: torch.Size([1920, 512, 2, 2])
+SDT_Generator::forward style_embe.view(): torch.Size([4, 1920, 512])
+SDT_Generator::forward base_encoder output memory: torch.Size([4, 1920, 512])
+SDT_Generator::forward WRITER memory: torch.Size([4, 1920, 512]) , GLYPH memory: torch.Size([4, 1920, 512])
+SDT_Generator::forward rearrange writer_memory: torch.Size([4, 128, 15, 512]) , glyph_memory: torch.Size([4, 128, 15, 512])
+SDT_Generator::forward [writer] memory_fea: torch.Size([60, 128, 512]) , compact_fea: torch.Size([128, 512])
+SDT_Generator::forward [writer] pro_emb: torch.Size([128, 256])
+SDT_Generator::forward [writer] query_emb: torch.Size([64, 256])
+SDT_Generator::forward [writer] pos_emb: torch.Size([64, 256])
+SDT_Generator::forward [writer] nce_emb: torch.Size([64, 2, 256])
+SDT_Generator::forward [writer] normalize NCE nce_emb: torch.Size([64, 2, 256])
+SDT_Generator::forward [glyph] patch_emb: torch.Size([4, 64, 15, 512])
+SDT_Generator::forward [glyph] random_double_sampling result anc: torch.Size([64, 15, 1, 512]) , positive: torch.Size([64, 15, 1, 512]) , n_channels: 512
+SDT_Generator::forward [glyph] anc reshape: torch.Size([64, 15, 512])
+SDT_Generator::forward [glyph] anc_compact: torch.Size([64, 1, 512])
+SDT_Generator::forward [glyph] anc_compact after pro_mlp_character: torch.Size([64, 1, 256])
+SDT_Generator::forward [glyph] positive reshape: torch.Size([64, 15, 512])
+SDT_Generator::forward [glyph] positive_compact: torch.Size([64, 1, 512])
+SDT_Generator::forward [glyph] NCE anc_compact: torch.Size([64, 1, 256]) , positive_compact: torch.Size([64, 1, 256])
+SDT_Generator::forward [glyph] normalize nce_emb_patch: torch.Size([64, 2, 256])
+SDT_Generator::forward [KV] writer_style: torch.Size([60, 64, 512])
+SDT_Generator::forward [KV] glyph_style: torch.Size([4, 64, 15, 512])
+SDT_Generator::forward [KV] glyph_style rearranged: torch.Size([60, 64, 512])
+SDT_Generator::forward [Decoder] seq: [64, T, 5] (T : length of the sequence)
+SDT_Generator::forward [Decoder] seq_emb: [T, 64, 512]
+Content_TR:: Feat_Encoder input: torch.Size([64, 1, 64, 64])
+Content_TR:: Feat_Encoder Feat_Encoder(conv2d+resnet) output: torch.Size([64, 512, 2, 2])
+Content_TR:: rearrange output: torch.Size([4, 64, 512])
+Content_TR:: encoder output: torch.Size([4, 64, 512])
+SDT_Generator::forward [Content Encoder] char_emb: [4, T, 64]
 SDT_Generator::forward [Content Encoder] char_emb after mean: [T, 512]
-SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, 16]
-SDT_Generator::forward [Decoder] tgt: [T, 16, 512] (T=T+1 : length of the sequence + 1 for content token)
-generate_square_subsequent_mask: torch.Size([27, 27])
-SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 16, 512]
-[TransformerDecoder] *** forward: memory.shape=[1][B][512], tgt.shape=[C][B][512]
+SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, 64]
+SDT_Generator::forward [Decoder] tgt: [T, 64, 512] (T=T+1 : length of the sequence + 1 for content token)
+generate_square_subsequent_mask: torch.Size([28, 28])
+SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 64, 512]
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([28, 64, 512])]
 [TransformerDecoderLayer] *** forward_pre: memory.shape=[1][B][512], tgt.shape=[C][B][512]
 [TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][512] after self_attn
 [TransformerDecoderLayer] forward_pre tgt.shape=[C][B][512] after sum with dropout1, norm2
@@ -88,116 +88,1945 @@ SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 16, 512
 [TransformerDecoderLayer] *** forward_pre tgt.shape=[C][B][512] after linear
 [TransformerDecoder] forward: layer[0] output.shape=[C][B][512]
 [TransformerDecoder] forward: layer[1] output.shape=[C][B][512]
-[TransformerDecoder] *** forward: output=[C][B][512]
-SDT_Generator::forward [Writer Decoder] wri_hs: 2, T, 16, 512] (wri_dec_layers, T, B, C)
-SDT_Generator::forward [Glyph Decoder] hs: [2, T, 16, 512] (gly_dec_layers, T, B, C)
-SDT_Generator::forward [Decoder] h after transpose: 16, T, 512] (B, T, C)
-SDT_Generator::forward [Decoder Output] pred_sequence: [16, T, 123] (B, T, C)
-train_iter preds : torch.Size([64, 27, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 27, 5], preds : 64, T, 27, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1728, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1728, 5])
-[Step 0] --- GMM Debug ---
-  NLL loss (mean): 1.7940
-  pen state loss : 1.2306
-  result0 max pdf: 21.4724
-  result1 avg pre-log: 0.0633
-  z_pi max: 0.5873, mean: 0.0500
-  sigma1 min/max: 0.0232/30.6030
-  sigma2 min/max: 0.0361/30.2590
-  corr range: -0.9941 ~ 0.9992
-iter:0 loss:15.592 ETA:33 days, 6:52:34.389572
- # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
- # _visualize_input_images_tb writer_id: torch.Size([64])
-generate_square_subsequent_mask: torch.Size([34, 34])
-train_iter preds : torch.Size([64, 34, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 34, 5], preds : 64, T, 34, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2176, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2176, 5])
-iter:1 loss:19.617 ETA:13 days, 4:51:40.358787
-generate_square_subsequent_mask: torch.Size([25, 25])
-train_iter preds : torch.Size([64, 25, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 25, 5], preds : 64, T, 25, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1600, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1600, 5])
-iter:2 loss:15.010 ETA:1 day, 3:13:02.618873
-iter:3 loss:13.298 ETA:1 day, 1:18:29.101254
-generate_square_subsequent_mask: torch.Size([29, 29])
-train_iter preds : torch.Size([64, 29, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 29, 5], preds : 64, T, 29, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1856, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1856, 5])
-iter:4 loss:11.698 ETA:1 day, 1:59:25.786118
-iter:5 loss:11.477 ETA:1 day, 7:50:22.016122
-generate_square_subsequent_mask: torch.Size([37, 37])
-train_iter preds : torch.Size([64, 37, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 37, 5], preds : 64, T, 37, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2368, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2368, 5])
-iter:6 loss:11.875 ETA:23:21:30.189621
-generate_square_subsequent_mask: torch.Size([45, 45])
-train_iter preds : torch.Size([64, 45, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 45, 5], preds : 64, T, 45, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2880, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2880, 5])
-iter:7 loss:10.821 ETA:1 day, 0:23:41.175419
-iter:8 loss:10.498 ETA:1 day, 0:59:54.931400
-iter:9 loss:10.565 ETA:1 day, 2:37:50.901146
-generate_square_subsequent_mask: torch.Size([26, 26])
-train_iter preds : torch.Size([64, 26, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 26, 5], preds : 64, T, 26, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1664, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1664, 5])
-iter:10 loss:10.894 ETA:1 day, 2:21:20.700369
-iter:11 loss:10.818 ETA:1 day, 2:11:01.277671
-generate_square_subsequent_mask: torch.Size([28, 28])
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([28, 64, 512])]
+SDT_Generator::forward [Writer Decoder] wri_hs: 2, T, 64, 512] (wri_dec_layers, T, B, C)
+SDT_Generator::forward [Glyph Decoder] hs: [2, T, 64, 512] (gly_dec_layers, T, B, C)
+SDT_Generator::forward [Decoder] h after transpose: 64, T, 512] (B, T, C)
+SDT_Generator::forward [Decoder Output] pred_sequence: [64, T, 123] (B, T, C)
 train_iter preds : torch.Size([64, 28, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 28, 5], preds : 64, T, 28, 123]
 train_iter preds w/view(-1, 123) : torch.Size([1792, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1792, 5])
-iter:12 loss:10.833 ETA:1 day, 1:01:58.055269
-iter:13 loss:11.253 ETA:1 day, 2:38:10.010793
-generate_square_subsequent_mask: torch.Size([32, 32])
-train_iter preds : torch.Size([64, 32, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 32, 5], preds : 64, T, 32, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2048, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2048, 5])
-iter:14 loss:10.203 ETA:1 day, 1:14:48.908632
-generate_square_subsequent_mask: torch.Size([23, 23])
-train_iter preds : torch.Size([64, 23, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 23, 5], preds : 64, T, 23, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1472, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1472, 5])
-iter:15 loss:10.471 ETA:1 day, 1:29:03.597459
-iter:16 loss:9.953 ETA:1 day, 1:22:32.735676
-iter:17 loss:10.948 ETA:1 day, 8:41:24.850674
-iter:18 loss:9.934 ETA:2 days, 15:04:01.742062
-iter:19 loss:9.132 ETA:1 day, 2:54:33.997695
-generate_square_subsequent_mask: torch.Size([24, 24])
-train_iter preds : torch.Size([64, 24, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 24, 5], preds : 64, T, 24, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1536, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1536, 5])
-iter:20 loss:9.611 ETA:1 day, 1:09:39.749179
-iter:21 loss:10.689 ETA:2 days, 16:10:37.673922
+[Step 0] --- GMM Debug ---
+  NLL loss (mean): 1.8593
+  pen state loss : 1.5684
+  result0 max pdf: 16.4176
+  result1 avg pre-log: 0.0648
+  z_pi max: 0.4519, mean: 0.0500
+  sigma1 min/max: 0.0240/32.8054
+  sigma2 min/max: 0.0306/45.9688
+  corr range: -0.9980 ~ 0.9992
+iter:0 loss:16.623 ETA:21 days, 16:12:19.696503
+ # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
+ # _visualize_input_images_tb writer_id: torch.Size([64])
+generate_square_subsequent_mask: torch.Size([27, 27])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([27, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([27, 64, 512])]
+train_iter preds : torch.Size([64, 27, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 27, 5], preds : 64, T, 27, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1728, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1728, 5])
+iter:1 loss:18.050 ETA:14 days, 13:35:11.592619
+generate_square_subsequent_mask: torch.Size([25, 25])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([25, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([25, 64, 512])]
+train_iter preds : torch.Size([64, 25, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 25, 5], preds : 64, T, 25, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1600, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1600, 5])
+iter:2 loss:15.564 ETA:15:18:03.677673
+iter:3 loss:20.186 ETA:17:06:39.856475
+generate_square_subsequent_mask: torch.Size([64, 64])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([64, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([64, 64, 512])]
+train_iter preds : torch.Size([64, 64, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 64, 5], preds : 64, T, 64, 123]
+train_iter preds w/view(-1, 123) : torch.Size([4096, 123]), gt_coords w/reshape(-1, 5) : torch.Size([4096, 5])
+iter:4 loss:19.155 ETA:4 days, 15:27:24.483113
+generate_square_subsequent_mask: torch.Size([26, 26])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([26, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([26, 64, 512])]
+train_iter preds : torch.Size([64, 26, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 26, 5], preds : 64, T, 26, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1664, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1664, 5])
+iter:5 loss:18.251 ETA:16:47:26.753869
+iter:6 loss:16.938 ETA:16:40:47.827723
+generate_square_subsequent_mask: torch.Size([34, 34])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([34, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([34, 64, 512])]
+train_iter preds : torch.Size([64, 34, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 34, 5], preds : 64, T, 34, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2176, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2176, 5])
+iter:7 loss:17.547 ETA:2 days, 16:14:26.176412
+iter:8 loss:17.576 ETA:15:15:39.170448
 generate_square_subsequent_mask: torch.Size([30, 30])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([30, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([30, 64, 512])]
 train_iter preds : torch.Size([64, 30, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 30, 5], preds : 64, T, 30, 123]
 train_iter preds w/view(-1, 123) : torch.Size([1920, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1920, 5])
-iter:22 loss:9.441 ETA:1 day, 1:11:28.932879
-generate_square_subsequent_mask: torch.Size([48, 48])
-train_iter preds : torch.Size([64, 48, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 48, 5], preds : 64, T, 48, 123]
-train_iter preds w/view(-1, 123) : torch.Size([3072, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3072, 5])
-iter:23 loss:8.941 ETA:1 day, 1:19:17.633190
-generate_square_subsequent_mask: torch.Size([43, 43])
-train_iter preds : torch.Size([64, 43, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 43, 5], preds : 64, T, 43, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2752, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2752, 5])
-iter:24 loss:8.767 ETA:2 days, 12:11:47.304609
+iter:9 loss:16.285 ETA:16:36:30.590858
+generate_square_subsequent_mask: torch.Size([52, 52])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([52, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([52, 64, 512])]
+train_iter preds : torch.Size([64, 52, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 52, 5], preds : 64, T, 52, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3328, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3328, 5])
+iter:10 loss:14.341 ETA:16:01:18.771801
+generate_square_subsequent_mask: torch.Size([29, 29])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([29, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([29, 64, 512])]
+train_iter preds : torch.Size([64, 29, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 29, 5], preds : 64, T, 29, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1856, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1856, 5])
+iter:11 loss:14.859 ETA:2 days, 9:08:36.929728
+iter:12 loss:15.399 ETA:15:21:53.129225
+iter:13 loss:16.264 ETA:15:21:29.489141
+iter:14 loss:15.668 ETA:4 days, 17:21:10.369155
+iter:15 loss:15.158 ETA:15:44:07.820187
+iter:16 loss:14.645 ETA:16:39:15.759186
+generate_square_subsequent_mask: torch.Size([22, 22])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([22, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([22, 64, 512])]
+train_iter preds : torch.Size([64, 22, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 22, 5], preds : 64, T, 22, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1408, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1408, 5])
+iter:17 loss:14.344 ETA:17:49:48.173760
+iter:18 loss:14.821 ETA:16:52:12.381876
+iter:19 loss:14.882 ETA:2 days, 9:19:35.827767
+iter:20 loss:14.301 ETA:17:02:09.334745
+iter:21 loss:14.487 ETA:15:45:23.360133
+iter:22 loss:14.163 ETA:15:54:02.867173
+iter:23 loss:13.939 ETA:15:31:46.446148
+iter:24 loss:13.524 ETA:16:33:09.959095
+generate_square_subsequent_mask: torch.Size([40, 40])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([40, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([40, 64, 512])]
+train_iter preds : torch.Size([64, 40, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 40, 5], preds : 64, T, 40, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2560, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2560, 5])
+iter:25 loss:13.208 ETA:15:33:36.833156
+generate_square_subsequent_mask: torch.Size([21, 21])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([21, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([21, 64, 512])]
+train_iter preds : torch.Size([64, 21, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 21, 5], preds : 64, T, 21, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1344, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1344, 5])
+iter:26 loss:13.254 ETA:4 days, 19:43:20.135631
+iter:27 loss:13.385 ETA:17:05:23.999810
+generate_square_subsequent_mask: torch.Size([24, 24])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([24, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([24, 64, 512])]
+train_iter preds : torch.Size([64, 24, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 24, 5], preds : 64, T, 24, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1536, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1536, 5])
+iter:28 loss:12.918 ETA:15:37:01.051748
+iter:29 loss:12.718 ETA:2 days, 17:59:50.857135
+iter:30 loss:12.378 ETA:16:45:43.177238
+iter:31 loss:12.315 ETA:16:43:39.346119
+iter:32 loss:12.307 ETA:17:08:09.804565
+iter:33 loss:11.906 ETA:14:23:19.570481
+iter:34 loss:11.715 ETA:15:44:09.208177
+iter:35 loss:11.329 ETA:15:53:22.054539
+generate_square_subsequent_mask: torch.Size([23, 23])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([23, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([23, 64, 512])]
+train_iter preds : torch.Size([64, 23, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 23, 5], preds : 64, T, 23, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1472, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1472, 5])
+iter:36 loss:11.543 ETA:4 days, 18:47:26.477410
+iter:37 loss:12.879 ETA:15:59:49.794432
+iter:38 loss:13.410 ETA:16:50:43.783261
+iter:39 loss:13.194 ETA:2 days, 15:31:04.765611
+iter:40 loss:13.019 ETA:15:52:43.581400
+iter:41 loss:12.725 ETA:15:45:12.586090
+generate_square_subsequent_mask: torch.Size([33, 33])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([33, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([33, 64, 512])]
+train_iter preds : torch.Size([64, 33, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 33, 5], preds : 64, T, 33, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2112, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2112, 5])
+iter:42 loss:11.841 ETA:16:46:56.978196
+iter:43 loss:11.246 ETA:2 days, 3:52:07.423096
 generate_square_subsequent_mask: torch.Size([31, 31])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([31, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([31, 64, 512])]
 train_iter preds : torch.Size([64, 31, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 31, 5], preds : 64, T, 31, 123]
 train_iter preds w/view(-1, 123) : torch.Size([1984, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1984, 5])
-iter:25 loss:9.254 ETA:1 day, 3:12:28.179370
-iter:26 loss:9.478 ETA:1 day, 2:43:06.148350
-iter:27 loss:9.688 ETA:2 days, 14:32:07.579824
-iter:28 loss:9.303 ETA:1 day, 8:35:44.733530
-iter:29 loss:8.553 ETA:1 day, 1:55:02.070587
-iter:30 loss:8.849 ETA:2 days, 15:31:54.676757
-iter:31 loss:9.192 ETA:1 day, 2:32:44.475600
-iter:32 loss:9.040 ETA:1 day, 2:16:35.171951
-iter:33 loss:9.436 ETA:2 days, 16:22:17.422298
+iter:44 loss:10.846 ETA:16:41:21.278798
+iter:45 loss:10.677 ETA:15:44:22.968178
+iter:46 loss:10.611 ETA:2 days, 15:22:39.820053
+iter:47 loss:10.603 ETA:15:53:51.849554
+generate_square_subsequent_mask: torch.Size([42, 42])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([42, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([42, 64, 512])]
+train_iter preds : torch.Size([64, 42, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 42, 5], preds : 64, T, 42, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2688, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2688, 5])
+iter:48 loss:10.714 ETA:15:44:37.611530
+iter:49 loss:10.287 ETA:2 days, 13:09:24.800220
+iter:50 loss:10.025 ETA:15:33:59.100659
+iter:51 loss:10.151 ETA:15:22:24.960889
+iter:52 loss:10.005 ETA:2 days, 21:01:10.537109
+iter:53 loss:10.182 ETA:15:29:04.081630
+iter:54 loss:9.942 ETA:15:30:05.679587
+iter:55 loss:10.590 ETA:16:14:10.642233
+iter:56 loss:10.722 ETA:14:24:37.607729
+generate_square_subsequent_mask: torch.Size([95, 95])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([95, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([95, 64, 512])]
+train_iter preds : torch.Size([64, 95, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 95, 5], preds : 64, T, 95, 123]
+train_iter preds w/view(-1, 123) : torch.Size([6080, 123]), gt_coords w/reshape(-1, 5) : torch.Size([6080, 5])
+iter:57 loss:10.047 ETA:16:20:41.953671
+generate_square_subsequent_mask: torch.Size([39, 39])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([39, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([39, 64, 512])]
+train_iter preds : torch.Size([64, 39, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 39, 5], preds : 64, T, 39, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2496, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2496, 5])
+iter:58 loss:9.498 ETA:15:29:40.251530
+iter:59 loss:9.326 ETA:4 days, 17:45:15.511722
+generate_square_subsequent_mask: torch.Size([46, 46])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([46, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([46, 64, 512])]
+train_iter preds : torch.Size([64, 46, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 46, 5], preds : 64, T, 46, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2944, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2944, 5])
+iter:60 loss:9.229 ETA:18:00:47.082853
+generate_square_subsequent_mask: torch.Size([32, 32])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([32, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([32, 64, 512])]
+train_iter preds : torch.Size([64, 32, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 32, 5], preds : 64, T, 32, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2048, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2048, 5])
+iter:61 loss:9.345 ETA:16:09:46.803122
+iter:62 loss:9.410 ETA:4 days, 17:51:55.172811
+iter:63 loss:9.716 ETA:15:33:54.170152
+iter:64 loss:9.679 ETA:15:28:32.175476
+iter:65 loss:9.519 ETA:16:19:22.424476
+iter:66 loss:9.722 ETA:14:08:04.615498
+iter:67 loss:9.759 ETA:15:34:33.805034
+generate_square_subsequent_mask: torch.Size([43, 43])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([43, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([43, 64, 512])]
+train_iter preds : torch.Size([64, 43, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 43, 5], preds : 64, T, 43, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2752, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2752, 5])
+iter:68 loss:9.607 ETA:15:35:06.415149
+iter:69 loss:9.511 ETA:2 days, 13:22:37.697906
+iter:70 loss:9.350 ETA:15:53:00.316339
+iter:71 loss:9.515 ETA:15:51:32.466447
+iter:72 loss:9.329 ETA:2 days, 19:03:41.159500
+iter:73 loss:9.067 ETA:15:22:50.903152
+iter:74 loss:9.658 ETA:15:26:03.721457
+iter:75 loss:9.357 ETA:15:54:05.904493
+iter:76 loss:9.375 ETA:14:15:23.644508
+iter:77 loss:9.311 ETA:16:08:40.849108
+iter:78 loss:9.578 ETA:15:53:08.848307
+iter:79 loss:9.321 ETA:2 days, 11:22:23.434099
+iter:80 loss:9.565 ETA:15:50:45.043945
+iter:81 loss:9.364 ETA:15:31:46.055996
+iter:82 loss:9.150 ETA:2 days, 21:30:55.457883
+iter:83 loss:8.710 ETA:15:39:06.054387
+iter:84 loss:8.757 ETA:15:50:32.177320
+iter:85 loss:9.103 ETA:16:27:39.395723
+generate_square_subsequent_mask: torch.Size([36, 36])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([36, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([36, 64, 512])]
+train_iter preds : torch.Size([64, 36, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 36, 5], preds : 64, T, 36, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2304, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2304, 5])
+iter:86 loss:9.202 ETA:14:46:29.046285
+iter:87 loss:9.640 ETA:15:36:37.648411
+iter:88 loss:9.966 ETA:15:13:06.312031
+iter:89 loss:9.395 ETA:2 days, 17:00:28.053355
+iter:90 loss:9.138 ETA:15:29:05.681806
+iter:91 loss:9.274 ETA:15:32:00.179578
+iter:92 loss:8.763 ETA:15:49:36.799850
+iter:93 loss:8.879 ETA:2 days, 6:03:19.887199
+iter:94 loss:8.758 ETA:16:02:51.220379
+iter:95 loss:8.947 ETA:15:32:01.920329
+iter:96 loss:8.815 ETA:2 days, 20:14:04.334587
+iter:97 loss:8.948 ETA:15:34:25.629448
+iter:98 loss:9.274 ETA:15:31:50.691145
+iter:99 loss:9.136 ETA:15:27:14.364084
+iter:100 loss:9.075 ETA:11 days, 19:24:42.802939
+iter:101 loss:9.260 ETA:2 days, 13:02:33.527571
+iter:102 loss:9.193 ETA:15:32:23.601193
+iter:103 loss:8.513 ETA:16:12:51.078877
+iter:104 loss:9.010 ETA:2 days, 14:05:20.097857
+generate_square_subsequent_mask: torch.Size([37, 37])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([37, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([37, 64, 512])]
+train_iter preds : torch.Size([64, 37, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 37, 5], preds : 64, T, 37, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2368, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2368, 5])
+iter:105 loss:9.122 ETA:16:02:25.546570
+iter:106 loss:9.562 ETA:15:40:36.080249
+iter:107 loss:9.078 ETA:4 days, 19:19:55.708699
+iter:108 loss:9.090 ETA:15:38:56.863598
+iter:109 loss:9.168 ETA:15:42:12.264393
+iter:110 loss:9.427 ETA:2 days, 14:52:22.670960
+iter:111 loss:9.625 ETA:15:13:11.637201
+iter:112 loss:10.087 ETA:15:57:05.699795
+iter:113 loss:10.116 ETA:15:48:06.986267
+iter:114 loss:10.317 ETA:16:48:29.885141
+iter:115 loss:9.914 ETA:15:27:02.143154
+iter:116 loss:10.047 ETA:15:39:16.149445
+iter:117 loss:9.951 ETA:2 days, 10:01:16.463543
+iter:118 loss:10.223 ETA:2 days, 5:23:08.387462
+iter:119 loss:10.166 ETA:16:05:13.204463
+iter:120 loss:9.791 ETA:15:40:47.949123
+iter:121 loss:9.564 ETA:2 days, 14:30:13.415973
+generate_square_subsequent_mask: torch.Size([38, 38])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([38, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([38, 64, 512])]
+train_iter preds : torch.Size([64, 38, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 38, 5], preds : 64, T, 38, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2432, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2432, 5])
+iter:122 loss:9.467 ETA:16:14:51.958497
+iter:123 loss:9.715 ETA:16:12:24.223175
+generate_square_subsequent_mask: torch.Size([48, 48])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([48, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([48, 64, 512])]
+train_iter preds : torch.Size([64, 48, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 48, 5], preds : 64, T, 48, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3072, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3072, 5])
+iter:124 loss:9.001 ETA:2 days, 13:15:50.706155
+iter:125 loss:9.191 ETA:15:59:44.893763
+iter:126 loss:8.926 ETA:15:41:26.712638
+iter:127 loss:8.972 ETA:2 days, 23:21:20.568010
+iter:128 loss:8.772 ETA:15:19:37.924164
+iter:129 loss:8.803 ETA:17:39:25.093209
+iter:130 loss:8.884 ETA:2 days, 18:48:45.205183
+iter:131 loss:8.801 ETA:16:54:36.761802
+iter:132 loss:8.877 ETA:17:00:18.171465
+iter:133 loss:8.940 ETA:16:51:12.249701
+iter:134 loss:9.046 ETA:2 days, 11:26:33.319579
+iter:135 loss:8.704 ETA:15:30:57.837433
+iter:136 loss:8.490 ETA:16:37:04.623224
+iter:137 loss:8.603 ETA:2 days, 16:57:00.331270
+iter:138 loss:8.395 ETA:15:44:04.905210
+generate_square_subsequent_mask: torch.Size([54, 54])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([54, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([54, 64, 512])]
+train_iter preds : torch.Size([64, 54, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 54, 5], preds : 64, T, 54, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3456, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3456, 5])
+iter:139 loss:8.019 ETA:18:33:08.095127
+iter:140 loss:8.250 ETA:2 days, 12:11:39.915075
+iter:141 loss:8.658 ETA:15:30:37.481727
+iter:142 loss:8.843 ETA:16:47:33.568466
+iter:143 loss:9.122 ETA:2 days, 22:29:06.911755
+generate_square_subsequent_mask: torch.Size([72, 72])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([72, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([72, 64, 512])]
+train_iter preds : torch.Size([64, 72, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 72, 5], preds : 64, T, 72, 123]
+train_iter preds w/view(-1, 123) : torch.Size([4608, 123]), gt_coords w/reshape(-1, 5) : torch.Size([4608, 5])
+iter:144 loss:7.976 ETA:16:20:15.015942
+iter:145 loss:8.365 ETA:18:14:17.424790
+iter:146 loss:8.874 ETA:2 days, 17:12:15.143911
+iter:147 loss:8.768 ETA:15:47:39.012923
+iter:148 loss:8.573 ETA:15:47:21.241446
+iter:149 loss:8.941 ETA:17:08:27.076229
+iter:150 loss:8.784 ETA:2 days, 12:38:33.677096
+iter:151 loss:8.829 ETA:17:59:31.826770
+iter:152 loss:8.838 ETA:16:41:07.791464
+iter:153 loss:8.721 ETA:4 days, 15:43:45.926568
+iter:154 loss:8.885 ETA:16:28:53.426539
+iter:155 loss:8.627 ETA:16:45:12.889988
+iter:156 loss:8.745 ETA:2 days, 18:43:53.575970
+iter:157 loss:8.349 ETA:17:12:40.990761
+iter:158 loss:8.710 ETA:18:12:09.178950
+iter:159 loss:8.846 ETA:15:20:56.653227
+iter:160 loss:8.985 ETA:2 days, 14:30:06.865921
+generate_square_subsequent_mask: torch.Size([49, 49])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([49, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([49, 64, 512])]
+train_iter preds : torch.Size([64, 49, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 49, 5], preds : 64, T, 49, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3136, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3136, 5])
+iter:161 loss:8.691 ETA:15:48:48.213093
+iter:162 loss:9.518 ETA:16:00:44.129245
+iter:163 loss:9.831 ETA:4 days, 9:21:41.298828
+iter:164 loss:10.282 ETA:15:45:31.300890
+iter:165 loss:10.681 ETA:15:38:37.082655
+iter:166 loss:10.499 ETA:16:08:23.217804
+iter:167 loss:10.208 ETA:2 days, 13:49:22.475334
+iter:168 loss:10.159 ETA:15:31:13.151150
+iter:169 loss:9.942 ETA:15:27:54.579622
+iter:170 loss:9.109 ETA:2 days, 14:30:06.183357
+iter:171 loss:9.561 ETA:15:28:02.216992
+iter:172 loss:9.482 ETA:15:31:31.280401
+iter:173 loss:9.616 ETA:4 days, 12:08:34.393077
+iter:174 loss:9.435 ETA:15:42:34.996634
+iter:175 loss:9.248 ETA:15:44:05.709819
+iter:176 loss:8.974 ETA:17:10:08.363239
+iter:177 loss:8.981 ETA:2 days, 0:50:11.199656
+iter:178 loss:9.006 ETA:15:42:42.582903
+iter:179 loss:8.790 ETA:16:04:26.235073
+iter:180 loss:8.783 ETA:2 days, 8:37:29.268341
+iter:181 loss:8.710 ETA:15:32:23.502135
+iter:182 loss:8.517 ETA:15:49:52.405011
+iter:183 loss:8.619 ETA:16:24:00.595814
+iter:184 loss:8.721 ETA:2 days, 8:05:19.061037
+iter:185 loss:8.408 ETA:15:46:16.647073
+iter:186 loss:8.249 ETA:15:56:55.730911
+generate_square_subsequent_mask: torch.Size([35, 35])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([35, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([35, 64, 512])]
+train_iter preds : torch.Size([64, 35, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 35, 5], preds : 64, T, 35, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2240, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2240, 5])
+iter:187 loss:8.197 ETA:4 days, 7:55:50.116901
+iter:188 loss:8.608 ETA:16:15:09.326317
+iter:189 loss:8.578 ETA:15:46:36.233304
+iter:190 loss:8.564 ETA:15:59:37.552550
+iter:191 loss:8.251 ETA:2 days, 1:03:53.359933
+iter:192 loss:8.006 ETA:16:58:23.565247
+iter:193 loss:8.378 ETA:16:52:28.977853
+iter:194 loss:8.264 ETA:2 days, 10:11:00.493999
+iter:195 loss:8.169 ETA:15:44:28.860807
+iter:196 loss:8.390 ETA:15:55:30.350193
+iter:197 loss:8.370 ETA:2 days, 16:51:24.133490
+iter:198 loss:8.499 ETA:15:17:25.986815
+iter:199 loss:8.415 ETA:15:21:29.990108
+iter:200 loss:8.294 ETA:10 days, 14:59:46.591101
+iter:201 loss:8.030 ETA:16:57:19.410406
+iter:202 loss:7.996 ETA:16:48:05.389207
+iter:203 loss:8.019 ETA:17:20:26.797260
+iter:204 loss:7.938 ETA:15:11:34.978134
+iter:205 loss:7.922 ETA:15:54:13.600351
+iter:206 loss:7.553 ETA:16:19:03.991011
+iter:207 loss:7.812 ETA:2 days, 9:13:19.566984
+iter:208 loss:7.518 ETA:15:40:45.485153
+iter:209 loss:7.939 ETA:15:35:49.110394
+iter:210 loss:7.485 ETA:16:06:47.351396
+iter:211 loss:7.725 ETA:2 days, 11:18:23.087296
+iter:212 loss:7.909 ETA:16:17:15.004606
+iter:213 loss:8.038 ETA:16:12:25.769751
+iter:214 loss:7.853 ETA:2 days, 12:23:15.807062
+iter:215 loss:7.844 ETA:15:39:43.919302
+iter:216 loss:8.117 ETA:15:35:28.042601
+iter:217 loss:7.874 ETA:3 days, 0:11:54.801075
+iter:218 loss:7.952 ETA:14:58:12.885236
+iter:219 loss:7.721 ETA:15:28:36.949642
+iter:220 loss:7.814 ETA:15:47:34.391117
+generate_square_subsequent_mask: torch.Size([47, 47])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([47, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([47, 64, 512])]
+train_iter preds : torch.Size([64, 47, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 47, 5], preds : 64, T, 47, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3008, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3008, 5])
+iter:221 loss:7.394 ETA:2 days, 9:44:12.268267
+iter:222 loss:8.049 ETA:15:50:04.382864
+iter:223 loss:7.999 ETA:15:41:56.360709
+iter:224 loss:8.346 ETA:4 days, 5:52:29.910439
+iter:225 loss:7.966 ETA:15:58:23.023410
+iter:226 loss:8.146 ETA:15:42:27.281116
+iter:227 loss:8.345 ETA:16:04:35.196941
+iter:228 loss:8.410 ETA:2 days, 12:11:24.327124
+iter:229 loss:8.519 ETA:15:36:49.646455
+iter:230 loss:8.401 ETA:15:45:38.045647
+iter:231 loss:8.113 ETA:2 days, 11:48:32.607032
+iter:232 loss:8.019 ETA:15:53:38.381596
+iter:233 loss:7.795 ETA:15:42:25.109210
+iter:234 loss:8.109 ETA:2 days, 19:52:21.976011
+iter:235 loss:7.953 ETA:16:12:07.295069
+generate_square_subsequent_mask: torch.Size([121, 121])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([121, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([121, 64, 512])]
+train_iter preds : torch.Size([64, 121, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 121, 5], preds : 64, T, 121, 123]
+train_iter preds w/view(-1, 123) : torch.Size([7744, 123]), gt_coords w/reshape(-1, 5) : torch.Size([7744, 5])
+iter:236 loss:7.809 ETA:16:51:08.654248
+iter:237 loss:8.320 ETA:16:36:04.052699
+iter:238 loss:8.059 ETA:2 days, 11:42:26.764665
+iter:239 loss:8.071 ETA:15:48:43.281707
+iter:240 loss:8.163 ETA:15:13:07.377071
+iter:241 loss:8.140 ETA:4 days, 21:03:57.603748
+iter:242 loss:7.858 ETA:16:46:29.219976
+iter:243 loss:7.925 ETA:18:03:21.617345
+iter:244 loss:7.874 ETA:4 days, 13:15:02.820003
+iter:245 loss:7.723 ETA:16:51:25.494933
+iter:246 loss:7.845 ETA:17:36:04.482032
+iter:247 loss:7.832 ETA:17:42:56.167193
+iter:248 loss:7.723 ETA:2 days, 12:10:08.151432
+iter:249 loss:7.448 ETA:16:17:46.959910
+iter:250 loss:7.540 ETA:16:23:13.796229
+iter:251 loss:7.515 ETA:2 days, 13:18:55.316760
+iter:252 loss:7.775 ETA:18:15:25.234879
+iter:253 loss:7.722 ETA:16:50:19.058692
+iter:254 loss:8.213 ETA:4 days, 19:00:57.876084
+generate_square_subsequent_mask: torch.Size([71, 71])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([71, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([71, 64, 512])]
+train_iter preds : torch.Size([64, 71, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 71, 5], preds : 64, T, 71, 123]
+train_iter preds w/view(-1, 123) : torch.Size([4544, 123]), gt_coords w/reshape(-1, 5) : torch.Size([4544, 5])
+iter:255 loss:7.767 ETA:15:57:40.766461
+iter:256 loss:8.061 ETA:16:57:07.941422
+iter:257 loss:8.217 ETA:4 days, 13:42:25.533489
+iter:258 loss:8.938 ETA:16:12:46.249232
+iter:259 loss:8.014 ETA:16:15:17.585362
+iter:260 loss:8.284 ETA:18:03:49.658804
+iter:261 loss:8.443 ETA:14:46:54.680025
+iter:262 loss:8.776 ETA:16:50:43.519113
+iter:263 loss:8.181 ETA:16:19:58.282261
+iter:264 loss:8.480 ETA:4 days, 16:12:18.733295
+iter:265 loss:8.317 ETA:17:10:39.883755
+iter:266 loss:7.975 ETA:16:05:29.519222
+iter:267 loss:8.564 ETA:3 days, 0:46:59.464501
+iter:268 loss:7.996 ETA:16:48:55.505223
+iter:269 loss:8.262 ETA:15:37:35.820853
+iter:270 loss:7.916 ETA:2 days, 23:18:57.210522
+iter:271 loss:7.426 ETA:16:43:53.786090
+iter:272 loss:7.833 ETA:15:09:02.315746
+iter:273 loss:7.872 ETA:17:16:55.641637
+iter:274 loss:8.051 ETA:2 days, 7:31:13.807480
+iter:275 loss:7.542 ETA:15:24:41.335938
+iter:276 loss:7.498 ETA:16:12:39.799037
+iter:277 loss:7.598 ETA:4 days, 13:22:33.640412
+iter:278 loss:7.223 ETA:15:40:55.326711
+iter:279 loss:7.499 ETA:15:17:05.956724
+iter:280 loss:7.189 ETA:16:08:21.831970
+iter:281 loss:7.190 ETA:14:06:37.802809
+iter:282 loss:7.129 ETA:17:23:07.484585
+iter:283 loss:7.617 ETA:17:47:59.083343
+iter:284 loss:7.600 ETA:2 days, 5:14:26.704828
+iter:285 loss:7.162 ETA:17:08:29.842954
+iter:286 loss:7.237 ETA:17:06:31.018915
+iter:287 loss:7.403 ETA:2 days, 9:23:34.360087
+iter:288 loss:7.626 ETA:17:13:15.177673
+iter:289 loss:7.902 ETA:17:01:19.692761
+iter:290 loss:7.770 ETA:4 days, 5:54:36.104980
+iter:291 loss:7.820 ETA:17:12:38.107124
+iter:292 loss:7.375 ETA:16:25:03.093660
+iter:293 loss:7.590 ETA:2 days, 18:10:35.896776
+iter:294 loss:7.578 ETA:17:41:02.839134
+iter:295 loss:7.461 ETA:17:19:47.529199
+iter:296 loss:6.968 ETA:16:16:27.592690
+iter:297 loss:7.148 ETA:15:37:59.073272
+iter:298 loss:7.797 ETA:16:00:28.658182
+iter:299 loss:7.357 ETA:16:49:36.959704
+iter:300 loss:6.994 ETA:12 days, 23:50:23.551607
+iter:301 loss:7.370 ETA:16:19:00.436165
+iter:302 loss:7.126 ETA:2 days, 13:08:36.235684
+iter:303 loss:7.983 ETA:17:10:16.834669
+iter:304 loss:7.344 ETA:15:29:48.847343
+iter:305 loss:7.014 ETA:5 days, 2:58:32.865994
+iter:306 loss:6.873 ETA:16:13:37.926087
+iter:307 loss:7.547 ETA:16:48:48.636455
+iter:308 loss:7.219 ETA:4 days, 22:01:21.068072
+iter:309 loss:6.941 ETA:16:45:16.974911
+iter:310 loss:7.584 ETA:17:03:25.842392
+iter:311 loss:7.335 ETA:2 days, 22:25:40.039131
+iter:312 loss:7.451 ETA:16:57:24.586712
+iter:313 loss:7.038 ETA:15:31:08.125442
+iter:314 loss:7.339 ETA:2 days, 17:50:29.384026
+iter:315 loss:6.811 ETA:16:45:29.064317
+iter:316 loss:7.362 ETA:15:50:36.547810
+iter:317 loss:7.179 ETA:17:19:22.279693
+iter:318 loss:6.957 ETA:2 days, 6:59:12.976335
+iter:319 loss:7.464 ETA:16:49:12.944850
+iter:320 loss:7.096 ETA:16:31:59.608154
+iter:321 loss:6.795 ETA:4 days, 14:35:40.731926
+iter:322 loss:7.483 ETA:16:26:49.804896
+iter:323 loss:7.093 ETA:16:20:17.657568
+iter:324 loss:6.964 ETA:2 days, 13:53:06.512382
+iter:325 loss:7.279 ETA:16:40:30.360812
+iter:326 loss:7.448 ETA:16:26:51.760786
+iter:327 loss:7.119 ETA:16:55:06.086231
+iter:328 loss:7.184 ETA:15:36:03.795900
+generate_square_subsequent_mask: torch.Size([51, 51])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([51, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([51, 64, 512])]
+train_iter preds : torch.Size([64, 51, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 51, 5], preds : 64, T, 51, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3264, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3264, 5])
+iter:329 loss:6.943 ETA:16:58:50.696734
+iter:330 loss:6.718 ETA:17:07:34.998093
+iter:331 loss:6.662 ETA:2 days, 20:12:21.174996
+iter:332 loss:6.833 ETA:17:30:29.247846
+iter:333 loss:7.063 ETA:18:06:45.211380
+iter:334 loss:6.823 ETA:14:47:39.877633
+iter:335 loss:7.395 ETA:15:20:09.988046
+iter:336 loss:7.146 ETA:16:22:04.649433
+iter:337 loss:7.074 ETA:2 days, 15:29:51.900419
+iter:338 loss:6.887 ETA:15:26:25.128030
+iter:339 loss:7.429 ETA:16:20:16.038732
+iter:340 loss:7.293 ETA:4 days, 12:54:49.299741
+iter:341 loss:7.511 ETA:16:17:39.075639
+iter:342 loss:7.556 ETA:15:15:26.009557
+iter:343 loss:7.423 ETA:15:54:16.134946
+iter:344 loss:7.250 ETA:2 days, 6:26:47.948530
+iter:345 loss:7.094 ETA:16:36:16.582398
+iter:346 loss:7.216 ETA:14:58:39.714129
+iter:347 loss:7.172 ETA:4 days, 17:30:10.707258
+iter:348 loss:7.719 ETA:16:58:04.181111
+iter:349 loss:7.444 ETA:15:05:32.933148
+generate_square_subsequent_mask: torch.Size([93, 93])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([93, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([93, 64, 512])]
+train_iter preds : torch.Size([64, 93, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 93, 5], preds : 64, T, 93, 123]
+train_iter preds w/view(-1, 123) : torch.Size([5952, 123]), gt_coords w/reshape(-1, 5) : torch.Size([5952, 5])
+iter:350 loss:7.249 ETA:2 days, 19:19:20.864854
+iter:351 loss:7.781 ETA:16:23:12.574694
+iter:352 loss:7.003 ETA:15:05:03.794853
+iter:353 loss:7.061 ETA:16:21:34.452245
 generate_square_subsequent_mask: torch.Size([53, 53])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([53, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([53, 64, 512])]
 train_iter preds : torch.Size([64, 53, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 53, 5], preds : 64, T, 53, 123]
 train_iter preds w/view(-1, 123) : torch.Size([3392, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3392, 5])
+iter:354 loss:6.956 ETA:15:05:05.488026
+iter:355 loss:6.588 ETA:16:58:05.704567
+generate_square_subsequent_mask: torch.Size([70, 70])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([70, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([70, 64, 512])]
+train_iter preds : torch.Size([64, 70, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 70, 5], preds : 64, T, 70, 123]
+train_iter preds w/view(-1, 123) : torch.Size([4480, 123]), gt_coords w/reshape(-1, 5) : torch.Size([4480, 5])
+iter:356 loss:6.631 ETA:17:44:24.314003
+iter:357 loss:7.008 ETA:15:13:24.219310
+iter:358 loss:6.968 ETA:15:49:34.239711
+iter:359 loss:6.835 ETA:15:55:54.691720
+iter:360 loss:6.513 ETA:2 days, 13:07:23.499832
+iter:361 loss:6.495 ETA:17:01:40.009651
+iter:362 loss:6.594 ETA:15:42:23.245989
+iter:363 loss:6.746 ETA:2 days, 14:29:41.874196
+iter:364 loss:6.535 ETA:16:56:37.085958
+iter:365 loss:6.876 ETA:16:39:48.016105
+iter:366 loss:6.483 ETA:2 days, 12:10:20.270321
+iter:367 loss:6.915 ETA:16:47:18.960431
+iter:368 loss:6.361 ETA:16:52:41.548794
+iter:369 loss:6.749 ETA:4 days, 6:39:57.622271
+iter:370 loss:6.539 ETA:15:38:05.011554
+iter:371 loss:6.960 ETA:15:51:41.702288
+iter:372 loss:6.189 ETA:15:36:02.985159
+iter:373 loss:6.605 ETA:2 days, 10:21:23.146063
+iter:374 loss:6.506 ETA:17:03:24.961864
+iter:375 loss:6.771 ETA:15:48:13.142134
+iter:376 loss:6.463 ETA:2 days, 9:40:41.030788
+iter:377 loss:6.651 ETA:16:42:16.329755
+iter:378 loss:6.782 ETA:17:07:52.349707
+iter:379 loss:6.175 ETA:2 days, 22:32:40.713275
+iter:380 loss:6.349 ETA:16:29:12.662015
+generate_square_subsequent_mask: torch.Size([44, 44])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([44, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([44, 64, 512])]
+train_iter preds : torch.Size([64, 44, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 44, 5], preds : 64, T, 44, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2816, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2816, 5])
+iter:381 loss:6.398 ETA:17:56:42.906211
+iter:382 loss:6.542 ETA:18:13:47.632859
+iter:383 loss:7.045 ETA:15:11:22.384334
+iter:384 loss:6.438 ETA:15:55:48.651703
+iter:385 loss:6.351 ETA:17:04:36.202402
+iter:386 loss:6.644 ETA:4 days, 5:02:24.495383
+iter:387 loss:6.760 ETA:16:24:06.233408
+iter:388 loss:6.357 ETA:16:45:54.743455
+iter:389 loss:6.365 ETA:1 day, 15:30:07.199107
+iter:390 loss:6.531 ETA:14:51:28.461699
+iter:391 loss:6.499 ETA:16:53:29.848489
+iter:392 loss:6.179 ETA:16:49:43.966032
+iter:393 loss:6.440 ETA:2 days, 12:02:15.013015
+iter:394 loss:6.317 ETA:16:58:16.091280
+iter:395 loss:6.418 ETA:16:42:30.418975
+iter:396 loss:6.720 ETA:4 days, 13:10:40.331274
+iter:397 loss:6.514 ETA:17:04:38.027047
+iter:398 loss:6.316 ETA:16:57:16.380280
+iter:399 loss:6.711 ETA:2 days, 18:35:06.424298
+iter:400 loss:6.561 ETA:11 days, 23:23:37.425728
+iter:401 loss:6.287 ETA:17:26:08.574286
+iter:402 loss:6.531 ETA:16:40:07.687384
+iter:403 loss:6.293 ETA:16:57:47.734383
+iter:404 loss:6.519 ETA:15:24:08.879909
+iter:405 loss:6.749 ETA:15:31:40.537326
+iter:406 loss:7.236 ETA:15:25:39.738767
+iter:407 loss:6.601 ETA:4 days, 18:09:33.981889
+iter:408 loss:7.028 ETA:15:58:45.916153
+iter:409 loss:7.222 ETA:15:33:12.448073
+iter:410 loss:7.083 ETA:15:57:39.147642
+iter:411 loss:6.711 ETA:2 days, 5:33:07.429456
+iter:412 loss:7.430 ETA:16:08:05.320324
+iter:413 loss:6.680 ETA:15:38:16.299790
+iter:414 loss:7.515 ETA:2 days, 14:51:50.931538
+iter:415 loss:6.822 ETA:15:43:10.380571
+iter:416 loss:7.277 ETA:15:31:07.050041
+iter:417 loss:6.725 ETA:15:33:15.628395
+iter:418 loss:6.861 ETA:2 days, 8:01:17.887368
+iter:419 loss:6.842 ETA:15:37:24.120975
+iter:420 loss:6.696 ETA:15:19:22.835393
+iter:421 loss:6.804 ETA:2 days, 20:37:56.215750
+iter:422 loss:6.336 ETA:17:41:07.000968
+iter:423 loss:6.886 ETA:15:35:39.881663
+generate_square_subsequent_mask: torch.Size([45, 45])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([45, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([45, 64, 512])]
+train_iter preds : torch.Size([64, 45, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 45, 5], preds : 64, T, 45, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2880, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2880, 5])
+iter:424 loss:6.582 ETA:15:27:23.170828
+iter:425 loss:6.942 ETA:15:10:47.278136
+iter:426 loss:7.110 ETA:16:34:49.189537
+iter:427 loss:6.864 ETA:16:47:42.857819
+iter:428 loss:6.829 ETA:2 days, 11:22:45.755702
+iter:429 loss:6.870 ETA:15:43:48.853647
+iter:430 loss:6.789 ETA:15:36:30.347080
+iter:431 loss:6.394 ETA:2 days, 14:53:17.665580
+iter:432 loss:7.051 ETA:16:22:23.232594
+iter:433 loss:6.859 ETA:15:28:30.271809
+iter:434 loss:7.267 ETA:4 days, 14:01:55.602968
+iter:435 loss:6.967 ETA:15:39:35.072269
+iter:436 loss:7.425 ETA:15:36:28.657738
+iter:437 loss:7.212 ETA:17:56:56.470837
+iter:438 loss:7.587 ETA:14:32:29.683105
+iter:439 loss:6.964 ETA:16:23:53.849104
+iter:440 loss:7.350 ETA:15:59:51.296768
+iter:441 loss:7.767 ETA:2 days, 15:40:12.678814
+iter:442 loss:7.475 ETA:15:50:51.609474
+iter:443 loss:7.472 ETA:15:44:58.531999
+iter:444 loss:7.288 ETA:2 days, 10:46:23.730073
+iter:445 loss:7.111 ETA:15:30:04.979414
+iter:446 loss:6.721 ETA:15:54:03.059153
+iter:447 loss:7.009 ETA:16:16:04.275014
+iter:448 loss:7.140 ETA:1 day, 1:49:28.744110
+iter:449 loss:6.707 ETA:15:33:33.721498
+iter:450 loss:7.182 ETA:15:42:27.961962
+iter:451 loss:6.959 ETA:4 days, 8:52:25.367874
+iter:452 loss:6.917 ETA:15:23:12.536582
+iter:453 loss:6.639 ETA:15:58:59.398459
+iter:454 loss:6.716 ETA:15:35:58.517436
+iter:455 loss:6.833 ETA:14:10:38.189174
+iter:456 loss:7.084 ETA:15:36:32.303720
+iter:457 loss:7.452 ETA:15:22:15.486164
+iter:458 loss:7.480 ETA:4 days, 11:26:24.559316
+iter:459 loss:7.049 ETA:15:44:12.073105
+iter:460 loss:7.355 ETA:15:55:27.816348
+iter:461 loss:7.350 ETA:16:23:15.894811
+iter:462 loss:7.100 ETA:2 days, 8:56:31.120053
+iter:463 loss:6.774 ETA:15:25:04.610545
+iter:464 loss:6.955 ETA:15:32:25.144627
+iter:465 loss:6.866 ETA:4 days, 22:30:50.788628
+iter:466 loss:6.654 ETA:15:23:53.416150
+iter:467 loss:6.699 ETA:15:33:58.068648
+iter:468 loss:6.954 ETA:2 days, 19:57:37.548547
+iter:469 loss:7.187 ETA:15:57:20.402213
+iter:470 loss:7.109 ETA:15:53:09.839838
+iter:471 loss:6.936 ETA:16:31:59.744113
+iter:472 loss:7.020 ETA:2 days, 8:00:41.397343
+iter:473 loss:6.899 ETA:15:58:27.372296
+iter:474 loss:6.684 ETA:15:32:57.733469
+iter:475 loss:7.018 ETA:4 days, 4:59:50.165204
+iter:476 loss:6.839 ETA:15:16:31.850218
+iter:477 loss:7.161 ETA:15:29:18.355274
+generate_square_subsequent_mask: torch.Size([41, 41])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([41, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([41, 64, 512])]
+train_iter preds : torch.Size([64, 41, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 41, 5], preds : 64, T, 41, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2624, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2624, 5])
+iter:478 loss:7.609 ETA:16:11:40.203349
+iter:479 loss:7.488 ETA:2 days, 7:12:27.472144
+iter:480 loss:7.453 ETA:15:29:18.040161
+iter:481 loss:6.939 ETA:15:32:56.578268
+iter:482 loss:7.248 ETA:4 days, 7:07:21.170740
+iter:483 loss:6.812 ETA:15:57:58.517678
+iter:484 loss:6.942 ETA:15:45:42.109818
+iter:485 loss:6.931 ETA:16:22:20.231935
+iter:486 loss:6.937 ETA:14:07:15.374758
+iter:487 loss:6.614 ETA:15:36:23.288604
+iter:488 loss:6.543 ETA:15:37:52.195816
+iter:489 loss:6.694 ETA:4 days, 18:12:25.148800
+iter:490 loss:6.679 ETA:15:28:36.906638
+iter:491 loss:6.785 ETA:15:52:16.729774
+iter:492 loss:6.842 ETA:17:05:09.794612
+iter:493 loss:6.841 ETA:14:23:16.948937
+iter:494 loss:6.297 ETA:16:14:40.321824
+iter:495 loss:6.245 ETA:16:15:25.549072
+iter:496 loss:6.754 ETA:4 days, 9:46:41.368797
+iter:497 loss:6.376 ETA:15:37:24.638067
+iter:498 loss:6.478 ETA:15:35:59.642908
+iter:499 loss:6.382 ETA:2 days, 16:40:22.482074
+iter:500 loss:6.616 ETA:9 days, 10:08:09.931011
+iter:501 loss:6.398 ETA:3 days, 21:20:47.975389
+iter:502 loss:6.583 ETA:15:30:55.724298
+iter:503 loss:6.679 ETA:15:47:04.413872
+iter:504 loss:6.287 ETA:2 days, 17:08:18.541746
+iter:505 loss:6.642 ETA:15:35:49.824467
+iter:506 loss:6.342 ETA:15:25:45.491941
+iter:507 loss:6.823 ETA:2 days, 18:16:18.903306
+iter:508 loss:6.914 ETA:15:12:37.631373
+iter:509 loss:6.622 ETA:15:14:51.292496
+generate_square_subsequent_mask: torch.Size([61, 61])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([61, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([61, 64, 512])]
+train_iter preds : torch.Size([64, 61, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 61, 5], preds : 64, T, 61, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3904, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3904, 5])
+iter:510 loss:6.434 ETA:16:05:43.221416
+iter:511 loss:6.898 ETA:14:47:43.555010
+iter:512 loss:6.824 ETA:15:14:31.680176
+iter:513 loss:7.100 ETA:15:41:10.372058
+iter:514 loss:6.736 ETA:2 days, 12:12:31.179839
+iter:515 loss:6.643 ETA:15:50:31.643171
+iter:516 loss:6.661 ETA:15:31:50.494452
+iter:517 loss:6.255 ETA:4 days, 17:24:28.396644
+iter:518 loss:6.593 ETA:15:49:26.293837
+iter:519 loss:6.471 ETA:16:10:33.671881
+iter:520 loss:6.634 ETA:2 days, 17:45:37.728157
+iter:521 loss:6.606 ETA:15:21:46.942248
+iter:522 loss:6.429 ETA:15:33:07.666054
+iter:523 loss:6.304 ETA:15:27:45.601034
+iter:524 loss:6.696 ETA:1 day, 8:06:27.440517
+iter:525 loss:6.241 ETA:15:33:06.491132
+iter:526 loss:6.230 ETA:15:38:23.662166
+iter:527 loss:6.529 ETA:2 days, 18:25:40.852638
+iter:528 loss:6.567 ETA:15:06:42.211147
+iter:529 loss:6.015 ETA:15:28:56.832477
+iter:530 loss:6.118 ETA:15:30:36.090596
+iter:531 loss:6.250 ETA:14:09:54.734096
+iter:532 loss:6.392 ETA:15:34:30.699509
+iter:533 loss:6.014 ETA:15:04:48.946721
+iter:534 loss:6.347 ETA:4 days, 20:15:39.551400
+iter:535 loss:6.194 ETA:15:04:39.033817
+iter:536 loss:6.059 ETA:15:26:39.532356
+iter:537 loss:6.171 ETA:2 days, 15:07:15.377398
+iter:538 loss:6.216 ETA:14:12:03.246452
+iter:539 loss:6.439 ETA:15:31:48.803635
+iter:540 loss:6.230 ETA:15:23:11.838589
+iter:541 loss:6.039 ETA:4 days, 6:45:18.126162
+iter:542 loss:6.045 ETA:14:50:29.517673
+iter:543 loss:6.196 ETA:14:55:53.332044
+iter:544 loss:5.885 ETA:15:02:28.854622
+iter:545 loss:5.861 ETA:2 days, 6:54:35.775408
+iter:546 loss:5.732 ETA:14:57:22.780167
+iter:547 loss:6.059 ETA:14:57:41.911963
+iter:548 loss:6.172 ETA:3 days, 3:12:50.799113
+iter:549 loss:5.544 ETA:15:09:35.615283
+iter:550 loss:5.675 ETA:14:51:31.142702
+iter:551 loss:6.052 ETA:2 days, 19:03:13.926851
+iter:552 loss:5.636 ETA:15:17:57.420185
+iter:553 loss:5.600 ETA:15:25:02.067549
+iter:554 loss:5.778 ETA:15:32:32.483637
+iter:555 loss:5.887 ETA:2 days, 10:12:02.947237
+iter:556 loss:5.442 ETA:15:18:31.646096
+iter:557 loss:5.399 ETA:15:21:35.962428
+iter:558 loss:5.710 ETA:4 days, 11:37:52.265175
+iter:559 loss:5.753 ETA:15:40:52.500327
+iter:560 loss:5.825 ETA:15:20:03.358784
+iter:561 loss:5.915 ETA:15:27:03.281015
+iter:562 loss:5.283 ETA:2 days, 9:25:22.094759
+iter:563 loss:5.513 ETA:15:36:17.863468
+generate_square_subsequent_mask: torch.Size([74, 74])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([74, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([74, 64, 512])]
+train_iter preds : torch.Size([64, 74, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 74, 5], preds : 64, T, 74, 123]
+train_iter preds w/view(-1, 123) : torch.Size([4736, 123]), gt_coords w/reshape(-1, 5) : torch.Size([4736, 5])
+iter:564 loss:5.576 ETA:17:54:38.301514
+iter:565 loss:6.082 ETA:2 days, 11:03:43.811363
+iter:566 loss:6.044 ETA:17:25:05.036728
+iter:567 loss:5.773 ETA:17:12:55.280276
+iter:568 loss:5.732 ETA:4 days, 14:15:43.286661
+iter:569 loss:5.551 ETA:17:23:22.863672
+iter:570 loss:5.883 ETA:15:20:11.289124
+iter:571 loss:5.596 ETA:4 days, 23:23:20.062387
+iter:572 loss:5.773 ETA:17:44:32.196696
+iter:573 loss:5.697 ETA:17:13:57.271490
+iter:574 loss:5.901 ETA:4 days, 13:27:57.962071
+iter:575 loss:5.779 ETA:16:59:01.203743
+iter:576 loss:5.928 ETA:16:13:46.283752
+iter:577 loss:5.666 ETA:2 days, 23:09:47.775902
+iter:578 loss:5.755 ETA:15:18:02.839970
+iter:579 loss:5.858 ETA:15:28:25.887511
+iter:580 loss:5.559 ETA:15:25:59.881420
+iter:581 loss:5.897 ETA:14:02:55.630241
+iter:582 loss:5.567 ETA:15:40:23.453784
+iter:583 loss:5.536 ETA:15:22:25.046823
+iter:584 loss:5.274 ETA:4 days, 11:31:45.344341
+iter:585 loss:5.761 ETA:15:49:43.246652
+iter:586 loss:5.275 ETA:16:00:23.711422
+iter:587 loss:5.507 ETA:16:47:13.021197
+iter:588 loss:5.603 ETA:14:19:05.692145
+iter:589 loss:5.393 ETA:15:39:36.307077
+iter:590 loss:5.513 ETA:16:00:56.168497
+iter:591 loss:5.541 ETA:2 days, 13:27:28.835917
+iter:592 loss:5.361 ETA:16:20:31.555748
+iter:593 loss:5.721 ETA:15:50:01.831720
+iter:594 loss:5.492 ETA:2 days, 17:17:41.668088
+iter:595 loss:5.481 ETA:15:26:49.852484
+iter:596 loss:5.535 ETA:15:15:47.413945
+iter:597 loss:5.329 ETA:4 days, 21:27:16.408523
+iter:598 loss:6.065 ETA:15:32:59.694128
+iter:599 loss:5.143 ETA:15:45:38.546531
+iter:600 loss:5.777 ETA:11 days, 14:42:23.636131
+iter:601 loss:5.189 ETA:15:25:45.093065
+iter:602 loss:5.658 ETA:15:21:12.694468
+iter:603 loss:5.926 ETA:17:11:28.456950
+iter:604 loss:5.848 ETA:14:02:23.602717
+iter:605 loss:5.827 ETA:15:47:04.502048
+iter:606 loss:6.122 ETA:16:02:02.470893
+iter:607 loss:5.858 ETA:2 days, 14:57:53.157629
+iter:608 loss:5.906 ETA:15:25:31.305977
+iter:609 loss:5.724 ETA:15:13:57.297867
+iter:610 loss:5.934 ETA:15:01:11.418836
+iter:611 loss:5.960 ETA:2 days, 7:21:29.597954
+iter:612 loss:6.067 ETA:15:30:04.627705
+generate_square_subsequent_mask: torch.Size([56, 56])
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 64, 512])], tgt.shape=[C][B][torch.Size([56, 64, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([56, 64, 512])]
+train_iter preds : torch.Size([64, 56, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 56, 5], preds : 64, T, 56, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3584, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3584, 5])
+iter:613 loss:5.598 ETA:15:47:21.855186
+iter:614 loss:6.319 ETA:2 days, 21:38:42.985345
+iter:615 loss:6.675 ETA:14:58:33.238060
+iter:616 loss:6.242 ETA:15:46:07.317820
+iter:617 loss:6.603 ETA:16:35:35.789571
+iter:618 loss:6.624 ETA:14:47:57.103240
+iter:619 loss:6.501 ETA:15:15:26.530049
+iter:620 loss:6.213 ETA:15:31:08.748779
+iter:621 loss:6.059 ETA:2 days, 13:19:10.556427
+iter:622 loss:6.614 ETA:15:31:12.419007
+iter:623 loss:6.018 ETA:15:05:26.104545
+iter:624 loss:6.669 ETA:2 days, 20:55:45.234947
+iter:625 loss:5.970 ETA:15:25:25.810868
+iter:626 loss:6.365 ETA:15:25:32.329797
+iter:627 loss:6.304 ETA:15:05:02.103130
+iter:628 loss:6.147 ETA:2 days, 7:28:46.508490
+iter:629 loss:5.899 ETA:15:06:15.425850
+iter:630 loss:6.141 ETA:15:31:53.907969
+iter:631 loss:6.534 ETA:2 days, 19:59:39.390160
+iter:632 loss:6.132 ETA:16:48:33.166420
+iter:633 loss:6.279 ETA:16:29:02.557904
+iter:634 loss:6.603 ETA:17:05:27.949883
+iter:635 loss:6.470 ETA:2 days, 16:06:31.088448
+iter:636 loss:6.963 ETA:15:20:55.617076
+iter:637 loss:6.916 ETA:17:00:44.114499
+iter:638 loss:7.178 ETA:2 days, 16:24:36.992404
+iter:639 loss:7.210 ETA:16:58:23.330101
+iter:640 loss:7.256 ETA:17:01:16.702347
+iter:641 loss:7.365 ETA:14:19:52.926860
+iter:642 loss:6.590 ETA:17:08:34.130093
+iter:643 loss:6.728 ETA:15:50:17.768226
+iter:644 loss:7.010 ETA:2 days, 12:46:43.065857
+iter:645 loss:7.117 ETA:17:08:47.507911
+iter:646 loss:7.432 ETA:16:58:23.561115
+iter:647 loss:7.203 ETA:4 days, 14:01:09.635968
+iter:648 loss:7.231 ETA:16:54:59.380447
+iter:649 loss:6.755 ETA:16:54:34.454948
+iter:650 loss:7.261 ETA:1 day, 14:41:36.053946
+iter:651 loss:7.070 ETA:15:19:35.319019
+iter:652 loss:6.711 ETA:17:09:28.068370
+iter:653 loss:6.558 ETA:16:56:03.536749
+iter:654 loss:6.438 ETA:2 days, 13:23:21.324628
+iter:655 loss:6.406 ETA:16:52:57.234973
+iter:656 loss:6.412 ETA:16:55:23.504322
+iter:657 loss:6.877 ETA:4 days, 17:42:54.078692
+iter:658 loss:6.907 ETA:15:29:15.205107
+iter:659 loss:7.392 ETA:15:09:50.761394
+iter:660 loss:7.646 ETA:3 days, 1:25:09.674149
+iter:661 loss:7.549 ETA:15:34:46.858762
+iter:662 loss:7.303 ETA:15:01:30.823005
+iter:663 loss:7.418 ETA:15:45:09.880013
+iter:664 loss:7.563 ETA:14:30:06.230635
+iter:665 loss:7.030 ETA:15:18:12.409780
+iter:666 loss:7.158 ETA:15:26:39.794691
+iter:667 loss:7.151 ETA:4 days, 10:57:26.421685
+iter:668 loss:6.836 ETA:15:43:32.695779
+iter:669 loss:6.667 ETA:15:40:56.579870
+iter:670 loss:6.490 ETA:16:52:20.060256
+iter:671 loss:6.400 ETA:14:47:51.637891
+iter:672 loss:6.376 ETA:15:18:40.509964
+iter:673 loss:6.369 ETA:15:29:56.822087
+iter:674 loss:6.096 ETA:4 days, 18:41:08.559464
+iter:675 loss:6.267 ETA:14:58:31.888832
+iter:676 loss:5.976 ETA:15:26:22.938740
+iter:677 loss:6.429 ETA:2 days, 19:30:02.605221
+iter:678 loss:6.067 ETA:15:18:40.941745
+iter:679 loss:6.521 ETA:15:21:42.436201
+iter:680 loss:5.677 ETA:15:25:52.740097
+iter:681 loss:5.900 ETA:13:52:55.402946
+iter:682 loss:5.821 ETA:15:50:55.275521
+iter:683 loss:5.638 ETA:15:14:27.270704
+iter:684 loss:5.641 ETA:2 days, 12:10:48.439723
+iter:685 loss:5.603 ETA:15:24:34.933739
+iter:686 loss:6.031 ETA:15:23:58.112407
+iter:687 loss:5.463 ETA:3 days, 3:13:15.270734
+iter:688 loss:5.795 ETA:14:52:44.092583
+iter:689 loss:5.488 ETA:14:52:30.565912
+iter:690 loss:5.871 ETA:15:03:00.687034
+iter:691 loss:5.633 ETA:2 days, 9:33:16.055848
+iter:692 loss:5.541 ETA:14:58:17.169313
+iter:693 loss:6.037 ETA:15:06:47.437567
+iter:694 loss:5.528 ETA:2 days, 17:56:31.072231
+iter:695 loss:5.157 ETA:14:52:33.610607
+iter:696 loss:5.785 ETA:15:04:48.489426
+iter:697 loss:5.103 ETA:15:24:59.534116
+iter:698 loss:5.489 ETA:2 days, 13:50:30.000539
+iter:699 loss:5.952 ETA:15:08:17.555114
+iter:700 loss:6.028 ETA:10 days, 11:00:10.123348
+iter:701 loss:5.798 ETA:14:55:44.393047
+iter:702 loss:5.608 ETA:14:52:59.336692
+iter:703 loss:5.590 ETA:15:02:19.757921
+iter:704 loss:5.626 ETA:2 days, 8:22:21.417480
+iter:705 loss:5.758 ETA:15:10:56.707348
+iter:706 loss:5.971 ETA:14:59:18.812108
+iter:707 loss:6.138 ETA:2 days, 22:00:48.172570
+iter:708 loss:6.196 ETA:15:17:33.014260
+iter:709 loss:5.618 ETA:15:16:01.509837
+iter:710 loss:5.635 ETA:15:08:23.052320
+iter:711 loss:6.193 ETA:1 day, 12:29:28.020969
+iter:712 loss:6.238 ETA:14:56:53.220304
+iter:713 loss:5.805 ETA:15:29:46.622832
+iter:714 loss:6.186 ETA:4 days, 12:18:43.120334
+iter:715 loss:6.247 ETA:15:17:09.937165
+iter:716 loss:5.931 ETA:14:58:47.501779
+iter:717 loss:5.728 ETA:15:31:36.540451
+iter:718 loss:5.957 ETA:13:32:22.345640
+iter:719 loss:6.041 ETA:14:55:05.567749
+iter:720 loss:5.993 ETA:15:13:41.213875
+iter:721 loss:6.119 ETA:2 days, 13:41:42.393599
+iter:722 loss:6.257 ETA:14:56:16.976857
+iter:723 loss:5.977 ETA:15:03:02.833925
+iter:724 loss:6.211 ETA:2 days, 21:55:37.567425
+iter:725 loss:6.149 ETA:15:04:24.436412
+iter:726 loss:5.883 ETA:15:39:06.697281
+iter:727 loss:6.223 ETA:15:20:57.286444
+iter:728 loss:6.085 ETA:14:28:14.401188
+iter:729 loss:6.138 ETA:15:03:52.038145
+iter:730 loss:6.272 ETA:15:04:13.715460
+iter:731 loss:6.222 ETA:2 days, 16:27:57.635854
+iter:732 loss:5.931 ETA:15:11:44.840837
+iter:733 loss:6.318 ETA:15:27:07.570286
+iter:734 loss:5.747 ETA:16:00:58.953881
+iter:735 loss:6.151 ETA:1 day, 1:45:02.105731
+iter:736 loss:5.900 ETA:15:22:21.113266
+iter:737 loss:6.213 ETA:15:10:04.746566
+iter:738 loss:5.803 ETA:2 days, 16:33:32.061818
+iter:739 loss:5.781 ETA:15:20:46.880290
+iter:740 loss:5.822 ETA:15:19:46.696343
+iter:741 loss:5.834 ETA:2 days, 14:24:55.033426
+iter:742 loss:5.967 ETA:15:33:07.629806
+iter:743 loss:6.118 ETA:16:05:32.410354
+iter:744 loss:6.466 ETA:2 days, 14:49:18.550999
+iter:745 loss:5.952 ETA:15:44:11.159588
+iter:746 loss:5.874 ETA:16:06:56.241068
+iter:747 loss:6.403 ETA:4 days, 11:09:27.368763
+iter:748 loss:6.125 ETA:15:30:40.862495
+iter:749 loss:6.130 ETA:15:12:42.025537
+iter:750 loss:6.135 ETA:15:12:08.307247
+iter:751 loss:6.129 ETA:14:16:15.343447
+iter:752 loss:5.998 ETA:15:26:53.050369
+iter:753 loss:6.082 ETA:15:42:57.961318
+iter:754 loss:6.139 ETA:4 days, 12:53:25.288368
+iter:755 loss:5.993 ETA:15:28:17.529688
+iter:756 loss:6.349 ETA:15:43:06.895157
+iter:757 loss:6.231 ETA:15:59:31.400671
+iter:758 loss:5.243 ETA:14:21:52.282386
+iter:759 loss:5.729 ETA:16:03:56.600690
+iter:760 loss:5.882 ETA:15:27:34.234753
+iter:761 loss:5.433 ETA:3 days, 10:58:32.240482
+iter:762 loss:5.688 ETA:15:53:33.833117
+iter:763 loss:5.772 ETA:15:50:54.367414
+iter:764 loss:5.822 ETA:15:44:55.254235
+iter:765 loss:5.293 ETA:2 days, 5:25:20.849549
+iter:766 loss:5.500 ETA:15:17:50.907944
+iter:767 loss:5.656 ETA:15:44:37.252739
+iter:768 loss:5.576 ETA:2 days, 17:57:26.526031
+iter:769 loss:5.887 ETA:16:05:46.368726
+iter:770 loss:5.244 ETA:15:21:28.065405
+iter:771 loss:5.673 ETA:15:38:45.755604
+iter:772 loss:5.948 ETA:2 days, 8:12:50.149789
+iter:773 loss:5.760 ETA:15:31:22.068094
+iter:774 loss:5.873 ETA:15:41:06.787498
+iter:775 loss:5.697 ETA:5 days, 1:51:19.845923
+iter:776 loss:5.753 ETA:15:50:43.947361
+iter:777 loss:5.608 ETA:15:56:45.836823
+iter:778 loss:5.785 ETA:2 days, 22:02:41.955443
+iter:779 loss:5.503 ETA:16:04:14.496494
+iter:780 loss:5.780 ETA:15:45:58.765497
+iter:781 loss:5.895 ETA:15:47:42.595136
+iter:782 loss:5.725 ETA:2 days, 8:54:43.142182
+iter:783 loss:5.819 ETA:15:51:40.031919
+iter:784 loss:5.359 ETA:16:04:50.566944
+iter:785 loss:5.292 ETA:4 days, 8:43:28.150252
+iter:786 loss:5.164 ETA:15:41:23.287286
+iter:787 loss:5.679 ETA:15:55:09.720531
+iter:788 loss:5.677 ETA:16:13:12.195560
+SDT_Generator::forward, style_imgs: torch.Size([61, 30, 1, 64, 64])
+SDT_Generator::forward, batch_size: 61 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
+SDT_Generator::forward style_imgs.view(): torch.Size([1830, 1, 64, 64])
+SDT_Generator::forward Feat_Encoder_ResNet output: torch.Size([1830, 512, 2, 2])
+SDT_Generator::forward style_embe.view(): torch.Size([4, 1830, 512])
+SDT_Generator::forward base_encoder output memory: torch.Size([4, 1830, 512])
+SDT_Generator::forward WRITER memory: torch.Size([4, 1830, 512]) , GLYPH memory: torch.Size([4, 1830, 512])
+SDT_Generator::forward rearrange writer_memory: torch.Size([4, 122, 15, 512]) , glyph_memory: torch.Size([4, 122, 15, 512])
+SDT_Generator::forward [writer] memory_fea: torch.Size([60, 122, 512]) , compact_fea: torch.Size([122, 512])
+SDT_Generator::forward [writer] pro_emb: torch.Size([122, 256])
+SDT_Generator::forward [writer] query_emb: torch.Size([61, 256])
+SDT_Generator::forward [writer] pos_emb: torch.Size([61, 256])
+SDT_Generator::forward [writer] nce_emb: torch.Size([61, 2, 256])
+SDT_Generator::forward [writer] normalize NCE nce_emb: torch.Size([61, 2, 256])
+SDT_Generator::forward [glyph] patch_emb: torch.Size([4, 61, 15, 512])
+SDT_Generator::forward [glyph] random_double_sampling result anc: torch.Size([61, 15, 1, 512]) , positive: torch.Size([61, 15, 1, 512]) , n_channels: 512
+SDT_Generator::forward [glyph] anc reshape: torch.Size([61, 15, 512])
+SDT_Generator::forward [glyph] anc_compact: torch.Size([61, 1, 512])
+SDT_Generator::forward [glyph] anc_compact after pro_mlp_character: torch.Size([61, 1, 256])
+SDT_Generator::forward [glyph] positive reshape: torch.Size([61, 15, 512])
+SDT_Generator::forward [glyph] positive_compact: torch.Size([61, 1, 512])
+SDT_Generator::forward [glyph] NCE anc_compact: torch.Size([61, 1, 256]) , positive_compact: torch.Size([61, 1, 256])
+SDT_Generator::forward [glyph] normalize nce_emb_patch: torch.Size([61, 2, 256])
+SDT_Generator::forward [KV] writer_style: torch.Size([60, 61, 512])
+SDT_Generator::forward [KV] glyph_style: torch.Size([4, 61, 15, 512])
+SDT_Generator::forward [KV] glyph_style rearranged: torch.Size([60, 61, 512])
+SDT_Generator::forward [Decoder] seq: [61, T, 5] (T : length of the sequence)
+SDT_Generator::forward [Decoder] seq_emb: [T, 61, 512]
+Content_TR:: Feat_Encoder input: torch.Size([61, 1, 64, 64])
+Content_TR:: Feat_Encoder Feat_Encoder(conv2d+resnet) output: torch.Size([61, 512, 2, 2])
+Content_TR:: rearrange output: torch.Size([4, 61, 512])
+Content_TR:: encoder output: torch.Size([4, 61, 512])
+SDT_Generator::forward [Content Encoder] char_emb: [4, T, 61]
+SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, 61]
+SDT_Generator::forward [Decoder] tgt: [T, 61, 512] (T=T+1 : length of the sequence + 1 for content token)
+SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 61, 512]
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 61, 512])], tgt.shape=[C][B][torch.Size([24, 61, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([24, 61, 512])]
+SDT_Generator::forward [Writer Decoder] wri_hs: 2, T, 61, 512] (wri_dec_layers, T, B, C)
+SDT_Generator::forward [Glyph Decoder] hs: [2, T, 61, 512] (gly_dec_layers, T, B, C)
+SDT_Generator::forward [Decoder] h after transpose: 61, T, 512] (B, T, C)
+SDT_Generator::forward [Decoder Output] pred_sequence: [61, T, 123] (B, T, C)
+train_iter preds : torch.Size([61, 24, 123]), nce_emb : torch.Size([61, 2, 256]), nce_emb_patch : torch.Size([61, 2, 256])
+train_iter GT coords : 61, T, 24, 5], preds : 61, T, 24, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1464, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1464, 5])
+iter:789 loss:6.262 ETA:13:50:10.064323
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+iter:790 loss:5.529 ETA:14:56:29.403436
+iter:791 loss:5.741 ETA:4 days, 12:43:53.176683
+iter:792 loss:5.577 ETA:15:31:31.272135
+iter:793 loss:5.569 ETA:15:33:13.627506
+iter:794 loss:5.758 ETA:2 days, 15:21:46.111907
+iter:795 loss:5.679 ETA:17:02:02.718958
+iter:796 loss:5.664 ETA:15:15:23.268344
+iter:797 loss:6.051 ETA:15:36:17.063679
+iter:798 loss:5.962 ETA:4 days, 9:31:16.279686
+iter:799 loss:5.549 ETA:14:54:50.894531
+iter:800 loss:5.844 ETA:11 days, 10:07:54.461174
+iter:801 loss:5.992 ETA:15:46:06.365417
+iter:802 loss:5.646 ETA:15:46:55.852589
+iter:803 loss:6.072 ETA:17:13:02.583397
+iter:804 loss:6.272 ETA:16:15:00.156795
+iter:805 loss:6.115 ETA:17:28:55.881144
+iter:806 loss:6.386 ETA:17:57:28.063010
+iter:807 loss:6.275 ETA:15:57:24.731167
+iter:808 loss:6.195 ETA:17:13:26.957712
+iter:809 loss:6.130 ETA:2 days, 21:36:32.562995
+iter:810 loss:6.562 ETA:17:21:37.815313
+iter:811 loss:6.186 ETA:17:28:12.098941
+iter:812 loss:6.161 ETA:15:50:43.422421
+iter:813 loss:5.958 ETA:2 days, 7:37:22.082698
+iter:814 loss:6.053 ETA:17:09:43.408304
+iter:815 loss:5.931 ETA:17:15:26.399031
+iter:816 loss:5.618 ETA:4 days, 5:39:07.478619
+iter:817 loss:5.921 ETA:17:14:54.005132
+iter:818 loss:5.932 ETA:17:14:50.084248
+iter:819 loss:5.934 ETA:2 days, 20:38:02.790482
+iter:820 loss:6.117 ETA:15:43:44.612269
+iter:821 loss:6.562 ETA:15:48:39.608204
+iter:822 loss:6.185 ETA:3 days, 0:03:52.718529
+iter:823 loss:6.183 ETA:15:44:55.750449
+iter:824 loss:6.412 ETA:15:43:23.150568
+iter:825 loss:6.147 ETA:16:12:09.162037
+iter:826 loss:6.296 ETA:14:08:21.271652
+iter:827 loss:6.329 ETA:15:37:30.470206
+iter:828 loss:6.185 ETA:15:26:48.457857
+iter:829 loss:6.287 ETA:2 days, 9:03:01.797651
+iter:830 loss:6.125 ETA:15:19:08.474071
+iter:831 loss:5.875 ETA:15:11:21.176402
+iter:832 loss:5.340 ETA:2 days, 23:34:29.715698
+iter:833 loss:5.624 ETA:15:14:52.078518
+iter:834 loss:5.813 ETA:15:04:50.074577
+iter:835 loss:5.848 ETA:2 days, 21:07:36.247356
+iter:836 loss:5.972 ETA:15:40:45.890880
+iter:837 loss:5.963 ETA:15:13:18.049584
+iter:838 loss:5.839 ETA:15:58:36.941182
+iter:839 loss:5.954 ETA:14:48:06.188650
+iter:840 loss:6.091 ETA:15:39:32.819805
+iter:841 loss:5.916 ETA:14:57:32.080705
+iter:842 loss:6.173 ETA:2 days, 19:38:24.147586
+iter:843 loss:5.757 ETA:15:54:10.401132
+iter:844 loss:5.839 ETA:16:11:23.854970
+iter:845 loss:5.878 ETA:2 days, 16:15:12.022873
+iter:846 loss:6.242 ETA:15:48:40.488386
+iter:847 loss:5.888 ETA:16:02:35.407002
+iter:848 loss:5.795 ETA:4 days, 8:31:30.182545
+iter:849 loss:6.255 ETA:15:33:51.588227
+iter:850 loss:6.113 ETA:15:44:58.415768
+iter:851 loss:5.399 ETA:16:12:28.516944
+iter:852 loss:5.637 ETA:14:29:29.195820
+iter:853 loss:5.497 ETA:15:44:47.115986
+iter:854 loss:5.100 ETA:15:38:17.399504
+iter:855 loss:5.630 ETA:4 days, 17:01:58.231521
+iter:856 loss:5.181 ETA:15:37:04.617599
+iter:857 loss:5.775 ETA:16:06:41.251480
+iter:858 loss:5.263 ETA:2 days, 16:21:58.396236
+iter:859 loss:5.762 ETA:15:26:50.010680
+iter:860 loss:5.316 ETA:15:29:57.604551
+iter:861 loss:5.863 ETA:15:47:59.547861
+iter:862 loss:5.543 ETA:14:39:09.418571
+iter:863 loss:5.500 ETA:15:50:05.932673
+iter:864 loss:5.658 ETA:15:45:48.602020
+iter:865 loss:6.021 ETA:2 days, 18:29:38.861803
+iter:866 loss:5.875 ETA:15:54:16.750756
+iter:867 loss:6.313 ETA:15:50:47.801782
+iter:868 loss:5.565 ETA:2 days, 11:47:00.500016
+iter:869 loss:6.108 ETA:15:42:00.619148
+iter:870 loss:6.288 ETA:15:24:45.162249
+iter:871 loss:5.925 ETA:2 days, 19:27:33.068227
+iter:872 loss:6.415 ETA:15:40:06.727724
+iter:873 loss:5.904 ETA:15:21:38.127124
+iter:874 loss:6.287 ETA:15:24:56.296334
+iter:875 loss:5.972 ETA:2 days, 8:58:47.419263
+iter:876 loss:5.726 ETA:15:24:51.228824
+iter:877 loss:6.239 ETA:15:29:24.546398
+iter:878 loss:5.829 ETA:4 days, 18:15:31.548368
+iter:879 loss:5.927 ETA:15:23:58.835871
+iter:880 loss:5.830 ETA:15:40:46.143665
+iter:881 loss:5.892 ETA:2 days, 21:46:32.677689
+iter:882 loss:6.099 ETA:14:59:07.002582
+iter:883 loss:6.045 ETA:15:34:40.509222
+iter:884 loss:6.308 ETA:15:38:15.659841
+iter:885 loss:6.441 ETA:14:44:28.704121
+iter:886 loss:6.325 ETA:15:29:42.011854
+iter:887 loss:5.775 ETA:15:34:34.350581
+iter:888 loss:5.985 ETA:4 days, 9:41:32.685762
+iter:889 loss:6.415 ETA:15:25:46.091236
+iter:890 loss:6.249 ETA:15:29:57.696168
+iter:891 loss:5.741 ETA:16:03:16.241853
+iter:892 loss:5.946 ETA:14:37:03.316474
+iter:893 loss:5.864 ETA:15:37:25.122302
+iter:894 loss:5.757 ETA:15:40:13.455278
+iter:895 loss:5.591 ETA:2 days, 11:32:14.479123
+iter:896 loss:6.097 ETA:15:28:40.347427
+iter:897 loss:5.813 ETA:15:26:15.474396
+iter:898 loss:5.774 ETA:2 days, 22:28:54.970860
+iter:899 loss:5.721 ETA:15:20:50.225595
+iter:900 loss:6.172 ETA:11 days, 5:36:36.550369
+iter:901 loss:5.886 ETA:15:31:58.602346
+iter:902 loss:5.723 ETA:15:22:42.605859
+iter:903 loss:5.576 ETA:17:12:13.619046
+iter:904 loss:6.027 ETA:2 days, 14:13:24.692961
+iter:905 loss:5.761 ETA:17:29:27.323467
+iter:906 loss:5.696 ETA:16:17:05.847910
+iter:907 loss:6.262 ETA:2 days, 18:19:57.497695
+iter:908 loss:6.424 ETA:15:09:17.981764
+iter:909 loss:5.791 ETA:15:12:14.332412
+iter:910 loss:6.356 ETA:2 days, 14:01:48.962359
+iter:911 loss:5.798 ETA:15:43:38.867806
+iter:912 loss:5.715 ETA:16:03:32.312843
+iter:913 loss:6.054 ETA:4 days, 17:16:19.702446
+iter:914 loss:5.951 ETA:15:57:15.707994
+iter:915 loss:5.516 ETA:15:39:20.751690
+iter:916 loss:6.083 ETA:16:02:29.873567
+iter:917 loss:5.385 ETA:14:01:01.129676
+iter:918 loss:5.773 ETA:15:15:52.759522
+iter:919 loss:5.725 ETA:15:34:08.203993
+iter:920 loss:5.731 ETA:2 days, 9:32:37.913790
+iter:921 loss:6.039 ETA:15:28:42.179369
+iter:922 loss:5.620 ETA:15:24:20.420877
+iter:923 loss:5.535 ETA:15:54:23.096708
+iter:924 loss:5.411 ETA:14:01:12.645158
+iter:925 loss:5.676 ETA:15:43:55.200590
+iter:926 loss:5.349 ETA:15:47:10.843115
+iter:927 loss:5.611 ETA:4 days, 23:21:37.020871
+iter:928 loss:5.431 ETA:15:41:09.889679
+iter:929 loss:5.491 ETA:15:41:46.151927
+iter:930 loss:5.803 ETA:2 days, 23:03:31.516840
+iter:931 loss:5.697 ETA:14:57:12.348727
+iter:932 loss:5.400 ETA:15:09:45.482311
+iter:933 loss:5.711 ETA:15:17:33.508470
+iter:934 loss:5.641 ETA:13:54:50.279166
+iter:935 loss:5.542 ETA:15:19:26.861261
+iter:936 loss:5.008 ETA:15:24:13.056047
+iter:937 loss:5.299 ETA:2 days, 13:11:03.808639
+iter:938 loss:6.152 ETA:15:11:38.880312
+iter:939 loss:5.396 ETA:15:18:58.795552
+iter:940 loss:5.938 ETA:4 days, 16:23:27.727642
+iter:941 loss:5.723 ETA:15:27:05.127178
+iter:942 loss:5.688 ETA:15:16:46.218036
+iter:943 loss:5.769 ETA:2 days, 19:27:43.403690
+iter:944 loss:5.371 ETA:15:35:13.587524
+iter:945 loss:5.552 ETA:15:13:44.572495
+iter:946 loss:5.292 ETA:15:20:39.366242
+iter:947 loss:5.624 ETA:23:22:40.190652
+iter:948 loss:6.075 ETA:15:29:31.144188
+iter:949 loss:5.686 ETA:15:22:56.729827
+iter:950 loss:5.697 ETA:4 days, 17:36:05.614843
+iter:951 loss:5.707 ETA:17:15:06.190089
+iter:952 loss:6.397 ETA:17:16:31.300209
+iter:953 loss:6.621 ETA:4 days, 9:16:00.439698
+iter:954 loss:6.444 ETA:17:33:11.433027
+iter:955 loss:6.627 ETA:17:13:20.159125
+iter:956 loss:6.758 ETA:4 days, 2:59:27.434103
+iter:957 loss:6.379 ETA:17:17:31.714938
+iter:958 loss:6.637 ETA:17:19:10.109229
+iter:959 loss:7.114 ETA:2 days, 16:14:55.785617
+iter:960 loss:6.653 ETA:17:10:38.821259
+iter:961 loss:6.359 ETA:17:08:33.230441
+iter:962 loss:6.231 ETA:2 days, 20:22:05.440058
+iter:963 loss:6.112 ETA:17:26:47.993752
+iter:964 loss:6.324 ETA:17:22:19.136683
+iter:965 loss:6.431 ETA:2 days, 20:00:11.155651
+iter:966 loss:6.332 ETA:17:03:38.750301
+iter:967 loss:6.232 ETA:17:16:27.562616
+iter:968 loss:12.755 ETA:2 days, 22:49:46.118443
+iter:969 loss:13.026 ETA:16:36:28.536499
+iter:970 loss:10.891 ETA:17:19:19.067473
+iter:971 loss:9.732 ETA:2 days, 23:05:13.287436
+iter:972 loss:9.625 ETA:16:22:35.470055
+iter:973 loss:9.078 ETA:17:26:13.994530
+iter:974 loss:9.466 ETA:17:44:28.764753
+iter:975 loss:9.650 ETA:14:20:05.425513
+iter:976 loss:8.961 ETA:15:34:59.299709
+iter:977 loss:8.709 ETA:15:39:04.338374
+iter:978 loss:8.532 ETA:2 days, 18:23:54.242866
+iter:979 loss:8.780 ETA:17:13:12.920661
+iter:980 loss:9.456 ETA:17:20:13.538704
+iter:981 loss:9.604 ETA:2 days, 16:02:33.301056
+iter:982 loss:9.203 ETA:15:31:32.341556
+iter:983 loss:9.331 ETA:15:41:31.915403
+iter:984 loss:9.110 ETA:4 days, 10:12:13.081722
+iter:985 loss:8.673 ETA:15:39:15.121977
+iter:986 loss:9.302 ETA:15:57:42.954231
+iter:987 loss:8.966 ETA:1 day, 12:05:50.767315
+iter:988 loss:9.407 ETA:14:02:22.015424
+iter:989 loss:9.204 ETA:15:40:27.106541
+iter:990 loss:9.126 ETA:15:43:10.232818
+iter:991 loss:9.286 ETA:4 days, 12:26:30.349062
+iter:992 loss:8.726 ETA:15:47:07.943962
+iter:993 loss:8.831 ETA:15:35:13.818800
+iter:994 loss:8.936 ETA:16:27:50.499755
+iter:995 loss:8.934 ETA:14:14:31.909983
+iter:996 loss:9.152 ETA:15:27:52.529346
+iter:997 loss:9.366 ETA:15:12:45.413953
+iter:998 loss:9.263 ETA:2 days, 13:52:46.639320
+iter:999 loss:8.833 ETA:15:30:49.183827
+[Step 1000] --- GMM Debug ---
+  NLL loss (mean): 3.6007
+  pen state loss : 0.3427
+  result0 max pdf: 3.5285
+  result1 avg pre-log: 0.0142
+  z_pi max: 0.9672, mean: 0.0500
+  sigma1 min/max: 0.0209/280.0563
+  sigma2 min/max: 0.0324/500.0000
+  corr range: -0.9988 ~ 0.9972
+iter:1000 loss:9.078 ETA:10 days, 22:31:25.554600
+iter:1001 loss:8.632 ETA:15:37:06.854540
+iter:1002 loss:8.777 ETA:15:35:03.168014
+iter:1003 loss:8.783 ETA:15:36:17.136857
+iter:1004 loss:8.560 ETA:2 days, 10:31:40.140003
+iter:1005 loss:8.090 ETA:15:41:53.235624
+iter:1006 loss:7.806 ETA:15:38:37.150793
+iter:1007 loss:7.859 ETA:2 days, 17:04:33.695096
+iter:1008 loss:7.650 ETA:15:47:19.885365
+iter:1009 loss:7.361 ETA:15:30:08.422828
+iter:1010 loss:7.362 ETA:4 days, 22:05:13.503392
+iter:1011 loss:7.069 ETA:15:43:12.136769
+iter:1012 loss:6.184 ETA:15:50:35.913573
+iter:1013 loss:6.430 ETA:4 days, 20:25:14.860088
+iter:1014 loss:6.293 ETA:15:39:57.530612
+iter:1015 loss:6.405 ETA:15:40:51.283307
+iter:1016 loss:6.003 ETA:15:58:27.094454
+iter:1017 loss:6.732 ETA:14:34:00.981961
+iter:1018 loss:6.651 ETA:15:38:13.639695
+iter:1019 loss:6.146 ETA:15:46:21.569723
+iter:1020 loss:6.850 ETA:4 days, 14:52:10.310407
+iter:1021 loss:6.428 ETA:15:42:05.343274
+iter:1022 loss:6.742 ETA:15:46:21.567558
+iter:1023 loss:7.010 ETA:16:00:24.714638
+iter:1024 loss:6.737 ETA:13:57:08.168304
+iter:1025 loss:7.089 ETA:15:23:45.749123
+iter:1026 loss:6.976 ETA:15:21:58.590278
+iter:1027 loss:7.397 ETA:2 days, 18:28:46.961085
+iter:1028 loss:7.156 ETA:15:19:14.181241
+iter:1029 loss:6.701 ETA:15:29:19.502444
+iter:1030 loss:6.703 ETA:2 days, 9:39:50.554528
+iter:1031 loss:6.498 ETA:15:41:59.371603
+iter:1032 loss:6.444 ETA:15:23:34.691196
+iter:1033 loss:6.531 ETA:2 days, 13:59:14.776016
+iter:1034 loss:5.917 ETA:15:32:45.069712
+iter:1035 loss:5.916 ETA:15:46:31.899137
+iter:1036 loss:5.710 ETA:15:40:04.245493
+iter:1037 loss:5.586 ETA:2 days, 9:06:44.296351
+iter:1038 loss:5.779 ETA:15:44:15.517498
+iter:1039 loss:6.038 ETA:15:51:02.755409
+iter:1040 loss:5.483 ETA:4 days, 17:47:17.628994
+iter:1041 loss:5.807 ETA:15:43:04.268916
+iter:1042 loss:5.955 ETA:15:41:33.335688
+iter:1043 loss:5.926 ETA:2 days, 15:17:51.458743
+iter:1044 loss:6.247 ETA:15:47:04.764009
+iter:1045 loss:6.401 ETA:15:45:17.228835
+iter:1046 loss:6.074 ETA:15:48:20.514616
+iter:1047 loss:6.276 ETA:2 days, 15:42:34.078495
+iter:1048 loss:6.423 ETA:15:44:02.234495
+iter:1049 loss:6.169 ETA:15:40:08.434107
+iter:1050 loss:5.790 ETA:2 days, 10:10:09.438944
+iter:1051 loss:6.457 ETA:15:59:18.879572
+iter:1052 loss:6.871 ETA:15:32:29.144546
+iter:1053 loss:6.385 ETA:2 days, 10:16:04.255517
+iter:1054 loss:6.356 ETA:15:41:45.249008
+iter:1055 loss:6.615 ETA:15:54:08.322176
+iter:1056 loss:6.368 ETA:2 days, 18:38:07.397911
+iter:1057 loss:6.047 ETA:16:06:53.863594
+iter:1058 loss:6.273 ETA:15:51:20.310400
+iter:1059 loss:6.096 ETA:2 days, 19:34:43.176793
+iter:1060 loss:6.465 ETA:15:50:16.748204
+iter:1061 loss:6.217 ETA:15:40:21.727381
+iter:1062 loss:6.025 ETA:16:21:23.893830
+iter:1063 loss:5.942 ETA:14:53:58.662962
+iter:1064 loss:6.168 ETA:15:42:48.241671
+iter:1065 loss:6.354 ETA:15:44:01.852945
+iter:1066 loss:6.508 ETA:5 days, 2:03:54.129490
+iter:1067 loss:5.945 ETA:15:25:54.393124
+iter:1068 loss:6.155 ETA:15:41:38.094936
+iter:1069 loss:6.234 ETA:2 days, 16:53:41.833664
+iter:1070 loss:6.251 ETA:15:35:20.754061
+iter:1071 loss:6.287 ETA:15:26:56.260951
+iter:1072 loss:6.213 ETA:15:40:16.141373
+iter:1073 loss:6.334 ETA:14:41:21.341497
+iter:1074 loss:6.064 ETA:15:41:57.069351
+iter:1075 loss:6.215 ETA:15:45:54.444021
+iter:1076 loss:6.881 ETA:4 days, 18:57:57.627136
+iter:1077 loss:6.388 ETA:15:44:16.505904
+iter:1078 loss:5.915 ETA:15:37:12.463518
+iter:1079 loss:6.162 ETA:3 days, 2:48:09.159574
+iter:1080 loss:6.055 ETA:15:44:51.837664
+iter:1081 loss:6.110 ETA:15:36:08.870881
+iter:1082 loss:5.846 ETA:3 days, 0:43:43.178731
+iter:1083 loss:5.801 ETA:15:56:05.325974
+iter:1084 loss:5.669 ETA:16:00:47.692196
+iter:1085 loss:5.790 ETA:2 days, 17:44:07.967641
+iter:1086 loss:5.952 ETA:16:52:52.738426
+iter:1087 loss:5.294 ETA:15:43:33.963389
+iter:1088 loss:5.603 ETA:15:39:00.941528
+iter:1089 loss:5.358 ETA:2 days, 13:49:42.396559
+iter:1090 loss:5.722 ETA:15:29:28.253837
+iter:1091 loss:5.735 ETA:16:31:42.487211
+iter:1092 loss:6.188 ETA:2 days, 10:12:46.827584
+iter:1093 loss:5.678 ETA:15:25:38.501308
+iter:1094 loss:7.289 ETA:15:37:11.023029
+iter:1095 loss:7.509 ETA:2 days, 19:24:43.501554
+iter:1096 loss:7.105 ETA:15:26:24.185036
+iter:1097 loss:7.527 ETA:15:43:43.684097
+iter:1098 loss:6.846 ETA:15:41:54.898036
+iter:1099 loss:6.604 ETA:14:13:54.824779
+iter:1100 loss:6.404 ETA:11 days, 12:25:48.203874
+iter:1101 loss:6.127 ETA:15:27:16.753119
+iter:1102 loss:6.271 ETA:15:25:11.187170
+iter:1103 loss:6.112 ETA:15:39:06.414097
+iter:1104 loss:5.988 ETA:14:05:57.814358
+iter:1105 loss:5.836 ETA:15:21:06.135533
+iter:1106 loss:5.897 ETA:15:09:54.769475
+iter:1107 loss:5.776 ETA:4 days, 11:06:50.922408
+iter:1108 loss:5.607 ETA:16:22:54.316724
+iter:1109 loss:5.309 ETA:15:46:33.632934
+iter:1110 loss:5.887 ETA:16:26:32.847223
+iter:1111 loss:6.116 ETA:14:15:20.406921
+iter:1112 loss:5.757 ETA:15:35:03.072824
+iter:1113 loss:6.208 ETA:15:22:00.293031
+iter:1114 loss:6.410 ETA:2 days, 11:41:34.498730
+iter:1115 loss:7.524 ETA:15:43:09.160774
+iter:1116 loss:8.718 ETA:15:37:20.830759
+iter:1117 loss:8.774 ETA:2 days, 23:08:18.354933
+iter:1118 loss:8.655 ETA:15:23:23.115167
+iter:1119 loss:7.914 ETA:15:29:35.296544
+iter:1120 loss:7.760 ETA:2 days, 23:58:15.494003
+iter:1121 loss:7.784 ETA:15:40:27.802399
+iter:1122 loss:7.682 ETA:15:52:30.805540
+iter:1123 loss:7.144 ETA:15:40:37.619038
+iter:1124 loss:7.403 ETA:14:46:50.647187
+iter:1125 loss:7.226 ETA:15:42:24.589818
+iter:1126 loss:7.563 ETA:15:37:31.516286
+iter:1127 loss:7.199 ETA:2 days, 10:50:32.946892
+iter:1128 loss:7.230 ETA:15:24:35.671524
+iter:1129 loss:7.470 ETA:15:30:47.359648
+iter:1130 loss:6.963 ETA:2 days, 18:26:46.011214
+iter:1131 loss:6.658 ETA:15:15:21.654780
+iter:1132 loss:6.432 ETA:15:29:23.163676
+iter:1133 loss:6.967 ETA:15:17:56.097457
+iter:1134 loss:7.175 ETA:2 days, 11:58:53.810014
+iter:1135 loss:7.123 ETA:15:46:23.980178
+iter:1136 loss:7.571 ETA:15:39:24.849323
+iter:1137 loss:7.712 ETA:2 days, 18:38:27.074086
+iter:1138 loss:7.827 ETA:15:41:12.050830
+iter:1139 loss:7.818 ETA:15:26:29.758496
+iter:1140 loss:7.422 ETA:15:35:10.725589
+iter:1141 loss:7.127 ETA:14:06:15.775992
+iter:1142 loss:7.206 ETA:15:10:19.782592
+iter:1143 loss:6.968 ETA:15:16:24.052667
+iter:1144 loss:7.261 ETA:4 days, 22:43:20.366974
+iter:1145 loss:6.573 ETA:16:00:39.495978
+iter:1146 loss:6.605 ETA:15:48:57.388666
+iter:1147 loss:6.907 ETA:2 days, 20:32:15.929900
+iter:1148 loss:6.583 ETA:15:35:24.113597
+iter:1149 loss:7.650 ETA:15:39:23.582578
+iter:1150 loss:7.307 ETA:15:44:13.492892
+iter:1151 loss:7.181 ETA:14:17:30.748886
+iter:1152 loss:7.143 ETA:15:52:37.023590
+iter:1153 loss:6.908 ETA:15:43:17.359492
+iter:1154 loss:6.854 ETA:4 days, 12:17:59.208113
+iter:1155 loss:6.758 ETA:15:48:02.046232
+iter:1156 loss:6.657 ETA:15:37:59.108353
+iter:1157 loss:7.092 ETA:16:05:31.605737
+iter:1158 loss:6.628 ETA:14:36:32.030391
+iter:1159 loss:6.265 ETA:15:39:53.364398
+iter:1160 loss:5.871 ETA:15:42:45.690222
+iter:1161 loss:6.608 ETA:4 days, 13:25:12.943061
+iter:1162 loss:6.178 ETA:15:51:24.508779
+iter:1163 loss:6.462 ETA:15:48:22.797262
+iter:1164 loss:6.679 ETA:2 days, 21:07:55.705627
+iter:1165 loss:6.635 ETA:15:53:54.967326
+iter:1166 loss:6.564 ETA:15:40:28.545210
+iter:1167 loss:6.766 ETA:15:42:54.317701
+iter:1168 loss:6.195 ETA:14:30:18.771286
+iter:1169 loss:5.996 ETA:15:39:32.229963
+iter:1170 loss:5.886 ETA:15:47:04.187913
+iter:1171 loss:6.257 ETA:2 days, 8:53:56.907623
+iter:1172 loss:6.418 ETA:15:44:36.473413
+iter:1173 loss:6.358 ETA:15:46:47.450177
+iter:1174 loss:6.339 ETA:2 days, 15:59:20.248513
+iter:1175 loss:6.134 ETA:15:39:16.544799
+iter:1176 loss:6.023 ETA:15:15:28.567690
+iter:1177 loss:5.944 ETA:15:14:17.660808
+iter:1178 loss:5.799 ETA:13:59:24.636751
+iter:1179 loss:5.667 ETA:16:00:28.977207
+iter:1180 loss:5.736 ETA:15:30:11.374836
+iter:1181 loss:5.427 ETA:2 days, 9:24:28.083928
+iter:1182 loss:5.898 ETA:15:33:34.736405
+iter:1183 loss:5.595 ETA:15:35:05.797678
+iter:1184 loss:4.993 ETA:2 days, 23:41:50.730972
+iter:1185 loss:5.628 ETA:15:26:13.628938
+iter:1186 loss:5.544 ETA:15:25:52.492995
+iter:1187 loss:5.600 ETA:15:11:36.346303
+iter:1188 loss:5.630 ETA:13:55:46.526240
+iter:1189 loss:5.690 ETA:15:40:51.880022
+iter:1190 loss:5.847 ETA:15:37:34.649084
+iter:1191 loss:6.183 ETA:2 days, 12:52:33.829884
+iter:1192 loss:6.046 ETA:15:24:43.414360
+iter:1193 loss:6.199 ETA:15:34:25.293267
+iter:1194 loss:6.452 ETA:2 days, 13:56:31.267422
+iter:1195 loss:6.438 ETA:15:27:59.282162
+iter:1196 loss:6.091 ETA:15:14:04.550317
+iter:1197 loss:6.292 ETA:15:17:01.970779
+iter:1198 loss:5.860 ETA:2 days, 9:37:29.781587
+iter:1199 loss:5.883 ETA:15:48:39.322034
+iter:1200 loss:5.791 ETA:10 days, 16:05:27.283669
+iter:1201 loss:5.577 ETA:15:48:39.934342
+iter:1202 loss:5.810 ETA:15:40:00.838965
+iter:1203 loss:5.442 ETA:16:33:45.250626
+iter:1204 loss:5.635 ETA:13:56:17.184901
+iter:1205 loss:5.490 ETA:15:37:14.953498
+iter:1206 loss:5.114 ETA:15:32:16.027269
+iter:1207 loss:5.197 ETA:2 days, 10:26:24.389190
+iter:1208 loss:5.507 ETA:15:25:40.279118
+iter:1209 loss:5.050 ETA:15:19:33.917136
+iter:1210 loss:4.919 ETA:4 days, 4:41:53.312507
+iter:1211 loss:5.251 ETA:15:33:48.320282
+iter:1212 loss:5.368 ETA:15:41:07.814342
+iter:1213 loss:5.405 ETA:15:45:44.930373
+iter:1214 loss:5.254 ETA:14:57:19.470607
+iter:1215 loss:5.199 ETA:15:26:23.158154
+iter:1216 loss:5.513 ETA:15:35:34.068420
+iter:1217 loss:5.282 ETA:2 days, 8:37:06.527912
+iter:1218 loss:5.978 ETA:16:04:23.122932
+iter:1219 loss:7.505 ETA:15:29:47.441321
+iter:1220 loss:7.106 ETA:2 days, 23:02:30.939159
+iter:1221 loss:7.447 ETA:15:09:54.245077
+iter:1222 loss:7.319 ETA:15:26:58.309078
+iter:1223 loss:7.181 ETA:2 days, 21:08:32.707690
+iter:1224 loss:7.170 ETA:17:10:28.219894
+iter:1225 loss:6.930 ETA:17:27:24.365025
+iter:1226 loss:6.945 ETA:2 days, 23:13:12.624096
+iter:1227 loss:6.700 ETA:17:28:41.075108
+iter:1228 loss:6.760 ETA:17:06:59.498190
+iter:1229 loss:6.899 ETA:18:04:35.154942
+iter:1230 loss:6.927 ETA:16:45:19.100015
+iter:1231 loss:6.355 ETA:17:11:48.833300
+iter:1232 loss:6.499 ETA:17:15:20.118118
+iter:1233 loss:6.454 ETA:2 days, 12:54:43.442611
+iter:1234 loss:6.167 ETA:17:25:22.240210
+iter:1235 loss:6.095 ETA:17:16:43.296493
+iter:1236 loss:6.050 ETA:2 days, 13:10:20.236542
+iter:1237 loss:6.270 ETA:17:11:30.852344
+iter:1238 loss:5.790 ETA:17:18:52.628780
+iter:1239 loss:5.913 ETA:2 days, 11:28:58.366118
+iter:1240 loss:6.037 ETA:17:09:11.165915
+iter:1241 loss:5.720 ETA:17:14:53.279752
+iter:1242 loss:5.858 ETA:2 days, 13:43:33.440345
+iter:1243 loss:5.824 ETA:17:20:28.583949
+iter:1244 loss:5.589 ETA:17:13:26.808781
+iter:1245 loss:5.322 ETA:2 days, 15:05:34.436598
+iter:1246 loss:5.490 ETA:17:24:55.613148
+iter:1247 loss:5.435 ETA:17:14:11.553354
+iter:1248 loss:5.437 ETA:2 days, 11:48:52.278526
+iter:1249 loss:5.106 ETA:17:15:44.326616
+iter:1250 loss:4.999 ETA:17:14:00.807903
+iter:1251 loss:5.171 ETA:4 days, 11:33:18.297680
+iter:1252 loss:5.114 ETA:17:13:26.919171
+iter:1253 loss:5.183 ETA:17:33:27.342510
+iter:1254 loss:5.053 ETA:2 days, 20:39:01.597558
+iter:1255 loss:5.386 ETA:15:39:03.203707
+iter:1256 loss:5.018 ETA:15:40:16.650124
+iter:1257 loss:5.062 ETA:15:38:33.542926
+iter:1258 loss:5.040 ETA:2 days, 10:00:32.377069
+iter:1259 loss:5.391 ETA:15:45:57.623433
+iter:1260 loss:4.852 ETA:15:21:15.424876
+iter:1261 loss:4.980 ETA:4 days, 21:51:48.568617
+iter:1262 loss:4.945 ETA:15:18:19.599524
+iter:1263 loss:4.798 ETA:15:12:09.027311
+iter:1264 loss:4.597 ETA:5 days, 1:47:28.828964
+iter:1265 loss:4.460 ETA:15:56:31.161951
+iter:1266 loss:4.792 ETA:15:26:38.037673
+iter:1267 loss:4.837 ETA:16:38:46.639258
+iter:1268 loss:5.143 ETA:13:57:07.364917
+iter:1269 loss:4.893 ETA:17:08:49.221077
+iter:1270 loss:5.205 ETA:17:15:18.618562
+iter:1271 loss:4.861 ETA:2 days, 10:02:56.068300
+iter:1272 loss:4.998 ETA:17:14:54.161041
+iter:1273 loss:4.755 ETA:17:35:57.289236
+iter:1274 loss:4.698 ETA:4 days, 13:01:20.514450
+iter:1275 loss:5.189 ETA:15:50:33.305174
+iter:1276 loss:4.908 ETA:15:11:57.108525
+iter:1277 loss:4.941 ETA:2 days, 19:11:29.197155
+iter:1278 loss:4.809 ETA:17:16:31.118922
+iter:1279 loss:4.821 ETA:17:15:47.501763
+iter:1280 loss:4.909 ETA:3 days, 1:42:12.900696
+iter:1281 loss:4.429 ETA:17:22:13.767499
+iter:1282 loss:4.972 ETA:17:21:50.995613
+iter:1283 loss:5.024 ETA:2 days, 16:22:32.751798
+iter:1284 loss:4.947 ETA:17:12:48.177372
+iter:1285 loss:4.632 ETA:17:13:27.662501
+iter:1286 loss:4.536 ETA:18:04:26.253535
+iter:1287 loss:4.391 ETA:16:07:47.083060
+iter:1288 loss:4.292 ETA:17:15:38.859800
+iter:1289 loss:4.295 ETA:17:18:16.026227
+iter:1290 loss:4.884 ETA:2 days, 6:48:59.076178
+iter:1291 loss:4.940 ETA:17:15:21.861240
+iter:1292 loss:4.605 ETA:17:22:00.309703
+iter:1293 loss:4.565 ETA:2 days, 19:05:28.618496
+iter:1294 loss:4.747 ETA:17:15:45.511088
+iter:1295 loss:4.716 ETA:17:13:53.298672
+iter:1296 loss:4.440 ETA:2 days, 12:14:22.495350
+iter:1297 loss:4.590 ETA:17:28:50.847194
+iter:1298 loss:4.713 ETA:17:08:14.867962
+iter:1299 loss:4.691 ETA:2 days, 11:23:44.678980
+iter:1300 loss:4.461 ETA:11 days, 6:52:08.735590
+iter:1301 loss:4.868 ETA:15:43:00.911051
+iter:1302 loss:4.985 ETA:15:17:14.030337
+iter:1303 loss:5.337 ETA:15:44:43.756919
+iter:1304 loss:5.241 ETA:2 days, 6:26:54.414265
+iter:1305 loss:5.577 ETA:15:19:13.667887
+iter:1306 loss:5.189 ETA:17:19:11.901781
+iter:1307 loss:5.112 ETA:4 days, 11:56:27.721475
+iter:1308 loss:5.239 ETA:17:17:15.402583
+iter:1309 loss:5.240 ETA:17:17:38.633056
+iter:1310 loss:4.672 ETA:4 days, 20:56:18.435645
+iter:1311 loss:4.945 ETA:15:56:54.022149
+iter:1312 loss:4.833 ETA:15:41:51.412079
+iter:1313 loss:4.929 ETA:2 days, 17:51:29.646043
+iter:1314 loss:4.728 ETA:15:50:48.592398
+iter:1315 loss:4.402 ETA:15:50:27.225531
+iter:1316 loss:4.461 ETA:3 days, 0:04:21.360111
+iter:1317 loss:4.703 ETA:15:16:22.458650
+iter:1318 loss:4.605 ETA:15:36:11.771670
+iter:1319 loss:4.712 ETA:16:16:44.136357
+iter:1320 loss:5.167 ETA:14:41:36.018600
+iter:1321 loss:5.150 ETA:15:21:56.296248
+iter:1322 loss:5.613 ETA:15:28:41.066098
+iter:1323 loss:5.487 ETA:4 days, 11:51:09.757088
+iter:1324 loss:5.171 ETA:15:57:06.039174
+iter:1325 loss:5.836 ETA:15:39:37.737308
+iter:1326 loss:5.532 ETA:2 days, 11:38:06.560612
+iter:1327 loss:5.881 ETA:15:28:49.042534
+iter:1328 loss:5.445 ETA:15:24:48.089813
+iter:1329 loss:5.895 ETA:15:15:49.438816
+iter:1330 loss:5.468 ETA:4 days, 3:44:38.902915
+iter:1331 loss:5.683 ETA:15:43:12.309590
+iter:1332 loss:5.532 ETA:15:49:15.844071
+iter:1333 loss:5.549 ETA:15:49:03.573809
+iter:1334 loss:6.518 ETA:14:15:44.191870
+iter:1335 loss:6.866 ETA:15:37:10.861357
+iter:1336 loss:6.905 ETA:15:36:42.917044
+iter:1337 loss:6.632 ETA:4 days, 16:11:04.541913
+iter:1338 loss:6.710 ETA:16:52:22.353587
+iter:1339 loss:6.053 ETA:15:39:27.654529
+iter:1340 loss:5.878 ETA:2 days, 18:34:31.317458
+iter:1341 loss:5.680 ETA:15:33:28.210052
+iter:1342 loss:5.298 ETA:15:49:06.867261
+iter:1343 loss:5.308 ETA:16:01:09.868912
+iter:1344 loss:5.465 ETA:1 day, 1:17:26.767090
+iter:1345 loss:5.196 ETA:15:37:49.994577
+iter:1346 loss:5.255 ETA:15:37:32.850164
+iter:1347 loss:5.550 ETA:2 days, 14:33:41.505020
+iter:1348 loss:5.758 ETA:15:58:34.395129
+iter:1349 loss:5.752 ETA:15:12:40.189570
+iter:1350 loss:5.643 ETA:4 days, 22:42:21.621923
+iter:1351 loss:5.896 ETA:16:00:53.432762
+iter:1352 loss:5.748 ETA:15:44:55.069302
+iter:1353 loss:5.724 ETA:2 days, 21:04:07.524202
+iter:1354 loss:5.474 ETA:15:50:41.748590
+iter:1355 loss:5.189 ETA:15:40:34.724039
+iter:1356 loss:5.115 ETA:16:07:57.420279
+iter:1357 loss:4.922 ETA:1 day, 8:57:35.773261
+iter:1358 loss:5.207 ETA:15:39:45.611961
+iter:1359 loss:5.179 ETA:15:20:23.405104
+iter:1360 loss:5.280 ETA:2 days, 18:44:59.991550
+iter:1361 loss:4.961 ETA:15:45:09.549982
+iter:1362 loss:4.949 ETA:15:40:36.097838
+iter:1363 loss:5.038 ETA:15:50:15.011251
+iter:1364 loss:4.981 ETA:14:41:13.269628
+iter:1365 loss:4.696 ETA:15:48:04.438726
+iter:1366 loss:5.255 ETA:15:48:34.035270
+iter:1367 loss:4.773 ETA:2 days, 12:05:26.441485
+iter:1368 loss:4.530 ETA:16:01:07.015697
+iter:1369 loss:4.623 ETA:15:57:27.366267
+iter:1370 loss:4.696 ETA:4 days, 21:25:08.654208
+iter:1371 loss:4.919 ETA:15:37:18.241176
+iter:1372 loss:5.026 ETA:15:41:21.086857
+iter:1373 loss:4.739 ETA:2 days, 15:33:18.167694
+iter:1374 loss:4.540 ETA:15:59:17.680648
+iter:1375 loss:5.199 ETA:15:43:06.310983
+iter:1376 loss:5.099 ETA:15:56:31.640442
+iter:1377 loss:4.717 ETA:13:59:10.453915
+iter:1378 loss:4.849 ETA:15:48:06.256384
+iter:1379 loss:4.699 ETA:15:23:38.109010
+iter:1380 loss:4.482 ETA:2 days, 10:41:19.426174
+iter:1381 loss:4.690 ETA:15:24:24.053060
+iter:1382 loss:4.691 ETA:15:28:14.152099
+iter:1383 loss:4.448 ETA:4 days, 5:13:30.634089
+iter:1384 loss:4.614 ETA:15:37:49.412815
+iter:1385 loss:4.612 ETA:15:23:22.323579
+iter:1386 loss:4.736 ETA:15:52:23.366347
+iter:1387 loss:4.441 ETA:14:49:36.192513
+iter:1388 loss:4.533 ETA:15:17:39.220777
+iter:1389 loss:4.896 ETA:15:11:31.393045
+iter:1390 loss:4.814 ETA:2 days, 9:18:14.238811
+iter:1391 loss:4.408 ETA:15:37:05.381019
+iter:1392 loss:4.707 ETA:15:43:45.505058
+iter:1393 loss:4.577 ETA:16:01:12.921420
+iter:1394 loss:4.477 ETA:14:15:28.069615
+iter:1395 loss:4.639 ETA:15:34:12.553468
+iter:1396 loss:4.739 ETA:15:30:57.943211
+iter:1397 loss:4.473 ETA:4 days, 9:55:38.088579
+iter:1398 loss:4.779 ETA:15:44:07.327539
+iter:1399 loss:4.399 ETA:15:41:43.239848
+iter:1400 loss:4.444 ETA:11 days, 14:27:30.004292
+iter:1401 loss:4.514 ETA:15:22:23.171592
+iter:1402 loss:4.503 ETA:15:41:11.088340
+iter:1403 loss:4.550 ETA:17:01:31.995716
+iter:1404 loss:4.371 ETA:14:14:35.816122
+iter:1405 loss:3.991 ETA:15:25:33.724611
+iter:1406 loss:4.500 ETA:15:37:38.397851
+iter:1407 loss:4.270 ETA:4 days, 11:21:05.312075
+iter:1408 loss:4.433 ETA:15:21:19.100311
+iter:1409 loss:4.437 ETA:15:19:27.602011
+iter:1410 loss:4.385 ETA:16:19:02.016563
+iter:1411 loss:4.166 ETA:14:05:49.069186
+iter:1412 loss:4.356 ETA:15:04:17.420823
+iter:1413 loss:4.074 ETA:15:16:08.865161
+iter:1414 loss:4.584 ETA:2 days, 20:29:40.624753
+iter:1415 loss:4.419 ETA:15:53:00.617276
+iter:1416 loss:4.144 ETA:15:49:34.610466
+iter:1417 loss:4.104 ETA:16:07:34.567084
+iter:1418 loss:4.134 ETA:14:26:04.584054
+iter:1419 loss:4.221 ETA:15:47:12.139662
+iter:1420 loss:4.241 ETA:15:39:43.542137
+iter:1421 loss:4.318 ETA:4 days, 15:25:39.708026
+iter:1422 loss:4.216 ETA:15:45:23.808654
+iter:1423 loss:4.097 ETA:15:48:16.566955
+iter:1424 loss:4.542 ETA:3 days, 0:44:44.579933
+iter:1425 loss:4.495 ETA:15:45:32.325810
+iter:1426 loss:4.248 ETA:15:43:16.921105
+iter:1427 loss:4.314 ETA:2 days, 21:58:09.678927
+iter:1428 loss:4.571 ETA:15:33:43.781756
+iter:1429 loss:4.251 ETA:15:44:53.071894
+iter:1430 loss:4.162 ETA:15:52:53.599634
+iter:1431 loss:4.209 ETA:14:19:00.117697
+iter:1432 loss:4.290 ETA:15:49:00.857140
+iter:1433 loss:4.589 ETA:15:38:10.043108
+iter:1434 loss:4.391 ETA:4 days, 12:30:18.853938
+iter:1435 loss:4.681 ETA:15:58:45.943667
+iter:1436 loss:4.629 ETA:15:37:13.661264
+iter:1437 loss:4.668 ETA:2 days, 22:21:17.485943
+iter:1438 loss:4.619 ETA:15:37:49.784035
+iter:1439 loss:4.641 ETA:15:42:07.507090
+iter:1440 loss:4.897 ETA:15:19:13.451538
+iter:1441 loss:4.839 ETA:2 days, 12:34:44.636145
+iter:1442 loss:4.318 ETA:16:19:29.002845
+iter:1443 loss:4.525 ETA:15:54:22.168959
+iter:1444 loss:4.461 ETA:2 days, 15:43:26.307881
+iter:1445 loss:4.213 ETA:15:51:53.657173
+iter:1446 loss:4.385 ETA:15:47:54.781155
+iter:1447 loss:4.562 ETA:3 days, 13:10:47.568177
+iter:1448 loss:4.525 ETA:15:26:32.708118
+iter:1449 loss:4.212 ETA:15:20:47.521658
+iter:1450 loss:4.279 ETA:15:51:54.633179
+iter:1451 loss:4.239 ETA:14:24:02.101335
+iter:1452 loss:4.166 ETA:15:34:19.945698
+iter:1453 loss:4.210 ETA:15:27:20.112915
+iter:1454 loss:4.181 ETA:4 days, 12:33:26.869832
+iter:1455 loss:4.274 ETA:15:46:36.937612
+iter:1456 loss:4.405 ETA:15:39:17.936138
+iter:1457 loss:4.297 ETA:2 days, 19:51:05.502113
+iter:1458 loss:4.284 ETA:15:37:15.525301
+iter:1459 loss:4.319 ETA:15:38:53.937333
+iter:1460 loss:4.589 ETA:15:59:58.745499
+iter:1461 loss:4.398 ETA:2 days, 10:26:05.036230
+iter:1462 loss:4.305 ETA:15:39:31.853600
+iter:1463 loss:4.136 ETA:15:41:47.941539
+iter:1464 loss:4.076 ETA:4 days, 18:03:05.859238
+iter:1465 loss:4.180 ETA:15:33:57.104708
+iter:1466 loss:4.402 ETA:15:39:19.783662
+iter:1467 loss:4.415 ETA:3 days, 2:33:46.508418
+iter:1468 loss:4.199 ETA:15:44:10.176263
+iter:1469 loss:4.362 ETA:15:49:22.623213
+iter:1470 loss:4.271 ETA:17:15:33.492818
+iter:1471 loss:4.410 ETA:14:13:38.378900
+iter:1472 loss:4.261 ETA:15:56:02.386963
+iter:1473 loss:4.436 ETA:15:44:46.757554
+iter:1474 loss:4.248 ETA:2 days, 15:53:06.161761
+iter:1475 loss:4.499 ETA:15:58:58.494676
+iter:1476 loss:4.417 ETA:15:39:44.917964
+iter:1477 loss:4.313 ETA:2 days, 13:25:23.730766
+iter:1478 loss:4.323 ETA:15:46:37.126479
+iter:1479 loss:4.701 ETA:15:55:08.726169
+iter:1480 loss:4.605 ETA:4 days, 18:27:53.321247
+iter:1481 loss:4.258 ETA:15:53:48.396721
+iter:1482 loss:4.434 ETA:15:23:39.283331
+iter:1483 loss:4.649 ETA:1 day, 16:40:51.904290
+iter:1484 loss:4.380 ETA:14:25:01.308626
+iter:1485 loss:4.532 ETA:15:45:25.549173
+iter:1486 loss:4.075 ETA:15:40:33.666831
+iter:1487 loss:4.244 ETA:2 days, 9:38:48.784236
+iter:1488 loss:4.396 ETA:15:43:39.668987
+iter:1489 loss:4.672 ETA:15:40:15.207710
+iter:1490 loss:5.123 ETA:2 days, 22:40:22.815757
+iter:1491 loss:5.500 ETA:15:34:46.086727
+iter:1492 loss:5.518 ETA:15:43:32.422794
+iter:1493 loss:5.455 ETA:15:31:39.618225
+iter:1494 loss:5.677 ETA:14:15:52.297961
+iter:1495 loss:5.335 ETA:15:40:53.825401
+iter:1496 loss:5.491 ETA:15:37:36.187243
+iter:1497 loss:5.395 ETA:2 days, 19:00:57.418769
+iter:1498 loss:5.158 ETA:15:40:39.957411
+iter:1499 loss:5.203 ETA:15:36:24.252898
+iter:1500 loss:5.070 ETA:14 days, 4:41:44.457116
+iter:1501 loss:4.871 ETA:15:55:24.571067
+iter:1502 loss:4.680 ETA:15:39:32.753540
+iter:1503 loss:4.696 ETA:15:52:42.471990
+iter:1504 loss:4.843 ETA:2 days, 13:44:18.423172
+iter:1505 loss:4.875 ETA:15:40:42.084371
+iter:1506 loss:4.916 ETA:15:36:50.193147
+iter:1507 loss:4.614 ETA:2 days, 13:53:00.838330
+iter:1508 loss:4.554 ETA:15:31:17.694978
+iter:1509 loss:4.425 ETA:15:18:13.208421
+iter:1510 loss:4.664 ETA:3 days, 0:10:52.091193
+iter:1511 loss:4.467 ETA:15:35:58.519710
+iter:1512 loss:4.516 ETA:15:18:28.560284
+iter:1513 loss:4.886 ETA:3 days, 0:57:24.431828
+iter:1514 loss:4.561 ETA:17:09:44.913779
+iter:1515 loss:4.721 ETA:17:18:35.986981
+iter:1516 loss:4.883 ETA:2 days, 13:13:58.269553
+iter:1517 loss:5.192 ETA:15:50:18.792994
+iter:1518 loss:5.561 ETA:14:32:46.347237
+iter:1519 loss:5.257 ETA:15:07:32.017679
+iter:1520 loss:5.286 ETA:2 days, 9:12:05.773029
+iter:1521 loss:5.511 ETA:15:46:50.282925
+iter:1522 loss:5.200 ETA:15:56:50.403549
+iter:1523 loss:5.159 ETA:2 days, 16:57:04.450377
+iter:1524 loss:4.854 ETA:15:42:58.027651
+iter:1525 loss:4.893 ETA:15:59:53.516445
+iter:1526 loss:5.092 ETA:16:00:15.845172
+iter:1527 loss:4.721 ETA:14:45:25.724465
+iter:1528 loss:4.608 ETA:15:48:46.909094
+iter:1529 loss:4.919 ETA:15:35:50.540498
+iter:1530 loss:4.668 ETA:3 days, 3:01:09.653394
+iter:1531 loss:4.799 ETA:15:44:15.480307
+iter:1532 loss:4.695 ETA:15:36:53.240441
+iter:1533 loss:4.462 ETA:3 days, 1:36:08.925629
+iter:1534 loss:4.430 ETA:15:43:44.624319
+iter:1535 loss:4.301 ETA:15:26:37.260071
+iter:1536 loss:4.674 ETA:16:06:18.328003
+iter:1537 loss:4.503 ETA:14:15:09.944726
+iter:1538 loss:4.334 ETA:15:39:58.537921
+iter:1539 loss:4.203 ETA:15:43:28.766140
+iter:1540 loss:4.262 ETA:4 days, 20:54:09.446759
+iter:1541 loss:4.216 ETA:15:38:44.534368
+iter:1542 loss:4.260 ETA:15:45:14.892068
+iter:1543 loss:4.032 ETA:2 days, 17:02:50.851030
+iter:1544 loss:4.117 ETA:15:39:17.797485
+iter:1545 loss:4.049 ETA:15:21:45.456494
+iter:1546 loss:4.189 ETA:15:14:34.468270
+iter:1547 loss:3.972 ETA:2 days, 14:30:11.411201
+iter:1548 loss:4.029 ETA:15:23:08.745891
+iter:1549 loss:3.647 ETA:15:31:26.261646
+iter:1550 loss:4.628 ETA:2 days, 11:14:57.989953
+iter:1551 loss:4.309 ETA:15:17:41.584413
+iter:1552 loss:4.166 ETA:15:20:32.913708
+iter:1553 loss:4.062 ETA:2 days, 21:11:45.749374
+iter:1554 loss:4.447 ETA:15:17:54.756745
+iter:1555 loss:3.983 ETA:15:37:01.014537
+iter:1556 loss:4.534 ETA:15:33:15.948418
+iter:1557 loss:4.144 ETA:14:46:19.058606
+iter:1558 loss:3.946 ETA:15:13:57.842322
+iter:1559 loss:3.840 ETA:15:51:13.532105
+iter:1560 loss:3.795 ETA:4 days, 9:03:12.413521
+iter:1561 loss:4.008 ETA:16:08:12.331422
+iter:1562 loss:4.397 ETA:15:41:09.733993
+iter:1563 loss:4.185 ETA:2 days, 21:04:15.190751
+iter:1564 loss:4.143 ETA:15:48:50.019637
+iter:1565 loss:4.121 ETA:15:38:14.729995
+iter:1566 loss:4.465 ETA:15:23:15.975400
+iter:1567 loss:4.148 ETA:13:54:43.148923
+iter:1568 loss:4.031 ETA:15:23:45.600769
+iter:1569 loss:3.786 ETA:15:56:21.527634
+iter:1570 loss:4.278 ETA:14:10:05.303493
+iter:1571 loss:3.927 ETA:15:37:51.927948
+iter:1572 loss:4.057 ETA:15:36:54.116712
+iter:1573 loss:4.134 ETA:4 days, 10:51:37.608023
+iter:1574 loss:4.051 ETA:15:43:01.184043
+iter:1575 loss:3.987 ETA:15:31:43.823841
+iter:1576 loss:4.099 ETA:2 days, 20:22:52.310707
+iter:1577 loss:3.958 ETA:15:58:39.434335
+iter:1578 loss:3.931 ETA:15:37:17.489898
+[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 61, 512])], tgt.shape=[C][B][torch.Size([26, 61, 512])]
+[TransformerDecoder] *** forward: output=[C][B][torch.Size([26, 61, 512])]
+train_iter preds : torch.Size([61, 26, 123]), nce_emb : torch.Size([61, 2, 256]), nce_emb_patch : torch.Size([61, 2, 256])
+train_iter GT coords : 61, T, 26, 5], preds : 61, T, 26, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1586, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1586, 5])
+iter:1579 loss:3.972 ETA:2 days, 18:18:33.344197
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
+/home/jinsu0000/1_git/sdt_vq/trainer/trainer.py:117: UserWarning: torch.nn.utils.clip_grad_norm is now deprecated in favor of torch.nn.utils.clip_grad_norm_.
+  torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
