@@ -61,6 +61,8 @@ class Trainer:
 
         if isinstance(out, (tuple, list)) and len(out) >= 5:
             preds, nce_emb, nce_emb_patch, vq_loss, vq_codes = out[:5]
+            print_once(f"train_iter vq_loss.shape : {vq_loss.shape}, VQ codes : {vq_codes.shape}, unique : {torch.unique(vq_codes)}")
+            vq_loss = vq_loss.mean()
         else:
             preds, nce_emb, nce_emb_patch = out
         print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
@@ -93,20 +95,13 @@ class Trainer:
         #loss = pen_loss + nce_loss_writer + nce_loss_glyph
         
         # nan/infinity 체크 추가
-        if (torch.isnan(loss) | torch.isinf(loss)).any():
+        if (torch.isnan(loss) | torch.isinf(loss)).any().item():
             print(f"[!!! NaN Detected] at Step {step}")
-            print(f"moving_loss: {moving_loss.item()}, state_loss: {state_loss.item()}")
-            print(f"nce_loss_writer: {nce_loss_writer.item()}, nce_loss_glyph: {nce_loss_glyph.item()}")
-            raise ValueError("NaN detected in loss at step {}".format(step))
-        if not torch.isfinite(loss):
-            print(f"[!!! NaN/Inf] step={step}")
-            print(f"moving_loss={moving_loss.item():.6f}, state_loss={state_loss.item():.6f}")
-            print(f"nce_writer={nce_loss_writer.item():.6f}, nce_glyph={nce_loss_glyph.item():.6f}, vq_loss={float(vq_loss):.6f}")
-            # (선택) GMM 파라미터 요약
-            for name, t in [("sigma1", o_sigma1), ("sigma2", o_sigma2), ("corr", o_corr)]:
-                t_ = t.detach()
-                print(f"  {name}: min={t_.min().item():.4e}, max={t_.max().item():.4e}, mean={t_.mean().item():.4e}")
-            raise ValueError("Non-finite loss")
+            print(f"  loss={loss.detach().float().mean().item():.6f}")
+            print(f"  moving_loss={moving_loss.detach().float().mean().item():.6f}, state_loss={state_loss.detach().float().mean().item():.6f}")
+            print(f"  nce_writer={nce_loss_writer.detach().float().mean().item():.6f}, nce_glyph={nce_loss_glyph.detach().float().mean().item():.6f}")
+            print(f"  vq_loss={float(vq_loss) if not isinstance(vq_loss, torch.Tensor) else vq_loss.detach().float().mean().item():.6f}")
+            raise ValueError(f"NaN detected in loss at step {step}")
 
         # backward and update trainable parameters
         self.model.zero_grad()
