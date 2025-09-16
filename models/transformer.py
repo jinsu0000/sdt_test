@@ -98,7 +98,7 @@ class TransformerDecoder(nn.Module):
                 memory_key_padding_mask: Optional[Tensor] = None,
                 pos: Optional[Tensor] = None,
                 query_pos: Optional[Tensor] = None):
-        print_once(f"[TransformerDecoder] *** forward: memory.shape=[1][B][{memory.shape[2]}], tgt.shape=[C][B][{tgt.shape[2]}]")
+        print_once(f"[TransformerDecoder] *** forward: memory.shape=[1][B][{memory.shape}], tgt.shape=[C][B][{tgt.shape}]")
         output = tgt
         output = tgt
 
@@ -122,7 +122,7 @@ class TransformerDecoder(nn.Module):
                 intermediate.pop()
                 intermediate.append(output)
 
-        print_once(f"[TransformerDecoder] *** forward: output=[C][B][{output.shape[2]}]")
+        print_once(f"[TransformerDecoder] *** forward: output=[C][B][{output.shape}]")
         if self.return_intermediate:
             return torch.stack(intermediate)
 
