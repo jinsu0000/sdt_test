@@ -274,19 +274,43 @@ class SDT_Generator(nn.Module):
             output_hid = hs[-1][i]
             gmm_pred = self.EmbtoSeq(output_hid)             # [B, 3+6M]
             # --- VQ로 r_t 산출 ---
-            z_e  = self.vq_proj(output_hid)                  # [B, vq_dim]
+            # (forward에서 vq_norm을 썼다면 inference도 동일하게)
+            if hasattr(self, "vq_norm"):
+                z_e = self.vq_proj(self.vq_norm(output_hid))   # [B, vq_dim]
+            else:
+                z_e = self.vq_proj(output_hid)                 # [B, vq_dim]
             z_q, _, _ = self.vq(z_e)
-            r_t  = torch.tanh(self.proto_head(z_q)) * self.proto_scale
+            alpha = getattr(self, "vq_alpha", 1.0)
+            r_t  = torch.tanh(self.proto_head(z_q)) * self.proto_scale * alpha   # [B, 2]
+
             # --- μ 재조립 (학습과 동일) ---
-            B = gmm_pred.size(0); M = (gmm_pred.size(1)-3)//6
-            pen = gmm_pred[:, :3]
-            mix = gmm_pred[:, 3:].view(B, 6, M)
-            pi, mu1_r, mu2_r, s1, s2, corr = mix[0], mix[1], mix[2], mix[3], mix[4], mix[5]
-            mu1 = mu1_r + r_t[:, 0].unsqueeze(-1).expand_as(mu1_r)
-            mu2 = mu2_r + r_t[:, 1].unsqueeze(-1).expand_as(mu2_r)
-            gmm_fixed = torch.cat([pen, torch.stack([pi, mu1, mu2, s1, s2, corr], dim=0).reshape(B, 6*M)], dim=1)
-            pred_sequence[i] = get_seq_from_gmm_with_sigma(gmm_fixed)  # 혹은 get_seq_from_gmm
-            
+            B = gmm_pred.size(0)
+            M = (gmm_pred.size(1) - 3) // 6
+            pen = gmm_pred[:, :3]                                # [B, 3]
+            mix = gmm_pred[:, 3:].view(B, 6, M)                  # [B, 6, M]
+
+            # FIX: 배치축 유지하고 채널축(6개)을 선택해야 합니다.
+            pi    = mix[:, 0, :]                                 # [B, M]
+            mu1_r = mix[:, 1, :]                                 # [B, M]
+            mu2_r = mix[:, 2, :]                                 # [B, M]
+            s1    = mix[:, 3, :]                                 # [B, M]
+            s2    = mix[:, 4, :]                                 # [B, M]
+            corr  = mix[:, 5, :]                                 # [B, M]
+
+            # FIX: r_t를 [B,2] -> [B,M]로 브로드캐스트
+            rx = r_t[:, 0].unsqueeze(-1).expand(B, M)            # [B, M]
+            ry = r_t[:, 1].unsqueeze(-1).expand(B, M)            # [B, M]
+            mu1 = mu1_r + rx                                     # [B, M]
+            mu2 = mu2_r + ry                                     # [B, M]
+
+            # FIX: 채널축으로 stack(dim=1) 후 평탄화 → [B, 6*M]
+            gmm_fixed = torch.cat(
+                [pen, torch.stack([pi, mu1, mu2, s1, s2, corr], dim=1).reshape(B, 6*M)],
+                dim=1
+            )                                                     # [B, 3+6*M]
+
+            pred_sequence[i] = get_seq_from_gmm_with_sigma(gmm_fixed)
+
             pen_state = pred_sequence[i, :, 2:]
             seq_emb = self.SeqtoEmb(pred_sequence[i])
             src_tensor[i + 1] = seq_emb
