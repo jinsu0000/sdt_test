@@ -75,57 +75,64 @@ def main(opt):
     else:
         batch_samples = int(opt.sample_size)*len(writer_dict)//cfg.TRAIN.IMS_PER_BATCH
 
-    batch_num, num_count= 0, 0
-    data_iter = iter(test_loader)
-    # tqdm : 진행률 프로그레스바바
-    with torch.no_grad():
-        for _ in tqdm.tqdm(range(batch_samples)):
-            batch_num += 1
-            if batch_num > batch_samples:
-                break
-            else:
-                data = next(data_iter)
-                # prepare input
-                coords, coords_len, character_id, writer_id, img_list, char_img = data['coords'].to(device), \
-                    data['coords_len'].to(device), \
-                    data['character_id'].long().to(device), \
-                    data['writer_id'].long().to(device), \
-                    data['img_list'].to(device), \
-                    data['char_img'].to(device)
-                preds = model.inference(img_list, char_img, 120)
-                bs = character_id.shape[0]
-                SOS = torch.tensor(bs * [[0, 0, 1, 0, 0]], device=device).unsqueeze(1).to(preds)
-                preds = torch.cat((SOS, preds), 1)  # add the SOS token like GT
-                preds = preds.detach().cpu().numpy()
+    num_count = 0
+    # --- 수정된 부분 1: data_iter = iter(test_loader) 라인 삭제 ---
+    # 수동으로 이터레이터를 만들 필요가 없습니다.
 
-                test_cache = {}
-                coords = coords.detach().cpu().numpy()
-                if opt.store_type == 'online':
-                    for i, pred in enumerate(preds):
-                        pred, _ = dxdynp_to_list(preds[i])
-                        coord, _ = dxdynp_to_list(coords[i])
-                        data = {'coordinates': pred, 'writer_id': writer_id[i].item(),
-                                'character_id': character_id[i].item(), 'coords_gt':coord}
-                        data_byte = pickle.dumps(data)
-                        data_id = str(num_count).encode('utf-8')
-                        test_cache[data_id] = data_byte
-                        num_count += 1
-                    test_cache['num_sample'.encode('utf-8')] = str(num_count).encode()
-                    writeCache(test_env, test_cache)
-                elif opt.store_type == 'img':
-                    for i, pred in enumerate(preds):
-                        """intends to blur the boundaries of each sample to fit the actual using situations,
-                            as suggested in 'Deep imitator: Handwriting calligraphy imitation via deep attention networks'"""
-                        sk_pil = coords_render(preds[i], split=True, width=256, height=256, thickness=8, board=0)
-                        character = char_dict[character_id[i].item()]
-                        save_path = os.path.join(opt.save_dir, 'test',
-                                        str(writer_id[i].item()) + '_' + character+'.png')
-                        try:
-                            sk_pil.save(save_path)
-                        except:
-                            print('error. %s, %s, %s' % (save_path, str(writer_id[i].item()), character))
-                else:
-                    raise NotImplementedError('only support online or img format')
+    with torch.no_grad():
+        # --- 수정된 부분 2: for 루프를 dataloader에 직접 사용하고, enumerate로 배치 번호를 관리 ---
+        # tqdm.tqdm으로 감싸서 진행률 표시는 그대로 유지합니다.
+        for batch_num, data in enumerate(tqdm.tqdm(test_loader)):
+            
+            # --- 수정된 부분 3: 생성하려는 샘플 수를 초과하면 루프를 빠져나옴 ---
+            # 기존의 batch_num > batch_samples 로직을 루프의 시작점으로 옮겼습니다.
+            if batch_num >= batch_samples:
+                break
+            
+            # --- 수정된 부분 4: data = next(data_iter) 라인 삭제 ---
+            # for 루프가 자동으로 다음 데이터를 'data' 변수에 할당해줍니다.
+
+            # prepare input
+            coords, coords_len, character_id, writer_id, img_list, char_img = data['coords'].to(device), \
+                data['coords_len'].to(device), \
+                data['character_id'].long().to(device), \
+                data['writer_id'].long().to(device), \
+                data['img_list'].to(device), \
+                data['char_img'].to(device)
+            preds = model.inference(img_list, char_img, 120)
+            bs = character_id.shape[0]
+            SOS = torch.tensor(bs * [[0, 0, 1, 0, 0]], device=device).unsqueeze(1).to(preds)
+            preds = torch.cat((SOS, preds), 1)  # add the SOS token like GT
+            preds = preds.detach().cpu().numpy()
+
+            test_cache = {}
+            coords = coords.detach().cpu().numpy()
+            if opt.store_type == 'online':
+                for i, pred in enumerate(preds):
+                    pred, _ = dxdynp_to_list(preds[i])
+                    coord, _ = dxdynp_to_list(coords[i])
+                    data = {'coordinates': pred, 'writer_id': writer_id[i].item(),
+                            'character_id': character_id[i].item(), 'coords_gt': coord}
+                    data_byte = pickle.dumps(data)
+                    data_id = str(num_count).encode('utf-8')
+                    test_cache[data_id] = data_byte
+                    num_count += 1
+                test_cache['num_sample'.encode('utf-8')] = str(num_count).encode()
+                writeCache(test_env, test_cache)
+            elif opt.store_type == 'img':
+                for i, pred in enumerate(preds):
+                    """intends to blur the boundaries of each sample to fit the actual using situations,
+                        as suggested in 'Deep imitator: Handwriting calligraphy imitation via deep attention networks'"""
+                    sk_pil = coords_render(preds[i], split=True, width=256, height=256, thickness=8, board=0)
+                    character = char_dict[character_id[i].item()]
+                    save_path = os.path.join(opt.save_dir, 'test',
+                                           str(writer_id[i].item()) + '_' + character + '.png')
+                    try:
+                        sk_pil.save(save_path)
+                    except:
+                        print('error. %s, %s, %s' % (save_path, str(writer_id[i].item()), character))
+            else:
+                raise NotImplementedError('only support online or img format')
 
 if __name__ == '__main__':
     """Parse input arguments"""
