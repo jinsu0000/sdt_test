@@ -1,0 +1,59 @@
+[SEED] 1001
+Filter the characters containing more than max_len points
+Filter the characters containing more than max_len points
+Number of train images: 50557 | test images: 12634
+Content_TR:: __init__ d_model: 512 , nhead: 2 , num_encoder_layers: 3 , dim_feedforward: 2048 , dropout: 0.1 , activation: relu , normalize_before: True
+[TransformerDecoderLayer]: d_model=512, nhead=8, dim_feedforward=2048, dropout=0.1, activation=relu, normalize_before=True
+TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
+  (self_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (linear1): Linear(in_features=512, out_features=2048, bias=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (linear2): Linear(in_features=2048, out_features=512, bias=True)
+  (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (dropout1): Dropout(p=0.1, inplace=False)
+  (dropout2): Dropout(p=0.1, inplace=False)
+  (dropout3): Dropout(p=0.1, inplace=False)
+) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
+TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
+  (self_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=512, out_features=512, bias=True)
+  )
+  (linear1): Linear(in_features=512, out_features=2048, bias=True)
+  (dropout): Dropout(p=0.1, inplace=False)
+  (linear2): Linear(in_features=2048, out_features=512, bias=True)
+  (norm1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm2): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (norm3): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+  (dropout1): Dropout(p=0.1, inplace=False)
+  (dropout2): Dropout(p=0.1, inplace=False)
+  (dropout3): Dropout(p=0.1, inplace=False)
+) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
+[TB] writing to: Saved/English_CASIA/flow_run-20250922_151058/tboard
+/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Traceback (most recent call last):
+  File "train_flow.py", line 82, in <module>
+    args = ap.parse_args(); main(args)
+  File "train_flow.py", line 68, in main
+    trainer.train(max_iter=max_iter)
+  File "/home/jinsu0000/1_git/sdt_flow/trainer/trainer_flow.py", line 97, in train
+    loss_flow, loss_pen = self._call('flow_match_loss', img_list, coords, char_img)
+  File "/home/jinsu0000/1_git/sdt_flow/trainer/trainer_flow.py", line 32, in _call
+    return getattr(model, fn)(*args, **kwargs)
+  File "/home/jinsu0000/1_git/sdt_flow/models/sdt_flow_wrapper.py", line 153, in flow_match_loss
+    ctx, Lctx, content_tok = self._make_prefix_ctx(style_imgs, char_img)
+  File "/home/jinsu0000/1_git/sdt_flow/models/sdt_flow_wrapper.py", line 130, in _make_prefix_ctx
+    ctx_s = self._encode_style_ctx(style_imgs, keep_tokens=keep_k)   # 예: keep_k=32 또는 60
+NameError: name 'keep_k' is not defined
