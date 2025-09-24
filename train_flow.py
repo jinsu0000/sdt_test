@@ -1,15 +1,14 @@
-
-import argparse, os, torch
+import argparse, os, torch, random, numpy as np
+import torch.backends.cudnn as cudnn
 from parse_config import cfg, cfg_from_file, assert_and_infer_cfg
 from utils.util import fix_seed
 from utils.logger import set_log, print_once
 from data_loader.loader import ScriptDataset
 from torch.utils.data import DataLoader
-import torch.backends.cudnn as cudnn
+
 from models.model import SDT_Generator
 from models.sdt_flow_wrapper import SDT_FlowWrapper
 from trainer.trainer_flow import TrainerFlow
-import random, numpy as np
 
 def seed_all(seed):
     random.seed(seed); np.random.seed(seed); torch.manual_seed(seed); torch.cuda.manual_seed_all(seed)
@@ -47,7 +46,9 @@ def main(opt):
     flow = SDT_FlowWrapper(
         sdt,
         H=opt.H, n_layers=opt.layers, n_head=opt.heads, ffn_mult=opt.ffn_mult,
-        condition_mode=opt.condition_mode  # 'prefix' | 'xattn'
+        condition_mode=opt.condition_mode,    # 'prefix' | 'xattn'
+        keep_k=opt.style_keep_tokens,         # 0이면 4*N 전부 사용
+        nce_temperature=opt.nce_temp
     ).to(device)
 
     if torch.cuda.device_count() > 1:
@@ -63,7 +64,15 @@ def main(opt):
         except Exception:
             model.load_state_dict({k.replace("module.", ""): v for k, v in state.get("model", state).items()})
 
-    trainer = TrainerFlow(flow, optm, train_loader, logs, char_dict, valid_data_loader=test_loader)
+    # TrainerFlow 생성 시 전달
+    trainer = TrainerFlow(
+        flow, optm, train_loader, logs, char_dict, valid_data_loader=test_loader,
+        nce_writer_weight=args.nce_w_writer, nce_glyph_weight=args.nce_w_glyph, nce_temp=args.nce_temp,
+        nce_w_writer_init=args.nce_w_writer_init, nce_w_glyph_init=args.nce_w_glyph_init,
+        nce_w_writer_final=args.nce_w_writer_final, nce_w_glyph_final=args.nce_w_glyph_final,
+        nce_warm_steps=args.nce_warm_steps, nce_decay_steps=args.nce_decay_steps
+    )
+
     max_iter = cfg.SOLVER.MAX_ITER if hasattr(cfg.SOLVER, "MAX_ITER") else opt.max_iter
     trainer.train(max_iter=max_iter)
 
@@ -79,4 +88,16 @@ if __name__ == "__main__":
     ap.add_argument('--lr', type=float, default=2e-4)
     ap.add_argument('--max_iter', type=int, default=200000)
     ap.add_argument('--condition_mode', type=str, default='prefix', choices=['prefix','xattn'])
+    ap.add_argument('--style_keep_tokens', type=int, default=0, help='Writer/Glyph 스타일 프리픽스 토큰 수(0=모두, 예:32)')
+    ap.add_argument('--nce_w_writer', type=float, default=0.1)
+    ap.add_argument('--nce_w_glyph',  type=float, default=0.1)
+    ap.add_argument('--nce_temp',     type=float, default=0.07)
+
+    # NCE loss 가중치
+    ap.add_argument('--nce_w_writer_init', type=float, default=0.5)   # 초기엔 크게
+    ap.add_argument('--nce_w_glyph_init',  type=float, default=0.5)
+    ap.add_argument('--nce_w_writer_final', type=float, default=0.1)  # 후기엔 낮게
+    ap.add_argument('--nce_w_glyph_final',  type=float, default=0.1)
+    ap.add_argument('--nce_warm_steps', type=int, default=5000)       # 고가중치 유지 구간
+    ap.add_argument('--nce_decay_steps', type=int, default=15000)     # 이 기간 동안 final로 감쇠
     args = ap.parse_args(); main(args)

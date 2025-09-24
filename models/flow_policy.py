@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ActionEmbed(nn.Module):
-    def __init__(self, d_action:int=2, d_model:int=512, tau_dim:int=32, max_H:int=1024):
+    def __init__(self, d_action:int=2, d_model:int=512, tau_dim:int=32, max_H:int=2048):
         super().__init__()
         self.pos = nn.Embedding(max_H, d_model)
         self.tau = nn.Sequential(nn.Linear(1, tau_dim), nn.SiLU(), nn.Linear(tau_dim, tau_dim))
@@ -12,8 +12,7 @@ class ActionEmbed(nn.Module):
             nn.Linear(d_model, d_model),
         )
     def forward(self, a_tau:torch.Tensor, tau:torch.Tensor, start_idx:int=0):
-        # a_tau: [B,H,2], tau: [B,1] or [B,H,1]
-        if tau.dim()==2:
+        if tau.dim()==2:  # [B,1] -> [B,H,1]
             tau = tau.unsqueeze(1).expand(a_tau.size(0), a_tau.size(1), 1)
         t = self.tau(tau)
         h = self.mlp(torch.cat([a_tau, t], dim=-1))
@@ -22,14 +21,10 @@ class ActionEmbed(nn.Module):
         return h + self.pos(idx)[None, :, :]
 
 def build_block_mask(Lctx:int, H:int, device=None):
-    """
-    Prefix-style causal mask:
-      - context rows (0..Lctx-1) cannot look at future action columns (Lctx..Lctx+H-1)
-      - action rows can look at all (ctx + previous actions), we keep it dense here.
-    """
     L = Lctx + H
     M = torch.zeros(L, L, device=device)
     NEG = float("-inf")
+    # prefix rows (context) cannot see future action columns
     M[:Lctx, Lctx:] = NEG
     return M
 
@@ -51,17 +46,15 @@ class DualExpertBlock(nn.Module):
         self.ln_act = nn.LayerNorm(d_act)
         self.ffn_act = nn.Sequential(nn.Linear(d_act, ffn_mult*d_act), nn.GELU(), nn.Linear(ffn_mult*d_act, d_act))
 
+        # last attention weights (for diagnostics)
+        self.last_self_attn = None
+
     def forward(self, ctx, act, attn_mask=None, padmask=None):
         x = torch.cat([ self.map_ctx(ctx), self.map_act(act) ], dim=1)
         h = self.ln_attn(x)
-        y, attn_w = self.attn(
-            h, h, h,
-            attn_mask=attn_mask,
-            key_padding_mask=padmask,
-            need_weights=True,
-            average_attn_weights=False  # ← 헤드별 가중치
-        )
-        self.last_self_attn = attn_w.detach()  # [B, num_heads, L_tgt, L_src] # log용
+        y, attn_w = self.attn(h,h,h, attn_mask=attn_mask, key_padding_mask=padmask,
+                              need_weights=True, average_attn_weights=False)
+        self.last_self_attn = attn_w.detach() if attn_w is not None else None
         x = x + self.drop(y)
         Lctx = ctx.size(1)
         x_ctx, x_act = x[:, :Lctx, :], x[:, Lctx:, :]
@@ -89,16 +82,12 @@ class ActContentXAttn(nn.Module):
         self.kv_ln = nn.LayerNorm(d_ctx)
         self.attn = nn.MultiheadAttention(d_act, n_head, dropout=p, batch_first=True)
         self.drop = nn.Dropout(p)
+        self.last_xattn = None
     def forward(self, act_tokens, content_tokens):
         q = self.q_ln(act_tokens)
         kv = self.kv_ln(content_tokens)
-        out, _ = self.attn(q, kv, kv)
-        out, attn_w = self.attn(
-            q, kv, kv,
-            need_weights=True,
-            average_attn_weights=False
-        )
-        self.last_xattn = attn_w.detach()  # [B, num_heads, L_act, L_content] # log용
+        out, attn_w = self.attn(q, kv, kv, need_weights=True, average_attn_weights=False)
+        self.last_xattn = attn_w.detach() if attn_w is not None else None
         return act_tokens + self.drop(out)
 
 class FlowPolicy(nn.Module):

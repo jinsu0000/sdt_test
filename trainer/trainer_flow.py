@@ -10,10 +10,19 @@ class TrainerFlow:
     """
     - DataParallel 안전 호출(_call)
     - TensorBoard 경로 출력 + 매 스텝 flush
-    - 50스텝마다 [문자 | Pred | GT] 3패널 이미지
+    - 100스텝마다 [문자 | Pred | GT] 3패널 이미지
     - 체크포인트 저장 시 .module 안전 처리
+    - 콘솔 프린트 안전(float 캐스팅 + flush)
+    - NCE(Writer/Glyph) 가중치: warm→cosine decay 스케줄
     """
-    def __init__(self, model_flow, optimizer, data_loader, logs, char_dict, valid_data_loader=None):
+    def __init__(self, model_flow, optimizer, data_loader, logs, char_dict,
+                 valid_data_loader=None,
+                 # 기본 가중치(미사용 시 0으로 둬도 됨)
+                 nce_writer_weight=0.1, nce_glyph_weight=0.1, nce_temp=0.07,
+                 # 스케줄 파라미터
+                 nce_w_writer_init=0.5, nce_w_glyph_init=0.5,
+                 nce_w_writer_final=0.1, nce_w_glyph_final=0.1,
+                 nce_warm_steps=5000, nce_decay_steps=15000):
         self.model_flow = model_flow
         self.optimizer = optimizer
         self.data_loader = data_loader
@@ -27,12 +36,43 @@ class TrainerFlow:
         self.save_model_dir = logs['model']
         self.save_sample_dir = logs['sample']
 
+        # base weights (옵션)
+        self.w_writer_base = nce_writer_weight
+        self.w_glyph_base  = nce_glyph_weight
+        self.nce_temp = nce_temp
+
+        # schedule params
+        self.nce_w_writer_init  = nce_w_writer_init
+        self.nce_w_glyph_init   = nce_w_glyph_init
+        self.nce_w_writer_final = nce_w_writer_final
+        self.nce_w_glyph_final  = nce_w_glyph_final
+        self.nce_warm_steps     = nce_warm_steps
+        self.nce_decay_steps    = nce_decay_steps
+
+        # 모델 내부 SupCon 온도 동기화
+        model = self.model_flow.module if isinstance(self.model_flow, torch.nn.DataParallel) else self.model_flow
+        if hasattr(model, 'supcon'):
+            model.supcon.temperature = self.nce_temp
+
+    # ---- utils ----
     def _call(self, fn, *args, **kwargs):
         model = self.model_flow.module if isinstance(self.model_flow, torch.nn.DataParallel) else self.model_flow
         return getattr(model, fn)(*args, **kwargs)
 
-    def _progress(self, step, loss, time_left):
-        sys.stdout.write(f"iter:{step} loss:{loss:.3f} ETA:{str(time_left)}\r\n")
+    def _progress(self, step, loss, time_left, extra=None):
+        try:
+            loss_val = float(loss) if not hasattr(loss, "item") else float(loss.item())
+        except Exception:
+            loss_val = float(loss)
+        line = f"iter:{step} loss:{loss_val:.3f} ETA:{str(time_left)}"
+        if extra:
+            try:
+                extras = " ".join([f"{k}:{float(v if not hasattr(v,'item') else v.item()):.3f}" for k, v in extra.items()])
+                line += " " + extras
+            except Exception:
+                pass
+        sys.stdout.write(line + "\n")
+        sys.stdout.flush()
 
     def _save_checkpoint(self, step):
         os.makedirs(self.save_model_dir, exist_ok=True)
@@ -49,8 +89,9 @@ class TrainerFlow:
             gt_img = coords_render(gt_coords[i], split=True, width=img_w, height=img_h, thickness=1)
             pred_img = coords_render(preds[i],   split=True, width=img_w, height=img_h, thickness=1)
             char_img_np = (char_img_batch[i].cpu().numpy().squeeze() * 255).astype('uint8')
-            char_img_pil = Image.fromarray(char_img_np).convert("RGB").resize((img_w, img_h))
-            canvas = Image.new("RGB", (img_w*3, img_h + 12), (255,255,255))
+            from PIL import Image as _Image
+            char_img_pil = _Image.fromarray(char_img_np).convert("RGB").resize((img_w, img_h))
+            canvas = _Image.new("RGB", (img_w*3, img_h + 12), (255,255,255))
             canvas.paste(char_img_pil, (0,0)); canvas.paste(pred_img, (img_w,0)); canvas.paste(gt_img, (img_w*2,0))
             character = self.char_dict[character_id[i].item()]
             ImageDraw.Draw(canvas).text((2, img_h), character, fill=(0,0,0), font=font)
@@ -77,6 +118,17 @@ class TrainerFlow:
             except Exception as e:
                 print(f"[TB Final Image Error] step {step} batch {batch_idx}: {e}")
 
+    # ---- NCE weight scheduler (warm -> cosine decay -> final) ----
+    def _sched(self, step, w_init, w_final):
+        if step < self.nce_warm_steps:
+            return float(w_init)
+        # t in [0,1]
+        t = min(1.0, max(0.0, (step - self.nce_warm_steps) / max(1, self.nce_decay_steps)))
+        # cosine from init to final
+        import math
+        return float(w_final + 0.5*(w_init - w_final)*(1 + math.cos(math.pi * t)))
+
+    # ---- train loop ----
     def train(self, max_iter):
         train_iter = iter(self.data_loader)
         for step in range(max_iter):
@@ -87,28 +139,48 @@ class TrainerFlow:
 
             coords = data['coords'].cuda()
             character_id = data['character_id'].long().cuda()
-            writer_id = data['writer_id'].long().cuda()
+            writer_id = data['writer_id'].long().cuda()   # (현재는 사용 X, 필요시 라벨로 활용)
             img_list = data['img_list'].cuda()
             char_img = data['char_img'].cuda()
 
             t0 = time.time()
             self.model_flow.train()
 
+            # 유동 NCE 가중치
+            wW = self._sched(step, self.nce_w_writer_init, self.nce_w_writer_final)
+            wG = self._sched(step, self.nce_w_glyph_init,  self.nce_w_glyph_final)
+
+            # ---- Flow ----
             loss_flow, loss_pen = self._call('flow_match_loss', img_list, coords, char_img)
             loss = loss_flow + loss_pen
 
+            # ---- NCE (SupCon, 학습 포함) ----
+            writer_supcon, glyph_supcon = self._call('nce_losses_supcon', img_list)
+            loss = loss + wW * writer_supcon + wG * glyph_supcon
+
+            # ---- Optimize ----
             self.optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model_flow.parameters(), 1.0)
             self.optimizer.step()
 
-            losses = {"flow": float(loss_flow.detach().cpu()),
-                      "pen":  float(loss_pen.detach().cpu()),
-                      "total": float(loss.detach().cpu())}
-            self.tb_summary.add_scalars("loss_flow", losses, step)
-            self.tb_summary.flush()
+            # ---- TensorBoard ----
+            self.tb_summary.add_scalars("loss_flow", {
+                "flow":  float(loss_flow.detach().cpu()),
+                "pen":   float(loss_pen.detach().cpu()),
+                "total": float(loss.detach().cpu()),
+            }, step)
+            self.tb_summary.add_scalars("loss_nce", {
+                "writer_supcon": float(writer_supcon.detach().cpu()),
+                "glyph_supcon":  float(glyph_supcon.detach().cpu()),
+            }, step)
+            self.tb_summary.add_scalars("nce/weights", {
+                "writer_w": wW,
+                "glyph_w":  wG,
+            }, step)
 
-            diag = self._call('get_diag_attn')  # DataParallel-safe
+            # 어텐션 다이애그
+            diag = self._call('get_diag_attn')
             if diag is not None:
                 if diag.get("style") is not None:
                     self.tb_summary.add_scalar("diag/attn_style", float(diag["style"]), step)
@@ -116,12 +188,20 @@ class TrainerFlow:
                     self.tb_summary.add_scalar("diag/attn_content", float(diag["content"]), step)
                 if diag.get("xattn") is not None:
                     self.tb_summary.add_scalar("diag/attn_xattn", float(diag["xattn"]), step)
-                self.tb_summary.flush()
+            self.tb_summary.flush()
 
+            # ---- Console ----
             dt = time.time() - t0
             left = datetime.timedelta(seconds=int((max_iter - step) * max(dt, 1e-3)))
-            self._progress(step, losses["total"], left)
+            if (step % 10) == 0:
+                extra = {"flow": loss_flow.detach(), "pen": loss_pen.detach(),
+                         "wNCE": writer_supcon.detach(), "gNCE": glyph_supcon.detach(),
+                         "wW": wW, "wG": wG}
+                self._progress(step, loss.detach(), left, extra=extra)
+            else:
+                self._progress(step, loss.detach(), left)
 
+            # ---- Samples & Checkpoint ----
             if (step+1) % 100 == 0:
                 self.model_flow.eval()
                 with torch.no_grad():
