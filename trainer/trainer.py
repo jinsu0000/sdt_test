@@ -56,18 +56,10 @@ class Trainer:
         if (step+1) > cfg.TRAIN.SNAPSHOT_BEGIN and (step+1) % cfg.TRAIN.SNAPSHOT_ITERS == 0:
             print(" # Style img_list shape from PNG:", img_list.shape)
 
-        vq_alpha = min(1.0, step / cfg.SOLVER.WARMUP_ITERS)
-        out = self.model(img_list, input_seq, char_img, vq_alpha)
-
-        if isinstance(out, (tuple, list)) and len(out) >= 5:
-            preds, nce_emb, nce_emb_patch, vq_loss, vq_codes = out[:5]
-            print_once(f"train_iter vq_loss.shape : {vq_loss.shape}, VQ codes : {vq_codes.shape}, unique : {torch.unique(vq_codes)}")
-            vq_loss = vq_loss.mean()
-        else:
-            preds, nce_emb, nce_emb_patch = out
+        preds, nce_emb, nce_emb_patch, aux = self.model(img_list, input_seq, char_img)
         print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
         
-        if step % 10000 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
+        if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
             self._plot_nce_embedding_2d(nce_emb, writer_id, step)
 
         # calculate loss
@@ -83,25 +75,22 @@ class Trainer:
                                       o_corr, o_pen_logits, gt_coords[:,0].unsqueeze(-1), gt_coords[:,1].unsqueeze(-1), gt_coords[:,2:], step)
         moving_loss = torch.sum(moving_loss_all) / torch.sum(coords_len)
         pen_loss = moving_loss + 2*state_loss
-        
-                
-        # [VQ-PATCH] 가중치
-        lambda_vq     = getattr(cfg.TRAIN, "LAMBDA_VQ", 0.25)
-        lambda_writer = getattr(cfg.TRAIN, "LAMBDA_WRITER_NCE", 1.0)   # 없으면 1.0
-        lambda_glyph  = getattr(cfg.TRAIN, "LAMBDA_GLYPH_NCE", 1.0)
+        if aux and (aux.get("vq_loss_content") is not None):
+            K = getattr(cfg.LOSS, "VQ_WARMUP_STEPS", 10000)
+            base_w = getattr(cfg.LOSS, "W_VQ", 0.5)           # 기본 0.5
+            step = getattr(self, "global_iter", 0)            # 트레이너에서 유지 중인 전역 스텝
+            w_vq = base_w if K <= 0 else min(base_w, base_w * float(step) / float(K))
 
-        loss = pen_loss + lambda_writer * nce_loss_writer + lambda_glyph * nce_loss_glyph + lambda_vq * vq_loss
+            loss = pen_loss + nce_loss_writer + nce_loss_glyph + w_vq * aux["vq_loss_content"]   # W_VQ는 0.2~1.0에서 시작 추천
+        else:
+            loss = pen_loss + nce_loss_writer + nce_loss_glyph
 
-        #loss = pen_loss + nce_loss_writer + nce_loss_glyph
-        
         # nan/infinity 체크 추가
-        if (torch.isnan(loss) | torch.isinf(loss)).any().item():
+        if (torch.isnan(loss) | torch.isinf(loss)).any():
             print(f"[!!! NaN Detected] at Step {step}")
-            print(f"  loss={loss.detach().float().mean().item():.6f}")
-            print(f"  moving_loss={moving_loss.detach().float().mean().item():.6f}, state_loss={state_loss.detach().float().mean().item():.6f}")
-            print(f"  nce_writer={nce_loss_writer.detach().float().mean().item():.6f}, nce_glyph={nce_loss_glyph.detach().float().mean().item():.6f}")
-            print(f"  vq_loss={float(vq_loss) if not isinstance(vq_loss, torch.Tensor) else vq_loss.detach().float().mean().item():.6f}")
-            raise ValueError(f"NaN detected in loss at step {step}")
+            print(f"moving_loss: {moving_loss.item()}, state_loss: {state_loss.item()}")
+            print(f"nce_loss_writer: {nce_loss_writer.item()}, nce_loss_glyph: {nce_loss_glyph.item()}")
+            raise ValueError("NaN detected in loss at step {}".format(step))
 
         # backward and update trainable parameters
         self.model.zero_grad()
@@ -110,10 +99,10 @@ class Trainer:
             torch.nn.utils.clip_grad_norm(self.model.parameters(), cfg.SOLVER.GRAD_L2_CLIP)
         self.optimizer.step()
 
-        # log files
+        # log file
         loss_dict = {"pen_loss": pen_loss.item(), "moving_loss": moving_loss.item(),
-                    "state_loss": state_loss.item(), "nce_loss_writer": nce_loss_writer.item(),
-                    "nce_loss_glyph": nce_loss_glyph.item(), "vq_loss": float(vq_loss)}
+                    "state_loss": state_loss.item(), "nce_loss_writer":nce_loss_writer.item(), 
+                    "nce_loss_glyph":nce_loss_glyph.item()}
         self.tb_summary.add_scalars("loss", loss_dict, step)
         iter_left = cfg.SOLVER.MAX_ITER - step
         time_left = datetime.timedelta(
@@ -157,7 +146,6 @@ class Trainer:
     def train(self, start_step=0):
         """start training iterations"""    
         train_loader_iter = iter(self.data_loader)
-        
         for step in range(start_step, cfg.SOLVER.MAX_ITER):
             try:
                 data = next(train_loader_iter)

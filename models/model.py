@@ -3,10 +3,11 @@ import torch.nn as nn
 import torchvision.models as models
 from models.transformer import *
 from models.encoder import Content_TR
-from models.vq import VectorQuantizerEMA
 from einops import rearrange, repeat
 from utils.logger import print_once, log_stats
 from models.gmm import get_seq_from_gmm, get_seq_from_gmm_with_sigma
+
+from models.vq import VQAdapter
 
 '''
 the overall architecture of our style-disentangled Transformer (SDT).
@@ -46,26 +47,28 @@ class SDT_Generator(nn.Module):
         self.pro_mlp_character = nn.Sequential(
             nn.Linear(512, 4096), nn.GELU(), nn.Linear(4096, 256))
 
-        # [VQ-PATCH] 하이퍼파라미터 (원하면 cfg로 빼세요)
-        self.vq_dim   = 64
-        self.vq_K     = 1024
-        self.vq_beta  = 0.25
-        self.proto_scale = 1.0   # r_t 크기 조절용(불안정하면 0.5로 시작)
-
-        # [VQ-PATCH] VQ 토크나이저 + 프로젝션/프로토타입 헤드
-        self.vq = VectorQuantizerEMA(K=self.vq_K, D=self.vq_dim, beta=self.vq_beta, decay=0.99)
-
-        self.vq_norm = nn.LayerNorm(d_model)      # VQ 입력 정규화
-        self.vq_proj = nn.Linear(d_model, self.vq_dim)
-        self.proto_head = nn.Linear(self.vq_dim, 2)    # Δx_base, Δy_base
-
-        nn.init.zeros_(self.proto_head.weight)
-        nn.init.zeros_(self.proto_head.bias)
-
         self.SeqtoEmb = SeqtoEmb(hid_dim=d_model)
         self.EmbtoSeq = EmbtoSeq(hid_dim=d_model)
         self.add_position = PositionalEncoding(dropout=0.1, dim=d_model)        
         self._reset_parameters()
+
+        # cfg가 없으면 False로
+        try:
+            from parse_config import cfg
+            use_vq = getattr(cfg.MODEL, "USE_VQ_CONTENT", False)
+            vq_dim   = getattr(getattr(cfg, "VQ", object()), "DIM", 256)
+            vq_k     = getattr(getattr(cfg, "VQ", object()), "K", 512)
+            vq_lvls  = getattr(getattr(cfg, "VQ", object()), "LEVELS", 1)
+            vq_beta  = getattr(getattr(cfg, "VQ", object()), "BETA", 0.25)
+            vq_decay = getattr(getattr(cfg, "VQ", object()), "DECAY", 0.99)
+        except Exception:
+            use_vq, vq_dim, vq_k, vq_lvls, vq_beta, vq_decay = False, 256, 512, 1, 0.25, 0.99
+
+        self.use_vq_content = use_vq
+        if self.use_vq_content:
+            # SDT는 보통 Transformer가 [S,B,D]이므로 seq_first=True
+            self.vq_content = VQAdapter(d_model, vq_dim=vq_dim, n_embed=vq_k, n_levels=vq_lvls,
+                                        decay=vq_decay, commitment_cost=vq_beta, seq_first=True)
 
 
     def _reset_parameters(self):
@@ -95,7 +98,7 @@ class SDT_Generator(nn.Module):
         return x_anchor, x_pos
 
     # the shape of style_imgs is [B, 2*N, C, H, W] during training
-    def forward(self, style_imgs, seq, char_img, vq_alpha=1.0):
+    def forward(self, style_imgs, seq, char_img):
         print_once("SDT_Generator::forward, style_imgs:", style_imgs.shape)
         batch_size, num_imgs, in_planes, h, w = style_imgs.shape
         print_once("SDT_Generator::forward, batch_size:", batch_size, ", num_imgs:", num_imgs, ", in_planes:", in_planes, ", h:", h, ", w:", w)
@@ -174,15 +177,34 @@ class SDT_Generator(nn.Module):
         #print_once("SDT_Generator::forward glyph_style after rearrange:", glyph_style.shape)
 
         # QUERY: [char_emb, seq_emb]
-        
         print_once(f"SDT_Generator::forward [Decoder] seq: [{seq.shape[0]}, T, {seq.shape[2]}] (T : length of the sequence)")
         # seq: [T, B, 5], T is the length of the sequence
         seq_emb = self.SeqtoEmb(seq).permute(1, 0, 2)
         T, N, C = seq_emb.shape
         print_once(f"SDT_Generator::forward [Decoder] seq_emb: [T, {N}, {C}]")
 
-        char_emb = self.content_encoder(char_img) # [4, N, 512]
-        print_once(f"SDT_Generator::forward [Content Encoder] char_emb: [4, T, {char_emb.shape[1]}]")
+        # ---------- 여기부터: Content Encoder + VQ 적용 ----------
+        char_emb = self.content_encoder(char_img)  # 기대형상: [S(=4), N, 512]
+        print_once(f"SDT_Generator::forward [Content Encoder] char_emb raw: {tuple(char_emb.shape)}")
+
+        # VQ: content에만 적용 (토글 on일 때만)
+        vq_loss_c, vq_info_c = None, None
+        if getattr(self, "use_vq_content", False):
+            char_emb, vq_loss_c, vq_info_c = self.vq_content(char_emb)  # [S,N,512] 유지
+            # 트레이너에서 쓸 수 있도록 저장(리턴 시그니처는 유지)
+            self._vq_content_loss = vq_loss_c
+            self._vq_content_info = vq_info_c
+            try:
+                px = float(vq_info_c["perplexity"])
+                cu = int(vq_info_c["code_usage"])
+                print_once(f"[VQ-Content] perplexity={px:.2f}, code_usage={cu}")
+            except Exception:
+                pass
+        else:
+            self._vq_content_loss = None
+            self._vq_content_info = None
+        # ---------- VQ 끝 ----------
+        # char_emb: [S(=4), N, 512] -> [1, N, 512]
         char_emb = torch.mean(char_emb, 0) #[N, 512]
         print_once(f"SDT_Generator::forward [Content Encoder] char_emb after mean: [T, {char_emb.shape[1]}]")
         char_emb = repeat(char_emb, 'n c -> t n c', t = 1)
@@ -202,49 +224,23 @@ class SDT_Generator(nn.Module):
 
         h = hs.transpose(1, 2)[-1]  # B T C
         print_once(f"SDT_Generator::forward [Decoder] h after transpose: {h.shape[0]}, T, {h.shape[2]}] (B, T, C)")
-
-        # [VQ-PATCH] 디코더 히든 -> VQ 임베딩 -> 코드북 양자화 -> 프로토타입 r_t
-        z_e = self.vq_proj(self.vq_norm(h))                                 # [B,T,vq_dim]
-        z_q, vq_loss, vq_codes = self.vq(z_e)                 # [B,T,vq_dim], scalar, [B,T]
-        r_raw = self.proto_head(z_q)
-        r_t = torch.tanh(r_raw) * self.proto_scale * vq_alpha         # [B,T,2]  (Δx_base, Δy_base)
-
-        pred_sequence = self.EmbtoSeq(h)                      # [B,T,123] (기존)
-        # [VQ-PATCH] pred_sequence를 재조립: μ에 r_t를 더해 "프로토타입+잔차"
-        B, T, Ctot = pred_sequence.shape
-        assert (Ctot - 3) % 6 == 0, "GMM 파라미터 차원이 3 + 6*M 형태여야 합니다."
-        M = (Ctot - 3) // 6
-
-        pred = pred_sequence.view(B, T, 3 + 6*M)
-        pen_logits = pred[:, :, :3]                     # [B,T,3]
-        mix = pred[:, :, 3:].view(B, T, 6, M)           # [B,T,6,M]
-        pi, mu1_r, mu2_r, s1, s2, corr = mix[:, :, 0], mix[:, :, 1], mix[:, :, 2], mix[:, :, 3], mix[:, :, 4], mix[:, :, 5]
-
-        # r_t(Δx_base, Δy_base)를  M개의 mixture로 broadcast
-        rx = r_t[..., 0].unsqueeze(-1).expand_as(mu1_r) # [B,T,M]
-        ry = r_t[..., 1].unsqueeze(-1).expand_as(mu2_r) # [B,T,M]
-        mu1 = mu1_r + rx
-        mu2 = mu2_r + ry
-
-        out = torch.cat([
-            pen_logits,
-            torch.stack([pi, mu1, mu2, s1, s2, corr], dim=2).reshape(B, T, 6*M)
-        ], dim=-1).contiguous()                          # [B,T,3+6*M] == [B,T,123]
-        pred_sequence = out
-
+        pred_sequence = self.EmbtoSeq(h)
         print_once(f"SDT_Generator::forward [Decoder Output] pred_sequence: [{pred_sequence.shape[0]}, T, {pred_sequence.shape[2]}] (B, T, C)")
 
-        # [VQ-PATCH] vq_loss / codes를 로깅용으로 보낼 수 있게 추가 반환
-        return pred_sequence, nce_emb, nce_emb_patch, vq_loss, vq_codes
+        # aux 딕셔너리로 VQ 관련 항목을 함께 리턴
+        aux = {
+            "vq_loss_content": vq_loss_c,     # torch.Scalar(Tensor) or None
+            "vq_info_content": vq_info_c      # dict or None
+        }
+
+        return pred_sequence, nce_emb, nce_emb_patch, aux
 
     # style_imgs: [B, N, C, H, W]
     def inference(self, style_imgs, char_img, max_len):
         print_once("SDT_Generator::inference style_imgs:", style_imgs.shape)
         batch_size, num_imgs, in_planes, h, w = style_imgs.shape
-        # [B, N, C, H, W] -> [B*N, C, H, W]
         style_imgs = style_imgs.view(-1, in_planes, h, w)
         print_once("SDT_Generator::inference style_imgs.view():", style_imgs.shape)
-        # [B*N, 1, 64, 64] -> [B*N, 512, 2, 2]
         style_embe = self.Feat_Encoder(style_imgs)
         print_once("SDT_Generator::inference Feat_Encoder_ResNet output:", style_embe.shape)
         FEAT_ST = style_embe.reshape(batch_size*num_imgs, 512, -1).permute(2, 0, 1)  # [4, B*N, C]
@@ -253,64 +249,43 @@ class SDT_Generator(nn.Module):
         memory = self.base_encoder(FEAT_ST_ENC)  # [5, B*N, C]
         memory_writer = self.writer_head(memory)  # [4, B*N, C]
         memory_glyph = self.glyph_head(memory)  # [4, B*N, C]
-        memory_writer = rearrange(
-            memory_writer, 't (b n) c ->(t n) b c', b=batch_size)  # [4*N, B, C]
-        memory_glyph = rearrange(
-            memory_glyph, 't (b n) c -> (t n) b c', b=batch_size)  # [4*N, B, C]
+        memory_writer = rearrange(memory_writer, 't (b n) c ->(t n) b c', b=batch_size)  # [4*N, B, C]
+        memory_glyph  = rearrange(memory_glyph,  't (b n) c ->(t n) b c', b=batch_size)  # [4*N, B, C]
 
-        char_emb = self.content_encoder(char_img)
-        char_emb = torch.mean(char_emb, 0) #[N, 256]
+        # ---------- 여기부터: Content Encoder + VQ 적용 ----------
+        char_emb = self.content_encoder(char_img)  # 기대형상: [S(=4), B, 512] 또는 [S, N, 512]
+        print_once("SDT_Generator::inference [Content Encoder] char_emb raw:", char_emb.shape)
+
+        if getattr(self, "use_vq_content", False):
+            char_emb, vq_loss_c, vq_info_c = self.vq_content(char_emb)  # 추론 시에도 양자화 일관성 유지
+            self._vq_content_loss = vq_loss_c
+            self._vq_content_info = vq_info_c
+            try:
+                px = float(vq_info_c["perplexity"])
+                cu = int(vq_info_c["code_usage"])
+                print_once(f"[VQ-Content:Infer] perplexity={px:.2f}, code_usage={cu}")
+            except Exception:
+                pass
+        else:
+            self._vq_content_loss = None
+            self._vq_content_info = None
+        # ---------- VQ 끝 ----------
+
+        # time 축 평균으로 content token
+        char_emb = torch.mean(char_emb, 0)  # [B, 512]
         src_tensor = torch.zeros(max_len + 1, batch_size, 512).to(char_emb)
         pred_sequence = torch.zeros(max_len, batch_size, 5).to(char_emb)
         src_tensor[0] = char_emb
         tgt_mask = generate_square_subsequent_mask(sz=max_len + 1).to(char_emb)
+
         for i in range(max_len):
             src_tensor[i] = self.add_position(src_tensor[i], step=i)
-
-            wri_hs = self.wri_decoder(
-                src_tensor, memory_writer, tgt_mask=tgt_mask)
+            wri_hs = self.wri_decoder(src_tensor, memory_writer, tgt_mask=tgt_mask)
             hs = self.gly_decoder(wri_hs[-1], memory_glyph, tgt_mask=tgt_mask)
 
             output_hid = hs[-1][i]
-            gmm_pred = self.EmbtoSeq(output_hid)             # [B, 3+6M]
-            # --- VQ로 r_t 산출 ---
-            # (forward에서 vq_norm을 썼다면 inference도 동일하게)
-            if hasattr(self, "vq_norm"):
-                z_e = self.vq_proj(self.vq_norm(output_hid))   # [B, vq_dim]
-            else:
-                z_e = self.vq_proj(output_hid)                 # [B, vq_dim]
-            z_q, _, _ = self.vq(z_e)
-            alpha = getattr(self, "vq_alpha", 1.0)
-            r_t  = torch.tanh(self.proto_head(z_q)) * self.proto_scale * alpha   # [B, 2]
-
-            # --- μ 재조립 (학습과 동일) ---
-            B = gmm_pred.size(0)
-            M = (gmm_pred.size(1) - 3) // 6
-            pen = gmm_pred[:, :3]                                # [B, 3]
-            mix = gmm_pred[:, 3:].view(B, 6, M)                  # [B, 6, M]
-
-            # FIX: 배치축 유지하고 채널축(6개)을 선택해야 합니다.
-            pi    = mix[:, 0, :]                                 # [B, M]
-            mu1_r = mix[:, 1, :]                                 # [B, M]
-            mu2_r = mix[:, 2, :]                                 # [B, M]
-            s1    = mix[:, 3, :]                                 # [B, M]
-            s2    = mix[:, 4, :]                                 # [B, M]
-            corr  = mix[:, 5, :]                                 # [B, M]
-
-            # FIX: r_t를 [B,2] -> [B,M]로 브로드캐스트
-            rx = r_t[:, 0].unsqueeze(-1).expand(B, M)            # [B, M]
-            ry = r_t[:, 1].unsqueeze(-1).expand(B, M)            # [B, M]
-            mu1 = mu1_r + rx                                     # [B, M]
-            mu2 = mu2_r + ry                                     # [B, M]
-
-            # FIX: 채널축으로 stack(dim=1) 후 평탄화 → [B, 6*M]
-            gmm_fixed = torch.cat(
-                [pen, torch.stack([pi, mu1, mu2, s1, s2, corr], dim=1).reshape(B, 6*M)],
-                dim=1
-            )                                                     # [B, 3+6*M]
-
-            pred_sequence[i] = get_seq_from_gmm_with_sigma(gmm_fixed)
-
+            gmm_pred = self.EmbtoSeq(output_hid)
+            pred_sequence[i] = get_seq_from_gmm(gmm_pred)
             pen_state = pred_sequence[i, :, 2:]
             seq_emb = self.SeqtoEmb(pred_sequence[i])
             src_tensor[i + 1] = seq_emb
@@ -318,7 +293,7 @@ class SDT_Generator(nn.Module):
                 break
             else:
                 pass
-        return pred_sequence.transpose(0, 1)  # N, T, C        
+        return pred_sequence.transpose(0, 1)  # N, T, C     
 
 '''
 project the handwriting sequences to the transformer hidden space

@@ -8,7 +8,7 @@ NUM_GPUS: 1  # TODO, support multi GPUs
 SOLVER:
   BASE_LR: 0.0002
   MAX_ITER: 200000
-  WARMUP_ITERS: 4000
+  WARMUP_ITERS: 20000
   TYPE: Adam  # TODO, support optional optimizer
   GRAD_L2_CLIP: 5.0
 TRAIN:

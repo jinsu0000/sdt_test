@@ -38,9 +38,9 @@ TransformerDecoder:: __init__ decoder_layer: TransformerDecoderLayer(
   (dropout2): Dropout(p=0.1, inplace=False)
   (dropout3): Dropout(p=0.1, inplace=False)
 ) , num_layers: 2 , norm: LayerNorm((512,), eps=1e-05, elementwise_affine=True) , return_intermediate: True
-/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
   warnings.warn(
-/home/jinsu0000/anaconda3/envs/exp-sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+/home/jinsu0000/anaconda3/envs/sdt/lib/python3.8/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
   warnings.warn(msg)
 SDT_Generator::forward, style_imgs: torch.Size([16, 30, 1, 64, 64])
 SDT_Generator::forward, batch_size: 16 , num_imgs: 30 , in_planes: 1 , h: 64 , w: 64
@@ -78,9 +78,9 @@ SDT_Generator::forward [Content Encoder] char_emb: [4, T, 16]
 SDT_Generator::forward [Content Encoder] char_emb after mean: [T, 512]
 SDT_Generator::forward [Content Encoder] char_emb after repeat: [1, T, 16]
 SDT_Generator::forward [Decoder] tgt: [T, 16, 512] (T=T+1 : length of the sequence + 1 for content token)
-generate_square_subsequent_mask: torch.Size([29, 29])
+generate_square_subsequent_mask: torch.Size([27, 27])
 SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 16, 512]
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([29, 16, 512])]
+[TransformerDecoder] *** forward: memory.shape=[1][B][512], tgt.shape=[C][B][512]
 [TransformerDecoderLayer] *** forward_pre: memory.shape=[1][B][512], tgt.shape=[C][B][512]
 [TransformerDecoderLayer] forward_pre tgt2.shape=[C][B][512] after self_attn
 [TransformerDecoderLayer] forward_pre tgt.shape=[C][B][512] after sum with dropout1, norm2
@@ -88,218 +88,116 @@ SDT_Generator::forward [Decoder] tgt after masking & add_position: [1+T, 16, 512
 [TransformerDecoderLayer] *** forward_pre tgt.shape=[C][B][512] after linear
 [TransformerDecoder] forward: layer[0] output.shape=[C][B][512]
 [TransformerDecoder] forward: layer[1] output.shape=[C][B][512]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([29, 16, 512])]
+[TransformerDecoder] *** forward: output=[C][B][512]
 SDT_Generator::forward [Writer Decoder] wri_hs: 2, T, 16, 512] (wri_dec_layers, T, B, C)
 SDT_Generator::forward [Glyph Decoder] hs: [2, T, 16, 512] (gly_dec_layers, T, B, C)
 SDT_Generator::forward [Decoder] h after transpose: 16, T, 512] (B, T, C)
 SDT_Generator::forward [Decoder Output] pred_sequence: [16, T, 123] (B, T, C)
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 29]), unique : tensor([   0,   13,   14,   17,   26,   27,   32,   36,   40,   42,   45,   48,
-          49,   54,   56,   61,   67,   71,   77,   78,   81,   84,   87,   93,
-          95,  106,  114,  117,  118,  127,  130,  132,  139,  144,  149,  152,
-         157,  166,  170,  173,  178,  179,  187,  197,  202,  210,  213,  219,
-         246,  252,  255,  267,  277,  279,  296,  308,  324,  332,  342,  348,
-         351,  359,  364,  391,  392,  397,  399,  402,  404,  408,  420,  421,
-         423,  427,  431,  433,  434,  436,  443,  453,  458,  459,  464,  465,
-         466,  474,  488,  490,  493,  497,  502,  507,  519,  535,  539,  556,
-         568,  577,  582,  583,  584,  585,  594,  607,  612,  619,  629,  635,
-         638,  639,  652,  654,  657,  663,  668,  678,  680,  681,  684,  686,
-         687,  693,  701,  703,  705,  720,  721,  731,  744,  747,  748,  757,
-         761,  765,  767,  773,  774,  783,  786,  797,  800,  801,  804,  822,
-         827,  828,  840,  859,  870,  876,  880,  883,  887,  903,  906,  908,
-         912,  917,  921,  923,  928,  930,  941,  951,  954,  956,  959,  966,
-         968,  976,  977,  986,  991,  997, 1006, 1009, 1011, 1012, 1019, 1021,
-        1022], device='cuda:0')
-train_iter preds : torch.Size([64, 29, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 29, 5], preds : 64, T, 29, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1856, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1856, 5])
-[Step 0] --- GMM Debug ---
-  NLL loss (mean): 1.8348
-  pen state loss : 1.4586
-  result0 max pdf: 8.4708
-  result1 avg pre-log: 0.0473
-  z_pi max: 0.4673, mean: 0.0500
-  sigma1 min/max: 0.0424/29.4911
-  sigma2 min/max: 0.0403/29.1004
-  corr range: -0.9984 ~ 0.9991
-iter:0 loss:15.890 ETA:36 days, 5:23:02.962799
- # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
- # _visualize_input_images_tb writer_id: torch.Size([64])
-generate_square_subsequent_mask: torch.Size([31, 31])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([31, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([31, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 31]), unique : tensor([684, 783], device='cuda:0')
-train_iter preds : torch.Size([64, 31, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 31, 5], preds : 64, T, 31, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1984, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1984, 5])
-iter:1 loss:15.414 ETA:10 days, 18:47:25.217391
-generate_square_subsequent_mask: torch.Size([26, 26])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([26, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([26, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 26]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 26, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 26, 5], preds : 64, T, 26, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1664, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1664, 5])
-iter:2 loss:18.188 ETA:1 day, 3:10:57.879520
-generate_square_subsequent_mask: torch.Size([27, 27])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([27, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([27, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 27]), unique : tensor([783], device='cuda:0')
 train_iter preds : torch.Size([64, 27, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 27, 5], preds : 64, T, 27, 123]
 train_iter preds w/view(-1, 123) : torch.Size([1728, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1728, 5])
-iter:3 loss:14.494 ETA:3 days, 3:05:16.217642
-iter:4 loss:13.531 ETA:1 day, 11:20:03.399942
-iter:5 loss:13.691 ETA:1 day, 4:32:22.487526
+[Step 0] --- GMM Debug ---
+  NLL loss (mean): 1.7940
+  pen state loss : 1.2306
+  result0 max pdf: 21.4724
+  result1 avg pre-log: 0.0633
+  z_pi max: 0.5873, mean: 0.0500
+  sigma1 min/max: 0.0232/30.6030
+  sigma2 min/max: 0.0361/30.2590
+  corr range: -0.9941 ~ 0.9992
+iter:0 loss:15.592 ETA:33 days, 6:52:34.389572
+ # _visualize_input_images_tb img_list: torch.Size([64, 30, 1, 64, 64])
+ # _visualize_input_images_tb writer_id: torch.Size([64])
+generate_square_subsequent_mask: torch.Size([34, 34])
+train_iter preds : torch.Size([64, 34, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 34, 5], preds : 64, T, 34, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2176, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2176, 5])
+iter:1 loss:19.617 ETA:13 days, 4:51:40.358787
 generate_square_subsequent_mask: torch.Size([25, 25])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([25, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([25, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 25]), unique : tensor([783], device='cuda:0')
 train_iter preds : torch.Size([64, 25, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 25, 5], preds : 64, T, 25, 123]
 train_iter preds w/view(-1, 123) : torch.Size([1600, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1600, 5])
-iter:6 loss:12.406 ETA:1 day, 3:32:40.080528
-generate_square_subsequent_mask: torch.Size([30, 30])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([30, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([30, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 30]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 30, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 30, 5], preds : 64, T, 30, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1920, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1920, 5])
-iter:7 loss:12.143 ETA:1 day, 1:57:17.834450
-generate_square_subsequent_mask: torch.Size([43, 43])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([43, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([43, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 43]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 43, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 43, 5], preds : 64, T, 43, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2752, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2752, 5])
-iter:8 loss:11.146 ETA:1 day, 5:10:01.350163
-iter:9 loss:11.402 ETA:1 day, 4:12:32.303262
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 31]), unique : tensor([783], device='cuda:0')
-iter:10 loss:10.793 ETA:1 day, 3:15:15.878720
-generate_square_subsequent_mask: torch.Size([40, 40])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([40, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([40, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 40]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 40, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 40, 5], preds : 64, T, 40, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2560, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2560, 5])
-iter:11 loss:10.142 ETA:2 days, 23:34:49.512058
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 29]), unique : tensor([783], device='cuda:0')
-iter:12 loss:11.032 ETA:1 day, 3:33:57.781643
-iter:13 loss:10.158 ETA:1 day, 3:23:35.911632
-iter:14 loss:10.094 ETA:2 days, 18:47:32.241414
-generate_square_subsequent_mask: torch.Size([23, 23])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([23, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([23, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 23]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 23, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 23, 5], preds : 64, T, 23, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1472, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1472, 5])
-iter:15 loss:10.544 ETA:1 day, 0:54:34.660844
-iter:16 loss:10.185 ETA:1 day, 3:02:33.394272
-generate_square_subsequent_mask: torch.Size([28, 28])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([28, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([28, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 28]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 28, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 28, 5], preds : 64, T, 28, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1792, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1792, 5])
-iter:17 loss:10.079 ETA:3 days, 2:28:22.171231
-iter:18 loss:9.816 ETA:1 day, 2:12:17.269227
-iter:19 loss:9.966 ETA:1 day, 6:21:14.209639
-iter:20 loss:9.467 ETA:3 days, 4:12:24.234509
-iter:21 loss:10.236 ETA:1 day, 0:53:58.166197
-iter:22 loss:9.733 ETA:1 day, 2:36:16.178015
-iter:23 loss:9.719 ETA:2 days, 20:52:46.714084
-iter:24 loss:9.853 ETA:1 day, 5:18:34.403936
-iter:25 loss:9.488 ETA:1 day, 2:48:44.235529
-iter:26 loss:9.723 ETA:1 day, 0:53:31.132699
-iter:27 loss:9.211 ETA:1 day, 0:33:53.008128
-iter:28 loss:9.407 ETA:1 day, 7:40:51.012892
-iter:29 loss:9.694 ETA:1 day, 2:34:52.680777
-generate_square_subsequent_mask: torch.Size([33, 33])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([33, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([33, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 33]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 33, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 33, 5], preds : 64, T, 33, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2112, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2112, 5])
-iter:30 loss:9.475 ETA:1 day, 2:02:09.977930
-generate_square_subsequent_mask: torch.Size([32, 32])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([32, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([32, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 32]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 32, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 32, 5], preds : 64, T, 32, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2048, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2048, 5])
-iter:31 loss:9.242 ETA:1 day, 2:48:12.113853
-iter:32 loss:8.780 ETA:1 day, 3:51:45.098442
-iter:33 loss:8.791 ETA:1 day, 4:45:04.170672
-generate_square_subsequent_mask: torch.Size([36, 36])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([36, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([36, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 36]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 36, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 36, 5], preds : 64, T, 36, 123]
-train_iter preds w/view(-1, 123) : torch.Size([2304, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2304, 5])
-iter:34 loss:9.742 ETA:1 day, 2:01:21.523978
-generate_square_subsequent_mask: torch.Size([22, 22])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([22, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([22, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 22]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 22, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 22, 5], preds : 64, T, 22, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1408, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1408, 5])
-iter:35 loss:8.985 ETA:1 day, 0:56:06.859843
-iter:36 loss:9.406 ETA:1 day, 2:01:14.246211
-iter:37 loss:9.762 ETA:1 day, 1:23:23.308588
-iter:38 loss:8.674 ETA:1 day, 7:48:22.223445
-iter:39 loss:8.624 ETA:1 day, 2:39:27.410558
-iter:40 loss:8.403 ETA:2 days, 22:29:33.230791
-iter:41 loss:8.328 ETA:1 day, 0:43:16.234529
-iter:42 loss:9.547 ETA:1 day, 5:16:16.950284
-generate_square_subsequent_mask: torch.Size([24, 24])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([24, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([24, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 24]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 24, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 24, 5], preds : 64, T, 24, 123]
-train_iter preds w/view(-1, 123) : torch.Size([1536, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1536, 5])
-iter:43 loss:10.366 ETA:2 days, 23:30:52.150838
-iter:44 loss:9.579 ETA:1 day, 2:08:42.297724
-iter:45 loss:9.203 ETA:1 day, 1:15:45.995635
-iter:46 loss:8.196 ETA:2 days, 22:20:41.358855
-iter:47 loss:8.556 ETA:1 day, 8:37:14.935976
-iter:48 loss:9.158 ETA:1 day, 0:59:36.931694
-iter:49 loss:9.653 ETA:2 days, 23:14:27.053586
-iter:50 loss:8.477 ETA:1 day, 3:15:48.216820
-iter:51 loss:8.889 ETA:1 day, 2:54:57.015000
-iter:52 loss:8.838 ETA:2 days, 19:19:19.932219
-iter:53 loss:8.234 ETA:1 day, 5:16:41.662825
-generate_square_subsequent_mask: torch.Size([52, 52])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([52, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([52, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 52]), unique : tensor([783], device='cuda:0')
-train_iter preds : torch.Size([64, 52, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
-train_iter GT coords : 64, T, 52, 5], preds : 64, T, 52, 123]
-train_iter preds w/view(-1, 123) : torch.Size([3328, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3328, 5])
-iter:54 loss:9.572 ETA:1 day, 2:05:15.895244
-iter:55 loss:9.053 ETA:3 days, 0:32:17.893659
-iter:56 loss:9.720 ETA:1 day, 1:30:36.527945
-iter:57 loss:9.376 ETA:1 day, 3:57:15.544855
-iter:58 loss:9.969 ETA:1 day, 3:07:57.411031
-iter:59 loss:9.718 ETA:1 day, 2:28:24.356395
-iter:60 loss:9.654 ETA:1 day, 8:46:57.877240
-iter:61 loss:9.432 ETA:1 day, 0:44:25.748869
-iter:62 loss:9.435 ETA:1 day, 4:40:37.229775
-iter:63 loss:9.594 ETA:1 day, 2:02:21.681319
-iter:64 loss:9.419 ETA:1 day, 4:04:57.361084
-iter:65 loss:9.080 ETA:1 day, 3:36:19.274182
+iter:2 loss:15.010 ETA:1 day, 3:13:02.618873
+iter:3 loss:13.298 ETA:1 day, 1:18:29.101254
+generate_square_subsequent_mask: torch.Size([29, 29])
+train_iter preds : torch.Size([64, 29, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 29, 5], preds : 64, T, 29, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1856, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1856, 5])
+iter:4 loss:11.698 ETA:1 day, 1:59:25.786118
+iter:5 loss:11.477 ETA:1 day, 7:50:22.016122
 generate_square_subsequent_mask: torch.Size([37, 37])
-[TransformerDecoder] *** forward: memory.shape=[1][B][torch.Size([60, 16, 512])], tgt.shape=[C][B][torch.Size([37, 16, 512])]
-[TransformerDecoder] *** forward: output=[C][B][torch.Size([37, 16, 512])]
-train_iter vq_loss.shape : torch.Size([4]), VQ codes : torch.Size([64, 37]), unique : tensor([783], device='cuda:0')
 train_iter preds : torch.Size([64, 37, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
 train_iter GT coords : 64, T, 37, 5], preds : 64, T, 37, 123]
 train_iter preds w/view(-1, 123) : torch.Size([2368, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2368, 5])
+iter:6 loss:11.875 ETA:23:21:30.189621
+generate_square_subsequent_mask: torch.Size([45, 45])
+train_iter preds : torch.Size([64, 45, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 45, 5], preds : 64, T, 45, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2880, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2880, 5])
+iter:7 loss:10.821 ETA:1 day, 0:23:41.175419
+iter:8 loss:10.498 ETA:1 day, 0:59:54.931400
+iter:9 loss:10.565 ETA:1 day, 2:37:50.901146
+generate_square_subsequent_mask: torch.Size([26, 26])
+train_iter preds : torch.Size([64, 26, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 26, 5], preds : 64, T, 26, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1664, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1664, 5])
+iter:10 loss:10.894 ETA:1 day, 2:21:20.700369
+iter:11 loss:10.818 ETA:1 day, 2:11:01.277671
+generate_square_subsequent_mask: torch.Size([28, 28])
+train_iter preds : torch.Size([64, 28, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 28, 5], preds : 64, T, 28, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1792, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1792, 5])
+iter:12 loss:10.833 ETA:1 day, 1:01:58.055269
+iter:13 loss:11.253 ETA:1 day, 2:38:10.010793
+generate_square_subsequent_mask: torch.Size([32, 32])
+train_iter preds : torch.Size([64, 32, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 32, 5], preds : 64, T, 32, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2048, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2048, 5])
+iter:14 loss:10.203 ETA:1 day, 1:14:48.908632
+generate_square_subsequent_mask: torch.Size([23, 23])
+train_iter preds : torch.Size([64, 23, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 23, 5], preds : 64, T, 23, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1472, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1472, 5])
+iter:15 loss:10.471 ETA:1 day, 1:29:03.597459
+iter:16 loss:9.953 ETA:1 day, 1:22:32.735676
+iter:17 loss:10.948 ETA:1 day, 8:41:24.850674
+iter:18 loss:9.934 ETA:2 days, 15:04:01.742062
+iter:19 loss:9.132 ETA:1 day, 2:54:33.997695
+generate_square_subsequent_mask: torch.Size([24, 24])
+train_iter preds : torch.Size([64, 24, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 24, 5], preds : 64, T, 24, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1536, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1536, 5])
+iter:20 loss:9.611 ETA:1 day, 1:09:39.749179
+iter:21 loss:10.689 ETA:2 days, 16:10:37.673922
+generate_square_subsequent_mask: torch.Size([30, 30])
+train_iter preds : torch.Size([64, 30, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 30, 5], preds : 64, T, 30, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1920, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1920, 5])
+iter:22 loss:9.441 ETA:1 day, 1:11:28.932879
+generate_square_subsequent_mask: torch.Size([48, 48])
+train_iter preds : torch.Size([64, 48, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 48, 5], preds : 64, T, 48, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3072, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3072, 5])
+iter:23 loss:8.941 ETA:1 day, 1:19:17.633190
+generate_square_subsequent_mask: torch.Size([43, 43])
+train_iter preds : torch.Size([64, 43, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 43, 5], preds : 64, T, 43, 123]
+train_iter preds w/view(-1, 123) : torch.Size([2752, 123]), gt_coords w/reshape(-1, 5) : torch.Size([2752, 5])
+iter:24 loss:8.767 ETA:2 days, 12:11:47.304609
+generate_square_subsequent_mask: torch.Size([31, 31])
+train_iter preds : torch.Size([64, 31, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 31, 5], preds : 64, T, 31, 123]
+train_iter preds w/view(-1, 123) : torch.Size([1984, 123]), gt_coords w/reshape(-1, 5) : torch.Size([1984, 5])
+iter:25 loss:9.254 ETA:1 day, 3:12:28.179370
+iter:26 loss:9.478 ETA:1 day, 2:43:06.148350
+iter:27 loss:9.688 ETA:2 days, 14:32:07.579824
+iter:28 loss:9.303 ETA:1 day, 8:35:44.733530
+iter:29 loss:8.553 ETA:1 day, 1:55:02.070587
+iter:30 loss:8.849 ETA:2 days, 15:31:54.676757
+iter:31 loss:9.192 ETA:1 day, 2:32:44.475600
+iter:32 loss:9.040 ETA:1 day, 2:16:35.171951
+iter:33 loss:9.436 ETA:2 days, 16:22:17.422298
+generate_square_subsequent_mask: torch.Size([53, 53])
+train_iter preds : torch.Size([64, 53, 123]), nce_emb : torch.Size([64, 2, 256]), nce_emb_patch : torch.Size([64, 2, 256])
+train_iter GT coords : 64, T, 53, 5], preds : 64, T, 53, 123]
+train_iter preds w/view(-1, 123) : torch.Size([3392, 123]), gt_coords w/reshape(-1, 5) : torch.Size([3392, 5])
