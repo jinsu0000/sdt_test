@@ -4,6 +4,16 @@ MODEL:
   GLY_DEC_LAYERS: 2
   NUM_HEAD_LAYERS: 1
   NUM_IMGS: 15
+  USE_VQ_CONTENT: true
+VQ:
+  LEVELS: 2        # ← RVQ
+  K: 256           # 레벨당 코드 수
+  DIM: 192         # vq_dim (in/out proj 사이)
+  BETA: 0.20       # commitment (β)
+  DECAY: 0.99
+LOSS:
+  W_VQ: 0.5
+  VQ_WARMUP_STEPS: 10000   # 0 → W_VQ 선형 워밍업
 NUM_GPUS: 1  # TODO, support multi GPUs
 SOLVER:
   BASE_LR: 0.0002
