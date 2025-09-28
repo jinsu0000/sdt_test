@@ -228,10 +228,31 @@ class SDT_Generator(nn.Module):
         print_once(f"SDT_Generator::forward [Decoder Output] pred_sequence: [{pred_sequence.shape[0]}, T, {pred_sequence.shape[2]}] (B, T, C)")
 
         # aux 딕셔너리로 VQ 관련 항목을 함께 리턴
-        aux = {
-            "vq_loss_content": vq_loss_c,     # torch.Scalar(Tensor) or None
-            "vq_info_content": vq_info_c      # dict or None
-        }
+
+        def _dp_pack_vq(info, device):
+            out = {}
+            if info is None:
+                return out
+            def to_tensor(x):
+                if torch.is_tensor(x):
+                    return x
+                try:
+                    # 0-d 텐서로 캐스팅
+                    return torch.tensor(x, device=device)
+                except Exception:
+                    return None
+            # ⚠️ 꼭 필요한 것만 남기기 (dict/list/indices/levels 등은 빼기)
+            for k in ("perplexity", "code_usage"):
+                t = to_tensor(info.get(k))
+                if t is not None:
+                    out[k] = t
+            return out
+
+        # ... 디코딩/EmbtoSeq까지 끝난 뒤:
+        aux = {}
+        if vq_loss_c is not None:
+            aux["vq_loss_content"] = vq_loss_c              # 이미 Tensor
+            aux.update(_dp_pack_vq(vq_info_c, h.device))    # 텐서만 담기
 
         return pred_sequence, nce_emb, nce_emb_patch, aux
 

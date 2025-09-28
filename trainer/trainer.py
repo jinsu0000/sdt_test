@@ -22,6 +22,17 @@ class Trainer:
     def __init__(self, model, criterion, optimizer, data_loader, 
                 logs, char_dict, valid_data_loader=None):
         self.model = model
+        try:
+            import torch.nn as nn
+            if isinstance(self.model, nn.DataParallel):
+                devs = getattr(self.model, 'device_ids', None)
+                if cfg.NUM_GPUS <= 1 or (devs is not None and len(devs) <= 1):
+                    print_once("[Trainer] Unwrapping DataParallel (single GPU).")
+                    self.model = self.model.module
+        except Exception as e:
+            print_once(f"[Trainer] DP unwrap skip: {e}")
+
+        
         self.criterion = criterion
         self.optimizer = optimizer
         self.data_loader = data_loader
@@ -59,38 +70,85 @@ class Trainer:
         preds, nce_emb, nce_emb_patch, aux = self.model(img_list, input_seq, char_img)
         print_once(f"train_iter preds : {preds.shape}, nce_emb : {nce_emb.shape}, nce_emb_patch : {nce_emb_patch.shape}")
         
-        if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
-            self._plot_nce_embedding_2d(nce_emb, writer_id, step)
+        #if step % 100 == 0: #(step+1) > cfg.TRAIN.VALIDATE_BEGIN  and (step+1) % cfg.TRAIN.VALIDATE_ITERS == 0:
+        #    self._plot_nce_embedding_2d(nce_emb, writer_id, step)
 
         # calculate loss
+                # calculate loss
         gt_coords = coords[:, 1:, :]
         print_once(f"train_iter GT coords : {gt_coords.shape[0]}, T, {gt_coords.shape[1]}, {gt_coords.shape[2]}], preds : {preds.shape[0]}, T, {preds.shape[1]}, {preds.shape[2]}]")
+
+        # NCE
         nce_loss_writer = self.nce_criterion(nce_emb, labels=writer_id)
-        nce_loss_glyph = self.nce_criterion(nce_emb_patch)
+        nce_loss_glyph  = self.nce_criterion(nce_emb_patch)
+
+        # GMM
         preds = preds.view(-1, 123)
         gt_coords = gt_coords.reshape(-1, 5)
         print_once(f"train_iter preds w/view(-1, 123) : {preds.shape}, gt_coords w/reshape(-1, 5) : {gt_coords.shape}")
         [o_pi, o_mu1, o_mu2, o_sigma1, o_sigma2, o_corr, o_pen_logits] = get_mixture_coef(preds)
-        moving_loss_all, state_loss = self.pen_criterion(o_pi, o_mu1, o_mu2, o_sigma1, o_sigma2, \
-                                      o_corr, o_pen_logits, gt_coords[:,0].unsqueeze(-1), gt_coords[:,1].unsqueeze(-1), gt_coords[:,2:], step)
-        moving_loss = torch.sum(moving_loss_all) / torch.sum(coords_len)
-        pen_loss = moving_loss + 2*state_loss
-        if aux and (aux.get("vq_loss_content") is not None):
+        moving_loss_all, state_loss = self.pen_criterion(
+            o_pi, o_mu1, o_mu2, o_sigma1, o_sigma2, o_corr, o_pen_logits,
+            gt_coords[:, 0].unsqueeze(-1), gt_coords[:, 1].unsqueeze(-1), gt_coords[:, 2:], step
+        )
+
+        # --- 모든 로스를 스칼라로 축약 ---
+        device = preds.device
+        dtype  = preds.dtype
+
+        def _to_scalar(x, name):
+            if x is None:
+                return None
+            if not torch.is_tensor(x):
+                x = torch.as_tensor(x, device=device, dtype=dtype)
+            if x.ndim > 0:
+                # 필요한 경우 한 번만 로그
+                try:
+                    print_once(f"[loss-reduce] {name}: {tuple(x.shape)} -> mean()")
+                except Exception:
+                    pass
+                x = x.mean()
+            return x
+
+        denom = torch.sum(coords_len).clamp_min(1)   # div-by-zero 방지
+        moving_loss = torch.sum(moving_loss_all) / denom
+        pen_loss    = moving_loss + 2 * state_loss
+
+        pen_loss        = _to_scalar(pen_loss,        "pen_loss")
+        moving_loss     = _to_scalar(moving_loss,     "moving_loss")
+        state_loss      = _to_scalar(state_loss,      "state_loss")
+        nce_loss_writer = _to_scalar(nce_loss_writer, "nce_loss_writer")
+        nce_loss_glyph  = _to_scalar(nce_loss_glyph,  "nce_loss_glyph")
+
+        # VQ loss (있으면)
+        vq_loss_content = None
+        if aux is not None and ("vq_loss_content" in aux) and (aux["vq_loss_content"] is not None):
+            vq_loss_content = _to_scalar(aux["vq_loss_content"], "vq_loss_content")
+
+        # 최종 loss
+        loss = torch.zeros((), device=device, dtype=dtype)
+        for t in (pen_loss, nce_loss_writer, nce_loss_glyph):
+            if t is not None:
+                loss = loss + t
+
+        if (vq_loss_content is not None):
             K = getattr(cfg.LOSS, "VQ_WARMUP_STEPS", 10000)
-            base_w = getattr(cfg.LOSS, "W_VQ", 0.5)           # 기본 0.5
-            step = getattr(self, "global_iter", 0)            # 트레이너에서 유지 중인 전역 스텝
+            base_w = getattr(cfg.LOSS, "W_VQ", 0.5)
+            # self.global_iter가 없으므로 현재 step으로 워밍업
             w_vq = base_w if K <= 0 else min(base_w, base_w * float(step) / float(K))
+            loss = loss + w_vq * vq_loss_content
 
-            loss = pen_loss + nce_loss_writer + nce_loss_glyph + w_vq * aux["vq_loss_content"]   # W_VQ는 0.2~1.0에서 시작 추천
-        else:
-            loss = pen_loss + nce_loss_writer + nce_loss_glyph
-
-        # nan/infinity 체크 추가
+        # nan/infinity 체크
         if (torch.isnan(loss) | torch.isinf(loss)).any():
             print(f"[!!! NaN Detected] at Step {step}")
-            print(f"moving_loss: {moving_loss.item()}, state_loss: {state_loss.item()}")
-            print(f"nce_loss_writer: {nce_loss_writer.item()}, nce_loss_glyph: {nce_loss_glyph.item()}")
-            raise ValueError("NaN detected in loss at step {}".format(step))
+            try:
+                print(f"moving_loss: {moving_loss.item()}, state_loss: {state_loss.item()}")
+                print(f"nce_loss_writer: {nce_loss_writer.item()}, nce_loss_glyph: {nce_loss_glyph.item()}")
+                if vq_loss_content is not None:
+                    print(f"vq_loss_content: {vq_loss_content.item()}")
+            except Exception:
+                pass
+            raise ValueError(f"NaN detected in loss at step {step}")
 
         # backward and update trainable parameters
         self.model.zero_grad()
@@ -134,7 +192,8 @@ class Trainer:
         print_once(f"valid_iter character_id : {character_id.shape}, writer_id : {writer_id.shape}")
          # forward
         with torch.no_grad():
-            preds = self.model.module.inference(img_list, char_img, 120)
+            net = self.model.module if hasattr(self.model, "module") else self.model
+            preds = net.inference(img_list, char_img, 120)
             bs = character_id.shape[0]
             print_once(f"bs : {bs}, preds shape : {preds.shape}")
             SOS = torch.tensor(bs * [[0, 0, 1, 0, 0]]).unsqueeze(1).to(preds)

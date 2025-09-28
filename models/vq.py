@@ -94,7 +94,13 @@ class ResidualVectorQuantizerEMA(nn.Module):
         loss = sum(losses)         # 레벨별 커밋먼트 손실 합
         px = torch.stack([i["perplexity"] for i in infos]).mean()
         usage = torch.stack([i["code_usage"] for i in infos]).mean()
-        info = {"perplexity": px, "code_usage": usage, "levels": len(self.levels)}
+        #info = {"perplexity": px, "code_usage": usage, "levels": len(self.levels)}
+        info = {
+            "perplexity": px,          # Tensor
+            "code_usage": usage,       # Tensor
+            # "levels": len(self.levels)        # ❌ DP에 실지 말기
+            # "levels_info": level_infos        # ❌ DP에 실지 말기
+        }
         return out, loss, info  # 모든 레벨 합성 결과(STE는 내부 VectorQuantizerEMA에서 이미 적용됨)
 
 
