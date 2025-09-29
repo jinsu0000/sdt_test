@@ -106,6 +106,6 @@ if __name__ == "__main__":
     ap.add_argument('--nce_w_glyph_init',  type=float, default=0.5)
     ap.add_argument('--nce_w_writer_final', type=float, default=0.1)
     ap.add_argument('--nce_w_glyph_final',  type=float, default=0.1)
-    ap.add_argument('--nce_warm_steps', type=int, default=50000)
-    ap.add_argument('--nce_decay_steps', type=int, default=150000)
+    ap.add_argument('--nce_warm_steps', type=int, default=30000)
+    ap.add_argument('--nce_decay_steps', type=int, default=60000)
     args = ap.parse_args(); main(args)

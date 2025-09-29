@@ -16,13 +16,13 @@ class SDT_FlowWrapper(nn.Module):
                  H:int=6,          # action chunk length
                  n_layers:int=6, n_head:int=8, ffn_mult:int=4, p:float=0.1,
                  stride_default:int=3,
-                 nce_temperature: float = 0.07):
+                 nce_temperature: float = 0.07
+                 ):
         super().__init__()
         self.sdt = sdt_model
         self.H = H
         self.stride_default = stride_default
         self.d_model = 512
-        self.need_weights = True
 
         print_once(f"SDT_FlowWrapper:: __init__ H: {H}, stride_default: {stride_default}, n_layers: {n_layers}, n_head: {n_head}, ffn_mult: {ffn_mult}, p: {p}")
 
@@ -36,38 +36,72 @@ class SDT_FlowWrapper(nn.Module):
 
         self._last_style_attn = None
         self._last_content_attn = None
+        self._last_xattn_mean = None
         
         # SupCon (NCE) — 기존 구현 사용
         self.supcon = SupConLoss(temperature=nce_temperature)
+    
+    
+    # --------- 한 번만 인코딩 ---------
+    def _encode_style_once(self, style_imgs):
+        """
+        return dict:
+          wtok:[B,4N,512], gtok:[B,4N,512],
+          feats_w:[B,2,256], feats_g:[B,2,256], anchor_num:int, num_imgs:int
+        """
+        device = style_imgs.device
+        B, num_imgs, C, H, W = style_imgs.shape
+        x = style_imgs.reshape(-1, C, H, W)                        # [B*2N,1,H,W] (train) / [B*N,1,H,W] (val)
 
-    # ---------- 스타일/컨텐트 인코딩 ----------
-    @torch.no_grad()
-    def _style_tokens(self, style_imgs):
-        """
-        SDT 인코더로 스타일 토큰 추출.
-        return:
-          wtok: [B, Lw(=4*N), 512]
-          gtok: [B, Lg(=4*N), 512]
-        """
-        B, N, C, H, W = style_imgs.shape
-        print_once(f"SDT_FlowWrapper::_style_tokens style_imgs: {style_imgs.shape}, {style_imgs.dtype}")
-        x = style_imgs.view(-1, C, H, W)                              # [B*N,1,H,W]
-        feat = self.sdt.Feat_Encoder(x)                               # [B*N, 512, 2, 2]
-        feat = feat.reshape(B*N, 512, -1).permute(2, 0, 1)            # [4, B*N, 512]
+        feat = self.sdt.Feat_Encoder(x)                            # [B*?,512,2,2]
+        feat = feat.view(B*num_imgs, 512, -1).permute(2,0,1)       # [4, B*?, 512]
         feat = self.sdt.add_position(feat)
-        print_once(f"SDT_FlowWrapper::_style_tokens [DEBUG] feat: {feat.shape}, {feat.dtype}")
-        mem  = self.sdt.base_encoder(feat)                            # [4, B*N, 512]
-        print_once(f"SDT_FlowWrapper::_style_tokens [DEBUG] mem: {mem.shape}, {mem.dtype}")
-        wmem = self.sdt.writer_head(mem)                              # [4, B*N, 512]
-        gmem = self.sdt.glyph_head(mem)                               # [4, B*N, 512]
-        print_once(f"SDT_FlowWrapper::_style_tokens [DEBUG] wmem: {wmem.shape}, {wmem.dtype}, gmem: {gmem.shape}, {gmem.dtype} ")
-        # → [4*N, B, 512] → [B, 4*N, 512]
-        wtok = rearrange(wmem, 't (b n) c -> b (t n) c', b=B)         # [B, 4*N, 512]
-        gtok = rearrange(gmem, 't (b n) c -> b (t n) c', b=B)         # [B, 4*N, 512]
-        print_once(f"SDT_FlowWrapper::_style_tokens [DEBUG] wtok: {wtok.shape}, {wtok.dtype}, gtok: {gtok.shape}, {gtok.dtype} ")
-        return wtok.contiguous(), gtok.contiguous()
+        mem  = self.sdt.base_encoder(feat)                         # [4, B*?, 512]
+        wmem = self.sdt.writer_head(mem)                           # [4, B*?, 512]
+        gmem = self.sdt.glyph_head(mem)                            # [4, B*?, 512]
 
-    @torch.no_grad()
+        # cond 토큰 (모든 N을 그대로 사용)
+        wtok = rearrange(wmem, 't (b n) c -> b (t n) c', b=B)      # [B,4N,512]
+        gtok = rearrange(gmem, 't (b n) c -> b (t n) c', b=B)      # [B,4N,512]
+
+        # --- NCE 임베딩 (학습시에만 2뷰 가정) ---
+        if num_imgs >= 2:
+            anchor_num = num_imgs // 2
+            p2 = 2 * anchor_num  # 사용할 총 이미지 수 (짝수)
+
+            # Writer SupCon
+            wmem_nce = wmem[:, :B * p2]  # [4, 2B*N, 512]
+            writer_memory = rearrange(wmem_nce, 't (b p n) c -> t (p b) n c', b=B, p=2, n=anchor_num)  # [4,2B,N,512]
+            memory_fea = rearrange(writer_memory, 't b n c -> (t n) b c')                          # [4N,2B,512]
+            compact = memory_fea.mean(0)                                                           # [2B,512]
+            pro_w = self.sdt.pro_mlp_writer(compact)                                              # [2B,256]
+            q_w, p_w = pro_w[:B], pro_w[B:]
+            q_w = F.normalize(q_w, dim=-1); p_w = F.normalize(p_w, dim=-1)
+            feats_w = torch.stack([q_w, p_w], dim=1)                                              # [B,2,256]
+
+            # Glyph SupCon (첫 번째 뷰만)
+            gmem_nce = gmem[:, :B * p2]
+            glyph_memory = rearrange(gmem_nce, 't (b p n) c -> t p b n c', b=B, p=2, n=anchor_num)     # [4,2,B,N,512]
+            patch = glyph_memory[:, 0]                                                             # [4,B,N,512]
+            anc, pos = self.sdt.random_double_sampling(patch)                                      # [L=4,B,N,512]
+            D = anc.shape[-1]
+            anc = anc.reshape(B, -1, D).mean(1, keepdim=True)                                      # [B,1,512]
+            pos = pos.reshape(B, -1, D).mean(1, keepdim=True)                                      # [B,1,512]
+            anc = self.sdt.pro_mlp_character(anc).squeeze(1)                                       # [B,256]
+            pos = self.sdt.pro_mlp_character(pos).squeeze(1)                                       # [B,256]
+            anc = F.normalize(anc, dim=-1); pos = F.normalize(pos, dim=-1)
+            feats_g = torch.stack([anc, pos], dim=1)                                               # [B,2,256]
+        else:
+            anchor_num = 0
+            feats_w = torch.zeros(B,2,256, device=device)
+            feats_g = torch.zeros(B,2,256, device=device)
+
+        return {
+            "wtok": wtok.contiguous(), "gtok": gtok.contiguous(),
+            "feats_w": feats_w, "feats_g": feats_g,
+            "anchor_num": anchor_num, "num_imgs": num_imgs
+        }
+    
     def _content_token(self, char_img):
         """
         SDT Content_TR 출력 평균으로 1토큰 생성.
@@ -77,108 +111,24 @@ class SDT_FlowWrapper(nn.Module):
         cont = cont.mean(0, keepdim=False)          # [B, 512]
         print_once(f"SDT_FlowWrapper::_content_token char_img: {char_img.shape}, {char_img.dtype} -> cont: {cont.shape}, {cont.dtype}")
         return cont.unsqueeze(1)                    # [B, 1, 512]
+    
+    def _make_cond_ctx(self, wtok, gtok, char_img):
+        # 1) encoders (grad ON)
+        ctok = self._content_token(char_img)             # [B, 1, 512]
 
-    @torch.no_grad()
-    def _make_cond_ctx(self, style_imgs, char_img):
-        """
-        Content(1) -> Writer -> Glyph 순으로 2단계 cross-attn하여 cond(1토큰) 생성.
-        return:
-          ctx  : [B, 1, 512]   (cond)
-          Lctx : 1
-        """
-        wtok, gtok = self._style_tokens(style_imgs)     # [B,4N,512] each
-        ctok = self._content_token(char_img)            # [B,1,512]
-        # content -> writer
-        mid, _ = self.mha_w(query=ctok, key=wtok, value=wtok, need_weights=self.need_weights)
-        print_once(f"SDT_FlowWrapper::_make_cond_ctx [DEBUG] mid: {mid.shape}, {mid.dtype}")
-        # mid -> glyph
-        cond, _ = self.mha_g(query=mid, key=gtok, value=gtok, need_weights=self.need_weights)
-        print_once(f"SDT_FlowWrapper::_make_cond_ctx [DEBUG] cond: {cond.shape}, {cond.dtype}")
+        # 2) content -> writer -> glyph 로 cond 2개 생성
+        # wtok [B, Lw, 512], gtok [B, Lg, 512]
+        cond_w, _ = self.mha_w(query=ctok, key=wtok, value=wtok, need_weights=False)  # [B,1,512]
+        cond_g, _ = self.mha_g(query=cond_w, key=gtok, value=gtok, need_weights=False) # [B,1,512]
 
-        if self.need_weights:
-            print_once(f"SDT_FlowWrapper::_make_cond_ctx [DEBUG] style_attn: {_.shape}, {_.dtype}")
-            # content -> writer
-            mid, attn_w_w = self.mha_w(query=ctok, key=wtok, value=wtok, need_weights=True)  # [B,1,4N]
-            print_once(f"[CTX] wtok L={wtok.size(1)}, attn_w_w mean={attn_w_w.mean().item():.4f}, max={attn_w_w.max().item():.4f}")
+        # 3) prefix = [ content | cond_w | cond_g ]  => Lctx = 3
+        ctx = torch.cat([ctok, cond_w, cond_g], dim=1)   # [B, 3, 512]
+        return ctx.contiguous(), 3
 
-            # mid -> glyph
-            cond, attn_w_g = self.mha_g(query=mid, key=gtok, value=gtok, need_weights=True)  # [B,1,4N]
-            print_once(f"[CTX] gtok L={gtok.size(1)}, attn_w_g mean={attn_w_g.mean().item():.4f}, max={attn_w_g.max().item():.4f}")
-            self.need_weights = False
-
-        return cond.contiguous(), 1
-
-    @torch.enable_grad()
-    def nce_losses_supcon(self, style_imgs):
-        """
-        style_imgs: [B, 2*N, 1, H, W]  (훈련에서만 호출)
-        원본 SDT forward()의 NCE 경로를 1:1로 재현.
-        반환: (writer_supcon, glyph_supcon)
-        """
-        import torch
-        import torch.nn.functional as F
-
-        dev = next(self.parameters()).device
-        B, num_imgs, C, H, W = style_imgs.shape
-
-        # 두 뷰가 필요하므로 2의 배수 확인 (홀수면 마지막 1장 드롭)
-        if num_imgs < 2:
-            zero = torch.tensor(0.0, device=dev)
-            return zero, zero
-        if num_imgs % 2 == 1:
-            num_imgs = num_imgs - 1
-            style_imgs = style_imgs[:, :num_imgs]
-
-        anchor_num = num_imgs // 2  # N
-        x = style_imgs.view(-1, C, H, W).to(dev, non_blocking=True)  # [B*2N,1,H,W]
-
-        # ===== 원본 SDT 인코더 경로 복제 =====
-        feat = self.sdt.Feat_Encoder(x)                                # [B*2N, 512, 2, 2]
-        feat = feat.view(B*num_imgs, 512, -1).permute(2, 0, 1)         # [4, B*2N, 512]
-        feat = self.sdt.add_position(feat)
-        mem  = self.sdt.base_encoder(feat)                             # [4, B*2N, 512]
-
-        wmem = self.sdt.writer_head(mem)                               # [4, B*2N, 512]
-        gmem = self.sdt.glyph_head(mem)                                # [4, B*2N, 512]
-
-        # ===== Writer NCE =====
-        # [4, B*2N, 512] -> [4, 2B, N, 512]
-        writer_memory = rearrange(wmem, 't (b p n) c -> t (p b) n c', b=B, p=2, n=anchor_num)
-        # [4, 2B, N, 512] -> [4N, 2B, 512] -> 평균 -> [2B, 512]
-        memory_fea = rearrange(writer_memory, 't b n c -> (t n) b c')  # [4*N, 2B, 512]
-        compact_fea = memory_fea.mean(dim=0)                           # [2B, 512]
-        pro_w = self.sdt.pro_mlp_writer(compact_fea)                   # [2B, 256]
-        # 앞 B = query, 뒤 B = pos
-        q_w, p_w = pro_w[:B], pro_w[B:]
-        q_w = F.normalize(q_w, dim=-1); p_w = F.normalize(p_w, dim=-1)
-        feats_w = torch.stack([q_w, p_w], dim=1)              # [B,2,256]
-        writer_supcon = self.supcon(feats_w)
-
-        # ===== Glyph NCE =====
-        # gmem: [4, B*2N, 512] -> 앞 B만 사용해서 [4, B, N, 512]
-        # gmem: [4, B*2N, 512] -> [4, 2, B, N, 512] 로 '뷰(p)' 차원을 분리
-        glyph_memory = rearrange(
-            gmem, 't (b p n) c -> t p b n c', b=B, p=2, n=anchor_num
-        )  # [4, 2, B, N, 512]
-
-        # 첫 번째 뷰(p=0)만 사용 -> [4, B, N, 512]
-        patch_emb = glyph_memory[:, 0]  # [4, B, N, 512]
-
-        # 같은 글자 내 토큰에서 anchor/positive 샘플 (원본 함수와 동일 요구형태)
-        anc, pos = self.sdt.random_double_sampling(patch_emb)  # OK: [L=4, B, N, D=512]
-
-        D = anc.shape[-1]
-        anc = anc.reshape(B, -1, D).mean(dim=1, keepdim=True)  # [B, 1, 512]
-        pos = pos.reshape(B, -1, D).mean(dim=1, keepdim=True)  # [B, 1, 512]
-
-        anc = self.sdt.pro_mlp_character(anc).squeeze(1)  # [B, 256]
-        pos = self.sdt.pro_mlp_character(pos).squeeze(1)  # [B, 256]
-        anc = torch.nn.functional.normalize(anc, dim=-1)
-        pos = torch.nn.functional.normalize(pos, dim=-1)
-
-        glyph_feats = torch.stack([anc, pos], dim=1)  # [B, 2, 256]
-        glyph_supcon = self.supcon(glyph_feats)
-
+    # --------- Losses (precomputed 사용) ---------
+    def nce_losses_supcon(self, pre):
+        writer_supcon = self.supcon(pre["feats_w"])
+        glyph_supcon  = self.supcon(pre["feats_g"])
         return writer_supcon, glyph_supcon
     
     def get_diag_attn(self):
@@ -214,7 +164,7 @@ class SDT_FlowWrapper(nn.Module):
         self._last_xattn_mean = xa.mean().item() if xa is not None else None
 
     # ---------- 학습 로스 ----------
-    def flow_match_loss(self, style_imgs, coords, char_img,
+    def flow_match_loss(self, coords, cond_ctx, Lctx:int,
                         tau_beta=(2.0,4.0), stride:int=None):
         """
         coords: [B, T, 5]  (dx,dy, one-hot(3))
@@ -226,10 +176,11 @@ class SDT_FlowWrapper(nn.Module):
         B, T, C = coords.shape
         H = self.H
         stride = stride or self.stride_default
-        print_once(f"SDT_FlowWrapper::flow_match_loss style_imgs: {style_imgs.shape}, {style_imgs.dtype}, B: {B}, char_img: {char_img.shape}, {char_img.dtype}")
+        print_once(f"SDT_FlowWrapper::flow_match_loss B: {B}, T: {T}, C: {C}, H: {H}, stride: {stride}, cond_ctx: {cond_ctx.shape}, {cond_ctx.dtype}")
 
-        # cond context
-        ctx, Lctx = self._make_cond_ctx(style_imgs, char_img)   # [B,1,512], 1
+        loss_flow = coords.new_tensor(0.0)
+        loss_pen  = coords.new_tensor(0.0)
+        n_blocks  = 0
 
         # ---- 시퀀스 전체에서 EOS 위치 산출 ----
         pen_1hot  = coords[..., 2:]                  # [B,T,3]
@@ -241,16 +192,11 @@ class SDT_FlowWrapper(nn.Module):
         ) # [B]
         print_once(f"SDT_FlowWrapper::flow_match_loss B={B} T={T} H={H} stride={stride} | EOS%={(has_eos.float().mean()*100):.1f} | first_eos(mean)={first_eos.float().mean().item():.1f}")
 
-
         # Δ 유효:  t < first_eos
         idxs = torch.arange(T, device=device)[None, :].expand(B, T)
         valid_delta_full = (idxs < first_eos[:, None])           # [B,T]
         # pen 유효: t <= first_eos (EOS 프레임 포함)
         valid_pen_full   = (idxs <= first_eos[:, None])          # [B,T]
-
-        loss_flow = coords.new_tensor(0.0)
-        loss_pen  = coords.new_tensor(0.0)
-        n_blocks  = 0
 
         for start in range(0, T, stride):
             end = min(T, start + H)
@@ -290,14 +236,14 @@ class SDT_FlowWrapper(nn.Module):
             eps = torch.randn_like(A_gt) * std
             A_tau = tau.view(B,1,1) * A_gt + (1 - tau.view(B,1,1)) * eps  # [B,H,2]
 
-            if start == 0:
-                print_once(f"[FM-win0] Lcur={Lcur}, pad={pad}, validΔ={int(valid_delta.sum())}, validPen={int(valid_pen.sum())}, "
-                        f"std={std.view(-1).tolist()}")
+            # if start == 0:
+            #     print_once(f"[FM-win0] Lcur={Lcur}, pad={pad}, validΔ={int(valid_delta.sum())}, validPen={int(valid_pen.sum())}, "
+            #             f"std={std.view(-1).tolist()}")
 
             # 정책
             act_emb   = self.action_embed(A_tau, tau, start_idx=start)      # [B,H,512]
             attn_mask = build_block_mask(Lctx, H, device=device)
-            v, pen_logits = self.policy(ctx, act_emb, None, attn_mask)      # v:[B,H,2], pen_logits:[B,H,3]
+            v, pen_logits = self.policy(cond_ctx, act_emb, None, attn_mask)      # v:[B,H,2], pen_logits:[B,H,3]
 
             _check_finite(v, "policy output v")
             _check_finite(pen_logits, "policy output pen_logits")
@@ -330,16 +276,6 @@ class SDT_FlowWrapper(nn.Module):
                                 tgt_lbl.reshape(-1),
                                 ignore_index=-100)
             loss_pen += lp
-
-
-            if start == 0:
-                # lf/ls/lp는 위에서 계산된 텐서들 (없으면 0으로 대체)
-                lf_val = float(lf.item()) if 'lf' in locals() else 0.0
-                ls_val = float(ls.item()) if 'ls' in locals() else 0.0
-                lp_val = float(lp.item()) if 'lp' in locals() else 0.0
-                print_once(f"[FM-win0] losses: ΔMSE={lf_val:.4f} smooth={ls_val:.4f} penCE={lp_val:.4f}")
-
-
             n_blocks += 1
 
         # 평균
@@ -347,6 +283,21 @@ class SDT_FlowWrapper(nn.Module):
         loss_pen  = loss_pen  / max(n_blocks, 1)
         return loss_flow, loss_pen
 
+    def forward(self, style_imgs, coords, char_img, return_nce: bool=True):
+        pre = self._encode_style_once(style_imgs)                     # wtok/gtok + NCE feats
+        cond_ctx, Lctx = self._make_cond_ctx(pre["wtok"], pre["gtok"], char_img)
+        loss_flow, loss_pen = self.flow_match_loss(coords, cond_ctx, Lctx)
+        if return_nce and pre["num_imgs"] >= 2:
+            writer_supcon, glyph_supcon = self.nce_losses_supcon(pre)
+        else:
+            z = (loss_flow.detach()*0)
+            writer_supcon, glyph_supcon = z, z
+        return {
+            "loss_flow": loss_flow,
+            "loss_pen":  loss_pen,
+            "nce_w":     writer_supcon,
+            "nce_g":     glyph_supcon,
+        }
 
     # ---------- 추론: 청크 + 앙상블 ----------
     @torch.no_grad()
@@ -361,7 +312,7 @@ class SDT_FlowWrapper(nn.Module):
         Temporal ensembling(삼각가중), R-step 재계획.
         return: [B, T, 5]
         """
-        device = next(self.parameters()).device
+        device = style_imgs.device
         B = style_imgs.size(0)
         H = self.H
         stride = stride if stride is not None else self.stride_default
@@ -369,7 +320,8 @@ class SDT_FlowWrapper(nn.Module):
 
         print_once(f"SDT_FlowWrapper::flow_infer style_imgs: {style_imgs.shape}, {style_imgs.dtype}, B: {B}, char_img: {char_img.shape}, {char_img.dtype}, T: {T}, steps: {steps}, stride: {stride}, replan: {replan}, solver: {solver}, micro_pen_ensemble: {micro_pen_ensemble}, micro_pen_weight: {micro_pen_weight}")
 
-        ctx, Lctx = self._make_cond_ctx(style_imgs, char_img)  # [B,1,512], 1
+        pre = self._encode_style_once(style_imgs)               # wtok/gtok 생성
+        ctx, Lctx = self._make_cond_ctx(pre["wtok"], pre["gtok"], char_img)
 
         # 누적 버퍼
         acc_xy  = torch.zeros(B, T, 2, device=device)
