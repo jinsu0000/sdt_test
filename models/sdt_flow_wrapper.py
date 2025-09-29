@@ -304,8 +304,9 @@ class SDT_FlowWrapper(nn.Module):
     def flow_infer(self, style_imgs, char_img, T:int,
                 steps:int=20, stride:int=None, replan:int=None,
                 solver:str="euler",               # NEW: "euler" | "rk4"
-                micro_pen_ensemble:bool=True,     # NEW: 내부 스텝 pen 앙상블
-                micro_pen_weight:str="linear"     # NEW: "linear" | "uniform"
+                micro_pen_ensemble:bool=False,     # NEW: 내부 스텝 pen 앙상블
+                micro_pen_weight:str="linear",     # NEW: "linear" | "uniform"
+                temporal_ensemble:bool=False        # NEW: 시간축 앙상블 on/off
                 ):
         """
         오일러/ RK4 적분으로 Δx,Δy 생성 + pen 확률 → one-hot.
@@ -323,10 +324,11 @@ class SDT_FlowWrapper(nn.Module):
         pre = self._encode_style_once(style_imgs)               # wtok/gtok 생성
         ctx, Lctx = self._make_cond_ctx(pre["wtok"], pre["gtok"], char_img)
 
-        # 누적 버퍼
-        acc_xy  = torch.zeros(B, T, 2, device=device)
-        acc_pen = torch.zeros(B, T, 3, device=device)
-        acc_w   = torch.zeros(B, T, 1, device=device)
+        if temporal_ensemble:
+            # 누적 버퍼
+            acc_xy  = torch.zeros(B, T, 2, device=device)
+            acc_pen = torch.zeros(B, T, 3, device=device)
+            acc_w   = torch.zeros(B, T, 1, device=device)
 
         def w_tri(h: int):  # 청크 내부 삼각 가중 (offset 최근일수록 가중↑)
             return torch.linspace(1, h, steps=h, device=device) / max(h, 1)
@@ -402,21 +404,27 @@ class SDT_FlowWrapper(nn.Module):
 
             if t == 0:
                 pen_summary = pen_prob.mean(dim=(0,1)).tolist()  # [3]
-                print_once(f"[INF-chunk0] h={h}, a.std={a.std().item():.4f}, pen_prob(mean)={pen_summary}, "
-                        f"acc_w.sum(firstR)={acc_w[:, t:t+min(replan,h), :].sum().item():.2f}")
+                print_once(f"[INF-chunk0] h={h}, a.std={a.std().item():.4f}, pen_prob(mean)={pen_summary}")
 
 
-            # ---------- 시간축 앙상블(청크 오프셋) ----------
-            w = w_tri(h).view(1, h, 1)                                        # [1,h,1]
-            acc_xy[:,  t:t+h, :] += w * a
-            acc_pen[:, t:t+h, :] += w * pen_prob
-            acc_w[:,   t:t+h, :] += w
-
-            # ---------- 앞 R 스텝 확정 ----------
             R = min(replan, T - t)
-            wsum = acc_w[:, t:t+R, :].clamp_min(1e-8)
-            xy   = acc_xy[:, t:t+R, :] / wsum                                  # [B,R,2]
-            pen  = acc_pen[:, t:t+R, :] / wsum                                  # [B,R,3]
+            if temporal_ensemble:
+                # ---------- 시간축 앙상블(청크 오프셋) ----------
+                w = w_tri(h).view(1, h, 1)                                        # [1,h,1]
+                acc_xy[:,  t:t+h, :] += w * a
+                acc_pen[:, t:t+h, :] += w * pen_prob
+                acc_w[:,   t:t+h, :] += w
+
+                # ---------- 앞 R 스텝 확정 ----------
+                wsum = acc_w[:, t:t+R, :].clamp_min(1e-8)
+                xy   = acc_xy[:, t:t+R, :] / wsum                                  # [B,R,2]
+                pen  = acc_pen[:, t:t+R, :] / wsum                                  # [B,R,3]
+            else:
+                # NEW: 앙상블 OFF — 현재 청크 결과만 사용
+                # replan 유지: h개 중 앞 R개만 확정(commit)
+                xy  = a[:, :R, :]                                      # [B,R,2]
+                pen = pen_prob[:, :R, :]                               # [B,R,3]
+
             pen_oh = torch.nn.functional.one_hot(pen.argmax(-1), num_classes=3).to(pen).float()
             step_chunk = torch.cat([xy, pen_oh], dim=-1)                        # [B,R,5]
 

@@ -51,7 +51,7 @@ def normalize_xys(xys):
 '''
 description: Rendering offline character images by connecting coordinate points
 '''
-def coords_render(coordinates, split, width, height, thickness, board=5):
+def coords_render(coordinates, split, width, height, thickness, board=5, show_pen_state=False):
     canvas_w = width  
     canvas_h = height  
     board_w = board  
@@ -71,6 +71,7 @@ def coords_render(coordinates, split, width, height, thickness, board=5):
     if split:
         ids = np.where(coordinates[:, -1] == 1)[0] 
         if len(ids) < 1:  ### if not exist [0, 0, 1]
+            print("[Warning] coords_render: no [0,0,1] in the sequence!")
             ids = np.where(coordinates[:, 3] == 1)[0] + 1
             if len(ids) < 1: ### if not exist [0, 1, 0]
                 ids = np.array([len(coordinates)])
@@ -78,7 +79,7 @@ def coords_render(coordinates, split, width, height, thickness, board=5):
             else:
                 xys_split = np.split(coordinates, ids, axis=0)
         else:  ### if exist [0, 0, 1]
-            remove_end = np.split(coordinates, ids, axis=0)[0]
+            remove_end = np.split(coordinates, ids+1, axis=0)[0]
             ids = np.where(remove_end[:, 3] == 1)[0] + 1 ### break in [0, 1, 0]
             xys_split = np.split(remove_end, ids, axis=0)
     else:
@@ -93,6 +94,19 @@ def coords_render(coordinates, split, width, height, thickness, board=5):
     canvas = Image.new(mode='L', size=(canvas_w, canvas_h), color=255)
     draw = ImageDraw.Draw(canvas)
 
+    # show_pen_state면 색 점을 찍기 위해 RGB로 전환
+    if show_pen_state:
+        canvas = canvas.convert("RGB")
+        draw = ImageDraw.Draw(canvas)
+        r = 2
+        # class → color (현재 파이프라인엔 EOC 없음: 0/1/2만 존재)  :contentReference[oaicite:3]{index=3}
+        color_map = {
+            0: (0, 128, 255),  # move: blue
+            1: (0, 255, 0),      # up/neutral: green
+            2: (255, 0, 0),    # EOS: red
+        }
+
+
     for stroke in xys_split:
         xs, ys = stroke[:, 0], stroke[:, 1]
         xys = np.stack([xs, ys], axis=-1).reshape(-1)
@@ -100,6 +114,34 @@ def coords_render(coordinates, split, width, height, thickness, board=5):
         xys[1::2] = (xys[1::2] - min_y) / original_size * p_canvas_h + board_h
         xys = np.round(xys)
         draw.line(xys.tolist(), fill=0, width=thickness)
+        # --- pen state 점 덧그리기 (옵션) ---
+        if show_pen_state:
+            xs_n = np.round((xs - min_x) / original_size * p_canvas_w + board_w).astype(int)
+            ys_n = np.round((ys - min_y) / original_size * p_canvas_h + board_h).astype(int)
+
+        # --- pen state 점 덧그리기 (옵션; one-hot 값으로 결정) ---
+        if show_pen_state:
+            xs_n = np.round((xs - min_x) / original_size * p_canvas_w + board_w)
+            ys_n = np.round((ys - min_y) / original_size * p_canvas_h + board_h)
+            # 안전: finite 체크 + int 변환
+            xs_n = xs_n.astype(np.int64, copy=False)
+            ys_n = ys_n.astype(np.int64, copy=False)
+
+            if stroke.shape[1] >= 5:
+                pen_idx = stroke[:, 2:].argmax(axis=-1)  # [len(stroke)]
+            else:
+                pen_idx = np.zeros(len(stroke), dtype=np.int64)
+
+            for i in range(len(stroke)):
+                cx, cy = int(xs_n[i]), int(ys_n[i])
+                c = int(pen_idx[i])
+                color = color_map.get(c, (255, 255, 255))
+                # PIL 안정성: 사각형 좌표 정렬(최소/최대)로 ValueError 예방
+                x0, x1 = cx - r, cx + r
+                y0, y1 = cy - r, cy + r
+                if x0 > x1: x0, x1 = x1, x0
+                if y0 > y1: y0, y1 = y1, y0
+                draw.ellipse([x0, y0, x1, y1], fill=color)
     return canvas
 
 # fix random seeds for reproducibility

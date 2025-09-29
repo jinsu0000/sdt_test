@@ -30,6 +30,16 @@ def lengths_from_eos_or_nz(coords: torch.Tensor) -> torch.Tensor:
     lengths = torch.where(has_eos, first_eos + 1, nz_len)
     return lengths.clamp(max=T)
 
+def _valid_seq_list(lst):
+    # dxdynp_to_list가 반환하는 리스트가 비어있지 않고,
+    # 각 토막 길이가 짝수( x,y 쌍 )이며 최소 한 토막은 존재하는지 체크
+    if not isinstance(lst, list) or len(lst) == 0:
+        return False
+    for seg in lst:
+        if not isinstance(seg, (list, tuple)) or len(seg) < 2 or len(seg) % 2 != 0:
+            return False
+    return True
+
 
 def main(opt):
     # ----- cfg / device -----
@@ -105,7 +115,7 @@ def main(opt):
             )         # [B,T,5]
 
             # --- SOS 붙이기(원본 포맷) ---
-            SOS = torch.tensor([[0.,0.,1.,0.,0.]], device=device).expand(B,1,5)
+            SOS = torch.tensor([[0, 0, 1, 0, 0]], device=device).expand(B,1,5)
             pred = torch.cat([SOS, pred], dim=1)              # [B, T+1, 5]
             pred_np = pred.detach().cpu().numpy()
 
@@ -116,6 +126,12 @@ def main(opt):
                 for i in range(B):
                     pred_list, _  = dxdynp_to_list(pred_np[i])     # pen 기반 split & EOS 컷
                     coord_list, _ = dxdynp_to_list(coords_np[i])   # GT도 동일 포맷
+
+                    if not (_valid_seq_list(pred_list) and _valid_seq_list(coord_list)):
+                        # 디버그 로깅 후 skip
+                        print(f"[SKIP] malformed sample: w={writer_id[i].item()} ch={character_id[i].item()}")
+                        continue
+
                     rec = {'coordinates': pred_list,
                            'writer_id': writer_id[i].item(),
                            'character_id': character_id[i].item(),
@@ -129,7 +145,7 @@ def main(opt):
 
             elif opt.store_type == 'img':
                 for i in range(B):
-                    sk_pil = coords_render(pred_np[i], split=True, width=256, height=256, thickness=8, board=0)
+                    sk_pil = coords_render(pred_np[i], split=True, width=256, height=256, thickness=8, board=0, show_pen_state=True)
                     ch = char_dict[character_id[i].item()]
                     save_path = os.path.join(opt.save_dir, 'test', f"{writer_id[i].item()}_{ch}.png")
                     try:
@@ -147,14 +163,14 @@ if __name__ == '__main__':
     ap.add_argument('--store_type', default='online', choices=['online','img'])
     ap.add_argument('--sample_size', default='500')       # 'all' 또는 숫자 문자열
     # FM/청크 하이퍼
-    ap.add_argument('--H', type=int, default=6)           # chunk length
+    ap.add_argument('--H', type=int, default=8)           # chunk length
     ap.add_argument('--T', type=int, default=120)         # total steps per char (원본처럼)
     ap.add_argument('--steps', type=int, default=20)      # Euler NFE
-    ap.add_argument('--stride', type=int, default=3)      # replan stride (=R)
-    ap.add_argument('--replan', type=int, default=3)      # 실행 R (기본 stride와 동일)
+    ap.add_argument('--stride', type=int, default=4)      # replan stride (=R)
+    ap.add_argument('--replan', type=int, default=4)      # 실행 R (기본 stride와 동일)
 
     ap.add_argument('--solver', default='rk4', choices=['euler','rk4'])
-    ap.add_argument('--micro_pen', action='store_true', help='pen logits micro-ensemble on')
+    ap.add_argument('--micro_pen', action='store_true', default=False, help='pen logits micro-ensemble on')
     ap.add_argument('--micro_pen_weight', default='linear', choices=['linear','uniform'])
 
     args = ap.parse_args()

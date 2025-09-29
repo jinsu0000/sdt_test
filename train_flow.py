@@ -94,7 +94,7 @@ if __name__ == "__main__":
     ap.add_argument('--layers', type=int, default=6)
     ap.add_argument('--heads', type=int, default=8)
     ap.add_argument('--ffn_mult', type=int, default=4)
-    ap.add_argument('--stride', type=int, default=3, help='학습 윈도우 stride (= R 기본값)')
+    ap.add_argument('--stride', type=int, default=4, help='학습 윈도우 stride (= R 기본값)')
     # Optim
     ap.add_argument('--lr', type=float, default=2e-4)
     ap.add_argument('--max_iter', type=int, default=200000)

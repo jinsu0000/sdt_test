@@ -83,8 +83,8 @@ class TrainerFlow:
     def _tb_samples(self, gt_coords, preds, character_id, char_img_batch, step, img_w=64, img_h=64):
         img_tensors = []; batch_idx = 0; font = ImageFont.load_default()
         for i, _ in enumerate(gt_coords):
-            gt_img = coords_render(gt_coords[i], split=True, width=img_w, height=img_h, thickness=1)
-            pred_img = coords_render(preds[i],   split=True, width=img_w, height=img_h, thickness=1)
+            gt_img = coords_render(gt_coords[i], split=True, width=img_w, height=img_h, thickness=1, show_pen_state=True)
+            pred_img = coords_render(preds[i],   split=True, width=img_w, height=img_h, thickness=1, show_pen_state=True)
             char_img_np = (char_img_batch[i].cpu().numpy().squeeze() * 255).astype('uint8')
             from PIL import Image as _Image
             char_img_pil = _Image.fromarray(char_img_np).convert("RGB").resize((img_w, img_h))
