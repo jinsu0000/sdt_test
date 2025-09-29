@@ -98,7 +98,7 @@ def coords_render(coordinates, split, width, height, thickness, board=5, show_pe
     if show_pen_state:
         canvas = canvas.convert("RGB")
         draw = ImageDraw.Draw(canvas)
-        r = 2
+        r = 1
         # class → color (현재 파이프라인엔 EOC 없음: 0/1/2만 존재)  :contentReference[oaicite:3]{index=3}
         color_map = {
             0: (0, 128, 255),  # move: blue
@@ -180,21 +180,29 @@ def writeCache(env, cache):
 '''
 description: convert the np version of coordinates to the list counterpart
 '''
-def dxdynp_to_list(coordinates):
-    ids = np.where(coordinates[:, -1] == 1)[0]
-    length = coordinates[:, 2:4].sum()
+def dxdynp_to_list(coordinates, eos_trunc: bool = False):
+    ids = np.where(coordinates[:, -1] == 1)[0]  # Pen_end(EOC) 위치
+    # ---- NEW: 잘라낼 시퀀스 선택 (원본 유지 + eos_trunc 추가) ----
     if len(ids) < 1:  ### if not exist [0, 0, 1]
-        ids = np.where(coordinates[:, 3] == 1)[0] + 1
+        seq = coordinates
+        if eos_trunc:
+            eos_ids = np.where(seq[:, 3] == 1)[0]  # Pen_up(EOS) 위치
+            if len(eos_ids) > 0:
+                seq = seq[:eos_ids[0] + 1]        # 첫 EOS '포함'까지 자르기
+        ids = np.where(seq[:, 3] == 1)[0] + 1
         if len(ids) < 1: ### if not exist [0, 1, 0]
-            ids = np.array([len(coordinates)])
-            xys_split = np.split(coordinates, ids, axis=0)[:-1] # remove the blank list
+            ids = np.array([len(seq)])
+            xys_split = np.split(seq, ids, axis=0)[:-1] # remove the blank list
         else:
-            xys_split = np.split(coordinates, ids, axis=0)
+            xys_split = np.split(seq, ids, axis=0)
     else:  ### if exist [0, 0, 1]
+        # 원본과 동일: EOC '직전'까지만 사용 (EOC 프레임 제외)
         remove_end = np.split(coordinates, ids, axis=0)[0]
+        seq = remove_end
         ids = np.where(remove_end[:, 3] == 1)[0] + 1 ### break in [0, 1, 0]
         xys_split = np.split(remove_end, ids, axis=0)[:-1] # split from the remove_end
-    
+
+    # ---- 원본 그대로: 스트로크를 [x0,y0,x1,y1,...]로 변환 ----
     coord_list = []
     for stroke in xys_split:
         xs, ys = stroke[:, 0], stroke[:, 1]
@@ -203,6 +211,8 @@ def dxdynp_to_list(coordinates):
             coord_list.append(xys)
         else:
             pass
+
+    length = len(seq)  # NEW: 실제 사용한 구간 길이
     return coord_list, length
 
 '''

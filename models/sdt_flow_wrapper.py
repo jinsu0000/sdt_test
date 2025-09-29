@@ -243,7 +243,15 @@ class SDT_FlowWrapper(nn.Module):
             # 정책
             act_emb   = self.action_embed(A_tau, tau, start_idx=start)      # [B,H,512]
             attn_mask = build_block_mask(Lctx, H, device=device)
-            v, pen_logits = self.policy(cond_ctx, act_emb, None, attn_mask)      # v:[B,H,2], pen_logits:[B,H,3]
+            v, _ = self.policy(cond_ctx, act_emb, None, attn_mask)          # v:[B,H,2]
+            #v, pen_logits = self.policy(cond_ctx, act_emb, None, attn_mask)      # v:[B,H,2], pen_logits:[B,H,3]
+
+            # ✅ pen은 τ=1에서 따로 예측 (라벨과 시계열 정합)
+            tau1 = torch.ones(B, 1, device=device)
+            # - A_gt 기준으로 pen 예측 (패딩/마스크는 아래에서 무시됨)
+            act_pen = self.action_embed(A_gt, tau1, start_idx=start)        # [B,H,512]
+            _, pen_logits = self.policy(cond_ctx, act_pen, None, attn_mask) # pen_logits:[B,H,3]
+
 
             _check_finite(v, "policy output v")
             _check_finite(pen_logits, "policy output pen_logits")
@@ -272,9 +280,15 @@ class SDT_FlowWrapper(nn.Module):
             tgt_lbl = P_gt.argmax(-1)                                       # [B,H] (0/1/2)
             ignore_mask = (~valid_pen) | (pad_mask == 0)                    # [B,H]  (무효 or 패딩)
             tgt_lbl = tgt_lbl.masked_fill(ignore_mask, -100)
-            lp = F.cross_entropy(pen_logits.reshape(-1,3),
-                                tgt_lbl.reshape(-1),
-                                ignore_index=-100)
+
+            # ✅ EOS 클래스 가중치(예: 2.0)로 희소 보정
+            class_w = torch.tensor([1.0, 1.0, 2.0], device=device)          # 필요시 1.5~3.0 튜닝
+            lp = F.cross_entropy(
+                pen_logits.reshape(-1, 3),
+                tgt_lbl.reshape(-1),
+                ignore_index=-100,
+                weight=class_w,                                             # ✅
+            )
             loss_pen += lp
             n_blocks += 1
 

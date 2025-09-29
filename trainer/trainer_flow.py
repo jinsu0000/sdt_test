@@ -122,9 +122,9 @@ class TrainerFlow:
         t = min(1.0, max(0.0, (step - self.nce_warm_steps) / max(1, self.nce_decay_steps)))
         return float(w_final + 0.5*(w_init - w_final)*(1 + math.cos(math.pi * t)))
 
-    def train(self, max_iter):
+    def train(self, max_iter, start_step: int = 0):
         train_iter = iter(self.data_loader)
-        for step in range(max_iter):
+        for step in range(start_step, max_iter):
             try:
                 data = next(train_iter)
             except StopIteration:
@@ -186,7 +186,7 @@ class TrainerFlow:
                 with torch.no_grad():
                     model = self._raw_model()
                     B, T, _ = coords.shape
-                    delta5 = model.flow_infer(img_list[:1], char_img[:1], T=min(120, T))
+                    delta5 = model.flow_infer(img_list[:1], char_img[:1], T=120)
                     # delta5가 이미 [B,T,5]면 그대로, 아니라면 dxdy만 왔던 과거 버전 호환
                     print_once(f"trainer_flow::train tb_sample() delta5.size(-1) = {delta5.size(-1)}")
                     if delta5.size(-1) == 5:

@@ -71,6 +71,22 @@ def main(opt):
             model.load_state_dict({k.replace("module.", ""): v for k, v in state.get("model", state).items()},
                                   strict=False)
 
+        # --- NEW: optimizer & step도 함께 로드 ---
+        if isinstance(state, dict) and "optimizer" in state:
+            try:
+                optm.load_state_dict(state["optimizer"])
+                print_once("[RESUME] optimizer state loaded.")
+            except Exception as e:
+                print_once(f"[RESUME] optimizer load skipped: {e}")
+        start_step = int(state.get("step", 0)) if isinstance(state, dict) else 0
+        if start_step > 0:
+            print_once(f"[RESUME] resume training from step={start_step}")
+        else:
+            print_once("[RESUME] no step found in checkpoint; start from 0")
+    else:
+        start_step = 0
+
+
     # --- trainer ---
     trainer = TrainerFlow(
         flow, optm, train_loader, logs, char_dict, valid_data_loader=test_loader,
@@ -82,7 +98,7 @@ def main(opt):
 
     max_iter = getattr(cfg.SOLVER, "MAX_ITER", opt.max_iter)
     print_once(f"[INFO] max_iter: {max_iter}")
-    trainer.train(max_iter=max_iter)
+    trainer.train(max_iter=max_iter, start_step=start_step)
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
