@@ -132,7 +132,6 @@ class TrainerFlow:
 
             coords = data['coords'].cuda(non_blocking=True)
             character_id = data['character_id'].long().cuda(non_blocking=True)
-            # writer_id = data['writer_id'].long().cuda(non_blocking=True)  # (필요시 사용)
             img_list = data['img_list'].cuda(non_blocking=True)
             char_img = data['char_img'].cuda(non_blocking=True)
 
@@ -143,14 +142,15 @@ class TrainerFlow:
             wW = self._sched(step, self.nce_w_writer_init, self.nce_w_writer_final) * self.nce_w_writer
             wG = self._sched(step, self.nce_w_glyph_init,  self.nce_w_glyph_final)  * self.nce_w_glyph
 
-            # === 핵심: forward() 한 번 호출 → DP가 병렬화 ===
+            # === forward ===
             out = self.model_flow(img_list, coords, char_img, return_nce=True)
             lf  = out["loss_flow"].mean()
             lp  = out["loss_pen"].mean()
             lw  = out["nce_w"].mean()
             lg  = out["nce_g"].mean()
+            pa  = out["pen_acc"].mean()   # ✅ pen acc
 
-            loss = lf + lp + wW * lw + wG * lg
+            loss = lf + lp + wW * lw + wG * lg  # 기존 유지(원하면 λ_pen 곱은 이후 튜닝)
 
             self.optimizer.zero_grad(set_to_none=True)
             loss.backward()
@@ -158,11 +158,12 @@ class TrainerFlow:
             self.optimizer.step()
 
             # ---- TensorBoard ----
-            self.tb_summary.add_scalars("loss_flow", {
+            self.tb_summary.add_scalars("loss", {
                 "flow":  float(lf.detach().cpu()),
-                "pen":   float(lp.detach().cpu()),
+                "pen":   float(lp.detach().cpu()),        # ✅ pen loss
                 "total": float(loss.detach().cpu()),
             }, step)
+            self.tb_summary.add_scalar("metrics/pen_acc", float(pa.detach().cpu()), step)  # ✅ pen acc
             self.tb_summary.add_scalars("loss_nce", {
                 "writer_supcon": float(lw.detach().cpu()),
                 "glyph_supcon":  float(lg.detach().cpu()),
@@ -174,8 +175,8 @@ class TrainerFlow:
             dt = time.time() - t0
             left = datetime.timedelta(seconds=int((max_iter - step) * max(dt, 1e-3)))
             if (step % 10) == 0:
-                extra = {"flow": lf.detach(), "pen": lp.detach(), "wNCE": lw.detach(), "gNCE": lg.detach(),
-                         "wW": wW, "wG": wG}
+                extra = {"flow": lf.detach(), "pen": lp.detach(), "wNCE": lw.detach(), "gNCE": lg.detach(), "pen_acc": pa.detach(),
+                        "wW": wW, "wG": wG}
                 self._progress(step, loss.detach(), left, extra=extra)
             else:
                 self._progress(step, loss.detach(), left)
@@ -192,7 +193,6 @@ class TrainerFlow:
                     if delta5.size(-1) == 5:
                         pred = delta5
                     else:
-                        # 구버전 호환: pen-down 기본 + 마지막 프레임 EOS 강제
                         pred = torch.zeros(1, delta5.size(1), 5, device=delta5.device)
                         pred[..., :2] = delta5
                         pred[..., 2] = 0.0  # pen0
@@ -203,7 +203,8 @@ class TrainerFlow:
                         pred[:, -1, 4] = 1.0        # <-- EOS (col=4)
                     
                     self._tb_samples(coords[:1].cpu().numpy(), pred.cpu().numpy(),
-                                     character_id[:1].cpu(), char_img[:1].cpu(), step)
+                                    character_id[:1].cpu(), char_img[:1].cpu(), step)
 
             if (step+1) % 10000 == 0:
                 self._save_checkpoint(step)
+

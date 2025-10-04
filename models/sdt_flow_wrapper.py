@@ -181,6 +181,9 @@ class SDT_FlowWrapper(nn.Module):
         loss_flow = coords.new_tensor(0.0)
         loss_pen  = coords.new_tensor(0.0)
         n_blocks  = 0
+        # ✅ pen accuracy 집계
+        pen_correct = coords.new_tensor(0.0)
+        pen_count   = coords.new_tensor(0.0)
 
         # ---- 시퀀스 전체에서 EOS 위치 산출 ----
         pen_1hot  = coords[..., 2:]                  # [B,T,3]
@@ -197,6 +200,8 @@ class SDT_FlowWrapper(nn.Module):
         valid_delta_full = (idxs < first_eos[:, None])           # [B,T]
         # pen 유효: t <= first_eos (EOS 프레임 포함)
         valid_pen_full   = (idxs <= first_eos[:, None])          # [B,T]
+
+        class_w = torch.tensor([1.0, 1.0, 2.0], device=device)          # EOS 가중(필요시 튜닝)
 
         for start in range(0, T, stride):
             end = min(T, start + H)
@@ -236,22 +241,15 @@ class SDT_FlowWrapper(nn.Module):
             eps = torch.randn_like(A_gt) * std
             A_tau = tau.view(B,1,1) * A_gt + (1 - tau.view(B,1,1)) * eps  # [B,H,2]
 
-            # if start == 0:
-            #     print_once(f"[FM-win0] Lcur={Lcur}, pad={pad}, validΔ={int(valid_delta.sum())}, validPen={int(valid_pen.sum())}, "
-            #             f"std={std.view(-1).tolist()}")
-
             # 정책
             act_emb   = self.action_embed(A_tau, tau, start_idx=start)      # [B,H,512]
             attn_mask = build_block_mask(Lctx, H, device=device)
             v, _ = self.policy(cond_ctx, act_emb, None, attn_mask)          # v:[B,H,2]
-            #v, pen_logits = self.policy(cond_ctx, act_emb, None, attn_mask)      # v:[B,H,2], pen_logits:[B,H,3]
 
             # ✅ pen은 τ=1에서 따로 예측 (라벨과 시계열 정합)
             tau1 = torch.ones(B, 1, device=device)
-            # - A_gt 기준으로 pen 예측 (패딩/마스크는 아래에서 무시됨)
             act_pen = self.action_embed(A_gt, tau1, start_idx=start)        # [B,H,512]
             _, pen_logits = self.policy(cond_ctx, act_pen, None, attn_mask) # pen_logits:[B,H,3]
-
 
             _check_finite(v, "policy output v")
             _check_finite(pen_logits, "policy output pen_logits")
@@ -276,31 +274,72 @@ class SDT_FlowWrapper(nn.Module):
                 loss_flow += (lf + 0.1 * ls)
 
             # ---- pen CE (EOS 포함까지만) ----
-            # 무시할 위치를 -100으로 라벨링
             tgt_lbl = P_gt.argmax(-1)                                       # [B,H] (0/1/2)
-            ignore_mask = (~valid_pen) | (pad_mask == 0)                    # [B,H]  (무효 or 패딩)
+            ignore_mask = (~valid_pen) | (pad_mask == 0)                    # [B,H]
             tgt_lbl = tgt_lbl.masked_fill(ignore_mask, -100)
 
-            # ✅ EOS 클래스 가중치(예: 2.0)로 희소 보정
-            class_w = torch.tensor([1.0, 1.0, 2.0], device=device)          # 필요시 1.5~3.0 튜닝
             lp = F.cross_entropy(
                 pen_logits.reshape(-1, 3),
                 tgt_lbl.reshape(-1),
                 ignore_index=-100,
-                weight=class_w,                                             # ✅
+                weight=class_w,
             )
             loss_pen += lp
+
+            # 유효 프레임 마스크
+            m_pen = (~ignore_mask)  # [B,H]
+
+            # 확률과 EOS 채널
+            p = pen_logits.softmax(-1)                  # [B,H,3]
+            p_eos = p[..., 2]                           # [B,H]
+
+            # 유효 프레임에서만 정규화(soft-argmax 가중)
+            pe = p_eos * m_pen.float()                  # [B,H]
+            Z  = pe.sum(dim=1, keepdim=True).clamp_min(1e-8)
+            w_pos = pe / Z                              # [B,H]
+
+            # 예측 EOS 인덱스(연속값)
+            idx = torch.arange(H, device=device, dtype=w_pos.dtype).view(1, H)  # [1,H]
+            pred_eos_idx = (w_pos * idx).sum(dim=1)          # [B]
+
+            # GT EOS 인덱스(윈도우 좌표) — 없으면 유효 프레임 마지막으로 대체
+            gt_eos = (P_gt[..., 2] == 1) & m_pen              # [B,H]
+            valid_rows = (m_pen.float().sum(dim=1) > 0)       # [B]
+
+            # 각 배치에서 유효 프레임 길이(윈도우 내)
+            valid_len = m_pen.float().sum(dim=1)              # [B]
+            fallback_idx = (valid_len - 1).clamp_min(0).long()
+
+            # 첫 EOS 위치(없으면 fallback)
+            has_eos = gt_eos.any(dim=1)
+            first_eos_idx = gt_eos.float().argmax(dim=1)      # [B] (없으면 0)
+            gt_idx_local = torch.where(has_eos, first_eos_idx, fallback_idx).float()  # [B]
+
+            # L1 위치 손실(유효한 행만)
+            if valid_rows.any():
+                loc_loss = F.l1_loss(pred_eos_idx[valid_rows], gt_idx_local[valid_rows])
+                loss_pen += 0.1 * loc_loss   # <- 가중치(0.05~0.2 권장)
+
+            # ✅ pen acc 집계
+            with torch.no_grad():
+                valid = (tgt_lbl != -100)                                   # [B,H]
+                if valid.any():
+                    pred = pen_logits.argmax(-1)                            # [B,H]
+                    pen_correct += (pred[valid] == tgt_lbl[valid]).float().sum()
+                    pen_count   += valid.float().sum()
+
             n_blocks += 1
 
         # 평균
         loss_flow = loss_flow / max(n_blocks, 1)
         loss_pen  = loss_pen  / max(n_blocks, 1)
-        return loss_flow, loss_pen
+        pen_acc   = (pen_correct / pen_count.clamp_min(1.0)).detach()
+        return loss_flow, loss_pen, pen_acc
 
     def forward(self, style_imgs, coords, char_img, return_nce: bool=True):
         pre = self._encode_style_once(style_imgs)                     # wtok/gtok + NCE feats
         cond_ctx, Lctx = self._make_cond_ctx(pre["wtok"], pre["gtok"], char_img)
-        loss_flow, loss_pen = self.flow_match_loss(coords, cond_ctx, Lctx)
+        loss_flow, loss_pen, pen_acc = self.flow_match_loss(coords, cond_ctx, Lctx)
         if return_nce and pre["num_imgs"] >= 2:
             writer_supcon, glyph_supcon = self.nce_losses_supcon(pre)
         else:
@@ -309,6 +348,7 @@ class SDT_FlowWrapper(nn.Module):
         return {
             "loss_flow": loss_flow,
             "loss_pen":  loss_pen,
+            "pen_acc":   pen_acc,    # ✅ 추가
             "nce_w":     writer_supcon,
             "nce_g":     glyph_supcon,
         }
@@ -419,7 +459,6 @@ class SDT_FlowWrapper(nn.Module):
             if t == 0:
                 pen_summary = pen_prob.mean(dim=(0,1)).tolist()  # [3]
                 print_once(f"[INF-chunk0] h={h}, a.std={a.std().item():.4f}, pen_prob(mean)={pen_summary}")
-
 
             R = min(replan, T - t)
             if temporal_ensemble:
