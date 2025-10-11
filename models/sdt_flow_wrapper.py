@@ -24,6 +24,13 @@ class SDT_FlowWrapper(nn.Module):
         self.stride_default = stride_default
         self.d_model = 512
 
+        # --- NEW: Pen/EOC & DTW 하이퍼 (필요 시 실험에서 조정 가능) ---
+        self.eoc_tail: int   = 6     # EOC 뒤 추가 감독 스텝(흡수 꼬리)
+        self.focal_gamma: float = 2.0
+        self.pen_class_w = nn.Parameter(torch.tensor([1.0, 1.0, 2.0]), requires_grad=False)
+        self.dtw_weight: float = 0.10    # soft-DTW 보조손실 가중치(0이면 꺼짐)
+        self.dtw_gamma:  float = 0.05    # soft-min 온도(작을수록 DTW에 가까움)
+ 
         print_once(f"SDT_FlowWrapper:: __init__ H: {H}, stride_default: {stride_default}, n_layers: {n_layers}, n_head: {n_head}, ffn_mult: {ffn_mult}, p: {p}")
 
         # 정책 네트워크 (ctx: [B,Lctx,512], act_emb: [B,H,512])
@@ -39,8 +46,8 @@ class SDT_FlowWrapper(nn.Module):
         self._last_xattn_mean = None
         
         # SupCon (NCE) — 기존 구현 사용
-        self.supcon = SupConLoss(temperature=nce_temperature)
-    
+        self.supcon = SupConLoss(temperature=nce_temperature)  
+
     
     # --------- 한 번만 인코딩 ---------
     def _encode_style_once(self, style_imgs):
@@ -163,14 +170,62 @@ class SDT_FlowWrapper(nn.Module):
         xa = getattr(getattr(self.policy, "xattn", None), "last_xattn", None)
         self._last_xattn_mean = xa.mean().item() if xa is not None else None
 
+    
+    # ---------- focal CE (ignore_index 지원) ----------
+    def _focal_ce(self, logits: torch.Tensor, target: torch.Tensor,
+                  ignore_index: int = -100, class_w: torch.Tensor = None, gamma: float = 2.0):
+        """
+        logits: [N, C], target: [N]
+        """
+        C = logits.size(-1)
+        valid = (target != ignore_index)
+        if not valid.any():
+            return logits.new_tensor(0.0)
+        # 기본 CE(가중치 없이): -log p_y
+        logp = torch.log_softmax(logits[valid], dim=-1)         # [Nv, C]
+        tgtv = target[valid]
+        ce_unred = torch.nn.NLLLoss(reduction="none")(logp, tgtv)  # [Nv]
+        # p_y
+        p_t = torch.gather(torch.softmax(logits[valid], dim=-1), 1, tgtv.view(-1,1)).squeeze(1)  # [Nv]
+        mod = (1.0 - p_t).pow(gamma)
+        loss = mod * ce_unred
+        if class_w is not None:
+            w = class_w.to(logits)[tgtv]
+            loss = loss * w
+        return loss.mean()
+
+    # ---------- soft-DTW (소형 H에서 배치 루프) ----------
+    def _soft_dtw_single(self, X: torch.Tensor, Y: torch.Tensor, gamma: float):
+        """
+        X: [m,2], Y: [n,2]
+        반환: soft-DTW 스칼라
+        """
+        m, n = X.size(0), Y.size(0)
+        if m == 0 or n == 0:
+            return X.new_tensor(0.0)
+        # 제곱거리 행렬
+        D = torch.cdist(X, Y, p=2).pow(2)  # [m,n]
+        INF = 1e6
+        R = X.new_full((m+1, n+1), INF)
+        R[0,0] = 0.0
+        for i in range(1, m+1):
+            # 벡터화된 j loop도 가능하지만 H가 작으므로 명시 루프로 안정성 우선
+            for j in range(1, n+1):
+                r0 = R[i-1, j]
+                r1 = R[i,   j-1]
+                r2 = R[i-1, j-1]
+                sm = -gamma * torch.logsumexp(torch.stack([ -r0/gamma, -r1/gamma, -r2/gamma ]), dim=0)
+                R[i, j] = D[i-1, j-1] + sm
+        return R[m, n]    
+
     # ---------- 학습 로스 ----------
     def flow_match_loss(self, coords, cond_ctx, Lctx:int,
                         tau_beta=(2.0,4.0), stride:int=None):
         """
         coords: [B, T, 5]  (dx,dy, one-hot(3))
-        - Δx,Δy: MSE는 EOS '직전까지만' 유효
-        - pen  : CE는 EOS '포함'까지 유효
-        - EOS 이후/패딩은 전부 무시
+        - Δx,Δy: MSE는 EOC '직전까지만' 유효
+        - pen  : CE는 EOC '포함'까지 유효
+        - EOC 이후/패딩은 전부 무시
         """
         device = coords.device
         B, T, C = coords.shape
@@ -185,23 +240,32 @@ class SDT_FlowWrapper(nn.Module):
         pen_correct = coords.new_tensor(0.0)
         pen_count   = coords.new_tensor(0.0)
 
-        # ---- 시퀀스 전체에서 EOS 위치 산출 ----
+        # ---- 시퀀스 전체에서 EOC 위치 산출 ----
         pen_1hot  = coords[..., 2:]                  # [B,T,3]
-        eos_full  = (pen_1hot[..., 2] == 1)         # [B,T]  (EOS는 class=2)
-        has_eos   = eos_full.any(dim=1)             # [B]
-        # 첫 EOS 인덱스 (없으면 T로 설정)
-        first_eos = torch.where(
-            has_eos, eos_full.float().argmax(dim=1), torch.full((B,), T, device=device, dtype=torch.long)
+        eoc_full  = (pen_1hot[..., 2] == 1)         # [B,T]  (EOC는 class=2)
+        has_eoc   = eoc_full.any(dim=1)             # [B]
+        # 첫 EOC 인덱스 (없으면 T로 설정)
+        first_eoc = torch.where(
+            has_eoc, eoc_full.float().argmax(dim=1), torch.full((B,), T, device=device, dtype=torch.long)
         ) # [B]
-        print_once(f"SDT_FlowWrapper::flow_match_loss B={B} T={T} H={H} stride={stride} | EOS%={(has_eos.float().mean()*100):.1f} | first_eos(mean)={first_eos.float().mean().item():.1f}")
+        print_once(f"SDT_FlowWrapper::flow_match_loss B={B} T={T} H={H} stride={stride} | EOC%={(has_eoc.float().mean()*100):.1f} | first_eoc(mean)={first_eoc.float().mean().item():.1f}")
 
-        # Δ 유효:  t < first_eos
+        # Δ 유효:  t < first_eoc
         idxs = torch.arange(T, device=device)[None, :].expand(B, T)
-        valid_delta_full = (idxs < first_eos[:, None])           # [B,T]
-        # pen 유효: t <= first_eos (EOS 프레임 포함)
-        valid_pen_full   = (idxs <= first_eos[:, None])          # [B,T]
+        valid_delta_full = (idxs < first_eoc[:, None])           # [B,T]
 
-        class_w = torch.tensor([1.0, 1.0, 2.0], device=device)          # EOS 가중(필요시 튜닝)
+        # pen 유효: t <= first_eoc (EOC 프레임 포함) + ✅ absorbing tail (EOC 뒤 K스텝 추가 감독)
+        valid_pen_full   = (idxs <= first_eoc[:, None])  # [B,T]
+        if getattr(self, "eoc_tail", 0) > 0:
+            tail = (idxs > first_eoc[:, None]) & (idxs <= first_eoc[:, None] + self.eoc_tail)
+            valid_pen_full = valid_pen_full | tail
+
+        class_w = self.pen_class_w.to(device)  # [3]  # EOC 가중(필요시 튜닝)
+        focal_gamma = float(getattr(self, "focal_gamma", 2.0))
+        use_tail = int(getattr(self, "eoc_tail", 0))
+        use_dtw  = float(getattr(self, "dtw_weight", 0.0)) > 0.0
+        dtw_w    = float(getattr(self, "dtw_weight", 0.0))
+        dtw_tau  = float(getattr(self, "dtw_gamma", 0.05))
 
         for start in range(0, T, stride):
             end = min(T, start + H)
@@ -219,14 +283,14 @@ class SDT_FlowWrapper(nn.Module):
             pad_mask = torch.ones(B, H, device=device)
             if pad > 0: pad_mask[:, -pad:] = 0.0
 
-            # ---- EOS 마스크를 윈도우에 맞게 슬라이스 ----
+            # ---- EOC 마스크를 윈도우에 맞게 슬라이스 ----
             valid_delta = valid_delta_full[:, start:end]      # [B,L<=H]
             valid_pen   = valid_pen_full[:,   start:end]      # [B,L<=H]
             if pad > 0:
                 valid_delta = torch.cat([valid_delta, torch.zeros(B, pad, device=device, dtype=torch.bool)], dim=1)
                 valid_pen   = torch.cat([valid_pen,   torch.zeros(B, pad, device=device, dtype=torch.bool)], dim=1)
 
-            # 윈도우가 아예 전부 무효(=EOS 이후/패딩뿐)면 스킵
+            # 윈도우가 아예 전부 무효(=EOC 이후/패딩뿐)면 스킵
             if (valid_delta.sum() == 0) and (valid_pen.sum() == 0):
                 continue
 
@@ -249,14 +313,14 @@ class SDT_FlowWrapper(nn.Module):
             # ✅ pen은 τ=1에서 따로 예측 (라벨과 시계열 정합)
             tau1 = torch.ones(B, 1, device=device)
             act_pen = self.action_embed(A_gt, tau1, start_idx=start)        # [B,H,512]
-            _, pen_logits = self.policy(cond_ctx, act_pen, None, attn_mask) # pen_logits:[B,H,3]
+            v1, pen_logits = self.policy(cond_ctx, act_pen, None, attn_mask) # v1:[B,H,2], pen_logits:[B,H,3]
 
             _check_finite(v, "policy output v")
             _check_finite(pen_logits, "policy output pen_logits")
             
             self._update_diag_attn(Lctx=Lctx, H=H, prefix_has_content=True)
 
-            # ---- Δ 손실 (EOS 이전만) ----
+            # ---- Δ 손실 (EOC 이전만) ----
             u_star = (A_gt - eps)                                           # [B,H,2]
             m_delta = valid_delta.float() * pad_mask                        # [B,H]
             if m_delta.sum() > 0:
@@ -273,51 +337,64 @@ class SDT_FlowWrapper(nn.Module):
                     ls = torch.zeros((), device=device)
                 loss_flow += (lf + 0.1 * ls)
 
-            # ---- pen CE (EOS 포함까지만) ----
+            # ---- pen CE (EOC 포함까지만 + ✅ absorbing tail: EOC 고정 라벨) ----
             tgt_lbl = P_gt.argmax(-1)                                       # [B,H] (0/1/2)
             ignore_mask = (~valid_pen) | (pad_mask == 0)                    # [B,H]
             tgt_lbl = tgt_lbl.masked_fill(ignore_mask, -100)
 
-            lp = F.cross_entropy(
+            # 윈도우 내 tail 위치를 찾아 EOC(=2)로 강제 라벨
+            if use_tail > 0:
+                extra_full = ((idxs > first_eoc[:, None]) & (idxs <= first_eoc[:, None] + use_tail))
+                extra_win  = extra_full[:, start:end]
+                if pad > 0:
+                    extra_win = torch.cat([extra_win, torch.zeros(B, pad, device=device, dtype=torch.bool)], dim=1)
+                # pad 영역 제외
+                extra_win = extra_win & (pad_mask.bool())
+                tgt_lbl = tgt_lbl.clone()
+                tgt_lbl[extra_win] = 2
+
+            # Focal-CE로 교체
+            lp = self._focal_ce(
                 pen_logits.reshape(-1, 3),
                 tgt_lbl.reshape(-1),
                 ignore_index=-100,
-                weight=class_w,
+                class_w=class_w,
+                gamma=focal_gamma
             )
             loss_pen += lp
 
             # 유효 프레임 마스크
             m_pen = (~ignore_mask)  # [B,H]
 
-            # 확률과 EOS 채널
+            # 확률과 EOC 채널
             p = pen_logits.softmax(-1)                  # [B,H,3]
-            p_eos = p[..., 2]                           # [B,H]
+            p_eoc = p[..., 2]                           # [B,H]
 
             # 유효 프레임에서만 정규화(soft-argmax 가중)
-            pe = p_eos * m_pen.float()                  # [B,H]
+            pe = p_eoc * m_pen.float()                  # [B,H]
             Z  = pe.sum(dim=1, keepdim=True).clamp_min(1e-8)
             w_pos = pe / Z                              # [B,H]
 
-            # 예측 EOS 인덱스(연속값)
+            # 예측 EOC 인덱스(연속값)
             idx = torch.arange(H, device=device, dtype=w_pos.dtype).view(1, H)  # [1,H]
-            pred_eos_idx = (w_pos * idx).sum(dim=1)          # [B]
+            pred_eoc_idx = (w_pos * idx).sum(dim=1)          # [B]
 
-            # GT EOS 인덱스(윈도우 좌표) — 없으면 유효 프레임 마지막으로 대체
-            gt_eos = (P_gt[..., 2] == 1) & m_pen              # [B,H]
+            # GT EOC 인덱스(윈도우 좌표) — 없으면 유효 프레임 마지막으로 대체
+            gt_eoc = (P_gt[..., 2] == 1) & m_pen              # [B,H]
             valid_rows = (m_pen.float().sum(dim=1) > 0)       # [B]
 
             # 각 배치에서 유효 프레임 길이(윈도우 내)
             valid_len = m_pen.float().sum(dim=1)              # [B]
             fallback_idx = (valid_len - 1).clamp_min(0).long()
 
-            # 첫 EOS 위치(없으면 fallback)
-            has_eos = gt_eos.any(dim=1)
-            first_eos_idx = gt_eos.float().argmax(dim=1)      # [B] (없으면 0)
-            gt_idx_local = torch.where(has_eos, first_eos_idx, fallback_idx).float()  # [B]
+            # 첫 EOC 위치(없으면 fallback)
+            has_eoc = gt_eoc.any(dim=1)
+            first_eoc_idx = gt_eoc.float().argmax(dim=1)      # [B] (없으면 0)
+            gt_idx_local = torch.where(has_eoc, first_eoc_idx, fallback_idx).float()  # [B]
 
             # L1 위치 손실(유효한 행만)
             if valid_rows.any():
-                loc_loss = F.l1_loss(pred_eos_idx[valid_rows], gt_idx_local[valid_rows])
+                loc_loss = F.l1_loss(pred_eoc_idx[valid_rows], gt_idx_local[valid_rows])
                 loss_pen += 0.1 * loc_loss   # <- 가중치(0.05~0.2 권장)
 
             # ✅ pen acc 집계
@@ -327,6 +404,22 @@ class SDT_FlowWrapper(nn.Module):
                     pred = pen_logits.argmax(-1)                            # [B,H]
                     pen_correct += (pred[valid] == tgt_lbl[valid]).float().sum()
                     pen_count   += valid.float().sum()
+
+            # ---- soft-DTW 보조 손실 (좌표 정렬 압력; 유효 Δ만 사용) ----
+            if use_dtw and (m_delta.sum() > 1):
+                # 배치별 유효 길이만큼 잘라 누적 위치(절대좌표) 생성
+                dtw_sum = coords.new_tensor(0.0)
+                dtw_cnt = 0
+                for b in range(B):
+                    Lb = int(m_delta[b].sum().item())
+                    if Lb > 1:
+                        # 예측 경로: v1(τ=1) 누적합 / GT 경로: A_gt 누적합
+                        pred_xy = torch.cumsum(v1[b, :Lb, :], dim=0)   # [Lb,2]
+                        gt_xy   = torch.cumsum(A_gt[b, :Lb, :], dim=0) # [Lb,2]
+                        dtw_sum = dtw_sum + self._soft_dtw_single(pred_xy, gt_xy, gamma=dtw_tau)
+                        dtw_cnt += 1
+                if dtw_cnt > 0:
+                    loss_flow = loss_flow + dtw_w * (dtw_sum / float(dtw_cnt))
 
             n_blocks += 1
 
@@ -389,7 +482,7 @@ class SDT_FlowWrapper(nn.Module):
 
         t = 0
         executed = []
-        eos_t = torch.full((B,), -1, device=device, dtype=torch.long)
+        eoc_t = torch.full((B,), -1, device=device, dtype=torch.long)
 
         while t < T:
             h = min(H, T - t)
@@ -481,16 +574,16 @@ class SDT_FlowWrapper(nn.Module):
             pen_oh = torch.nn.functional.one_hot(pen.argmax(-1), num_classes=3).to(pen).float()
             step_chunk = torch.cat([xy, pen_oh], dim=-1)                        # [B,R,5]
 
-            # EOS 처리
+            # EOC 처리
             for b in range(B):
-                if eos_t[b] >= 0:
+                if eoc_t[b] >= 0:
                     step_chunk[b, :, :2] = 0.0
                     step_chunk[b, :, 2:] = torch.tensor([0., 0., 1.], device=device)
                 else:
                     idx = (pen_oh[b].argmax(-1) == 2).nonzero(as_tuple=False)
                     if idx.numel() > 0:
                         first = int(idx[0].item())
-                        eos_t[b] = t + first
+                        eoc_t[b] = t + first
                         if first + 1 < R:
                             step_chunk[b, first+1:, :2] = 0.0
                             step_chunk[b, first+1:, 2:] = torch.tensor([0., 0., 1.], device=device)
@@ -498,12 +591,12 @@ class SDT_FlowWrapper(nn.Module):
             executed.append(step_chunk)
             t += R
             
-            if (eos_t >= 0).all():
+            if (eoc_t >= 0).all():
                 break
 
         out = torch.cat(executed, dim=1)[:, :T, :]                            # [B,T,5]
 
-        # 최종 EOS 보강
+        # 최종 EOC 보강
         pen_idx = out[..., 2:].argmax(-1)
         for b in range(B):
             if not (pen_idx[b] == 2).any():
