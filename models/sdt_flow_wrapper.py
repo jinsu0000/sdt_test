@@ -25,7 +25,7 @@ class SDT_FlowWrapper(nn.Module):
         self.d_model = 512
 
         # --- NEW: Pen/EOC & DTW 하이퍼 (필요 시 실험에서 조정 가능) ---
-        self.eoc_tail: int   = 6     # EOC 뒤 추가 감독 스텝(흡수 꼬리)
+        self.eoc_tail: int   = 0  # EOC tail disabled for fixed-length training     # EOC 뒤 추가 감독 스텝(흡수 꼬리)
         self.focal_gamma: float = 2.0
         self.pen_class_w = nn.Parameter(torch.tensor([1.0, 1.0, 2.0]), requires_grad=False)
         self.dtw_weight: float = 0.10    # soft-DTW 보조손실 가중치(0이면 꺼짐)
@@ -337,31 +337,23 @@ class SDT_FlowWrapper(nn.Module):
                     ls = torch.zeros((), device=device)
                 loss_flow += (lf + 0.1 * ls)
 
-            # ---- pen CE (EOC 포함까지만 + ✅ absorbing tail: EOC 고정 라벨) ----
-            tgt_lbl = P_gt.argmax(-1)                                       # [B,H] (0/1/2)
-            ignore_mask = (~valid_pen) | (pad_mask == 0)                    # [B,H]
-            tgt_lbl = tgt_lbl.masked_fill(ignore_mask, -100)
-
-            # 윈도우 내 tail 위치를 찾아 EOC(=2)로 강제 라벨
-            if use_tail > 0:
-                extra_full = ((idxs > first_eoc[:, None]) & (idxs <= first_eoc[:, None] + use_tail))
-                extra_win  = extra_full[:, start:end]
-                if pad > 0:
-                    extra_win = torch.cat([extra_win, torch.zeros(B, pad, device=device, dtype=torch.bool)], dim=1)
-                # pad 영역 제외
-                extra_win = extra_win & (pad_mask.bool())
-                tgt_lbl = tgt_lbl.clone()
-                tgt_lbl[extra_win] = 2
-
-            # Focal-CE로 교체
+            
+            # ---- pen CE (2-class Move/Up; EOC 프레임은 로스에서 제외) ----
+            # GT 2-class 라벨 구성
+            is_up = (P_gt[..., 1] == 1)                                    # Up=1 위치
+            tgt2 = torch.where(is_up, torch.ones_like(is_up, dtype=torch.long), torch.zeros_like(is_up, dtype=torch.long))  # [B,H] in {0,1}
+            ignore2 = (~valid_pen) | (pad_mask == 0) | (P_gt[..., 2] == 1)  # pad/EOC 제외
+            tgt2 = tgt2.masked_fill(ignore2, -100)
+            # 3-class 로짓에서 앞의 2채널만 사용
             lp = self._focal_ce(
-                pen_logits.reshape(-1, 3),
-                tgt_lbl.reshape(-1),
+                pen_logits[...,:2].reshape(-1, 2),
+                tgt2.reshape(-1),
                 ignore_index=-100,
-                class_w=class_w,
+                class_w=torch.tensor([1.0, 1.0], device=device),
                 gamma=focal_gamma
             )
             loss_pen += lp
+
 
             # 유효 프레임 마스크
             m_pen = (~ignore_mask)  # [B,H]

@@ -16,11 +16,13 @@ def seed_all(seed):
     cudnn.deterministic = True; cudnn.benchmark = False
     print(f"[SEED] {seed}")
 
-def get_dataloaders(cfg):
+def get_dataloaders(cfg, opt):
     train_dataset = ScriptDataset(cfg.DATA_LOADER.PATH, cfg.DATA_LOADER.DATASET,
-                                  cfg.TRAIN.ISTRAIN, cfg.MODEL.NUM_IMGS)
+                                  cfg.TRAIN.ISTRAIN, cfg.MODEL.NUM_IMGS,
+                                  char2K_path=opt.char2K, rdp_epsilon=opt.rdp_eps)
     test_dataset  = ScriptDataset(cfg.DATA_LOADER.PATH, cfg.DATA_LOADER.DATASET,
-                                  cfg.TEST.ISTRAIN,  cfg.MODEL.NUM_IMGS)
+                                  cfg.TEST.ISTRAIN,  cfg.MODEL.NUM_IMGS,
+                                  char2K_path=opt.char2K, rdp_epsilon=opt.rdp_eps)
     train_loader = DataLoader(train_dataset, batch_size=cfg.TRAIN.IMS_PER_BATCH,
                               shuffle=True, drop_last=False, collate_fn=train_dataset.collate_fn_,
                               num_workers=cfg.DATA_LOADER.NUM_THREADS)
@@ -35,7 +37,7 @@ def main(opt):
     fix_seed(cfg.TRAIN.SEED); seed_all(cfg.TRAIN.SEED)
 
     logs = set_log(cfg.OUTPUT_DIR, opt.cfg_file, opt.log_name)
-    train_dataset, test_dataset, train_loader, test_loader = get_dataloaders(cfg)
+    train_dataset, test_dataset, train_loader, test_loader = get_dataloaders(cfg, opt)
     print_once(f"Number of train images: {len(train_dataset)} | test images: {len(test_dataset)}")
     char_dict = test_dataset.char_dict
 
@@ -114,6 +116,8 @@ if __name__ == "__main__":
     # Optim
     ap.add_argument('--lr', type=float, default=2e-4)
     ap.add_argument('--max_iter', type=int, default=200000)
+    ap.add_argument('--char2K', type=str, default='char2K.json')
+    ap.add_argument('--rdp_eps', type=float, default=0.0)
     # (선택) NCE 관련 — TrainerFlow가 사용하면 활성, 아니면 무시
     ap.add_argument('--nce_w_writer', type=float, default=0.1)
     ap.add_argument('--nce_w_glyph',  type=float, default=0.1)

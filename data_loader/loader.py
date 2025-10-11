@@ -12,6 +12,7 @@ import codecs
 import glob
 import cv2
 from PIL import ImageDraw, Image
+from datasets.transforms_fixed_points import resample_coords_to_K, detect_cols
 transform_data = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean = (0.5), std = (0.5))
@@ -23,7 +24,7 @@ script={"CHINESE":['CASIA_CHINESE', 'Chinese_content.pkl'],
         }
 
 class ScriptDataset(Dataset):
-    def __init__(self, root='data', dataset='CHINESE', is_train=True, num_img = 15):
+    def __init__(self, root='data', dataset='CHINESE', is_train=True, num_img = 15, char2K_path=None, rdp_epsilon:float=0.0):
         data_path = os.path.join(root, script[dataset][0])
         self.dataset = dataset
         content_path = os.path.join(data_path, script[dataset][1])
@@ -58,6 +59,58 @@ class ScriptDataset(Dataset):
             raise IOError("input the correct lmdb path")
         
         self.lmdb = lmdb.open(lmdb_path, max_readers=8, readonly=True, lock=False, readahead=False, meminit=False)
+        # --- Fixed points mapping ---
+        self.char2K_path = char2K_path
+        self.rdp_epsilon = float(rdp_epsilon)
+        self.char2K = None
+        if self.char2K_path is not None:
+            # load or build mapping once
+            if os.path.exists(self.char2K_path):
+                import json
+                with open(self.char2K_path, 'r', encoding='utf-8') as f:
+                    self.char2K = json.load(f)
+            else:
+                # build from this LMDB split
+                import json, pickle, numpy as np
+                from collections import defaultdict
+                char_lens = defaultdict(list)
+                with self.lmdb.begin(write=False) as txn2:
+                    n2 = int(txn2.get('num_sample'.encode('utf-8')).decode())
+                    for ii in range(n2):
+                        rec = pickle.loads(txn2.get(str(ii).encode('utf-8')))
+                        coords0 = np.array(rec['coordinates'])
+                        ch = rec.get('tag_char','*')
+                        col = detect_cols(coords0)
+                        xy = coords0[:, [col['x'], col['y']]]
+                        # treat as absolute; if delta, approximate by cumsum
+                        mean_step = np.mean(np.abs(xy[1:] - xy[:-1])) if len(xy)>1 else 0.0
+                        mean_lvl  = np.mean(np.abs(xy)) if len(xy)>0 else 0.0
+                        if mean_step < 0.1 * max(mean_lvl, 1e-3):
+                            xy = np.cumsum(xy, axis=0)
+                        T = int(xy.shape[0])
+                        char_lens[ch].append(T)
+                # median per char, clipped [32, 128], even
+                char2K = {}
+                all_vals = []
+                for ch, arr in char_lens.items():
+                    if len(arr)==0: continue
+                    import numpy as np
+                    v = int(np.median(arr))
+                    v = max(32, min(128, v))
+                    if v % 2 == 1: v += 1
+                    char2K[ch] = v
+                    all_vals.extend(arr)
+                if '*' not in char2K:
+                    import numpy as np
+                    fb = int(np.median(all_vals)) if all_vals else 64
+                    fb = max(32, min(128, fb))
+                    if fb % 2 == 1: fb += 1
+                    char2K['*'] = fb
+                os.makedirs(os.path.dirname(self.char2K_path), exist_ok=True)
+                with open(self.char2K_path, 'w', encoding='utf-8') as f:
+                    json.dump(char2K, f, ensure_ascii=False, indent=2)
+                self.char2K = char2K
+        
         if script[dataset][0] == "CASIA_CHINESE" :
             self.max_len = -1  # Do not filter characters with many trajectory points
         else: # Japanese, Indic, English
@@ -108,6 +161,13 @@ class ScriptDataset(Dataset):
                 tmp_label = codecs.decode(tmp_label, "cp932")
             img_label.append(tmp_label)
         img_list = np.expand_dims(np.array(img_list), 1) # [N, C, H, W], C=1
+        if self.char2K is not None:
+            K = int(self.char2K.get(tag_char, self.char2K.get('*', 64)))
+            try:
+                coords = resample_coords_to_K(coords, tag_char, K, rdp_epsilon=self.rdp_epsilon)
+            except Exception:
+                # fallback: keep original
+                pass
         coords = normalize_xys(coords) # Coordinate Normalization
 
         #### Convert absolute coordinate values into relative ones
