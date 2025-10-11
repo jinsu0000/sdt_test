@@ -95,8 +95,8 @@ def split_strokes(coords, col):
 
 def resample_coords_to_K(coords, tag_char, K, rdp_epsilon=0.0, min_pts_per_stroke=3):
     P = coords.astype(np.float32)
-    # 1) Δ -> 절대
-    xy_abs = np.cumsum(P[:, :2], axis=0)
+    # 1) 입력은 '절대좌표' + one-hot(3)라고 가정
+    xy_abs = P[:, :2]
 
     # 2) stroke split: Up 채널(=1) 기준 (고정 포맷 전제)
     up = (P[:, 3] == 1).astype(np.int32)  # P[:, 2:5] -> [Move, Up, EOC], index 3가 Up
