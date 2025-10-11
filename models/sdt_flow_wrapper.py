@@ -224,7 +224,7 @@ class SDT_FlowWrapper(nn.Module):
         """
         coords: [B, T, 5]  (dx,dy, one-hot(3))
         - Δx,Δy: MSE는 EOC '직전까지만' 유효
-        - pen  : CE는 EOC '포함'까지 유효
+        - pen  : (Move,Up) 2-class 가중 CE, EOC 프레임은 로스에서 제외
         - EOC 이후/패딩은 전부 무시
         """
         device = coords.device
@@ -236,14 +236,14 @@ class SDT_FlowWrapper(nn.Module):
         loss_flow = coords.new_tensor(0.0)
         loss_pen  = coords.new_tensor(0.0)
         n_blocks  = 0
-        # ✅ pen accuracy 집계
+        # ✅ 2-class(Up/Move) pen accuracy 집계
         pen_correct = coords.new_tensor(0.0)
         pen_count   = coords.new_tensor(0.0)
 
         # ---- 시퀀스 전체에서 EOC 위치 산출 ----
         pen_1hot  = coords[..., 2:]                  # [B,T,3]
-        eoc_full  = (pen_1hot[..., 2] == 1)         # [B,T]  (EOC는 class=2)
-        has_eoc   = eoc_full.any(dim=1)             # [B]
+        eoc_full  = (pen_1hot[..., 2] == 1)          # [B,T]  (EOC는 class=2)
+        has_eoc   = eoc_full.any(dim=1)              # [B]
         # 첫 EOC 인덱스 (없으면 T로 설정)
         first_eoc = torch.where(
             has_eoc, eoc_full.float().argmax(dim=1), torch.full((B,), T, device=device, dtype=torch.long)
@@ -254,15 +254,20 @@ class SDT_FlowWrapper(nn.Module):
         idxs = torch.arange(T, device=device)[None, :].expand(B, T)
         valid_delta_full = (idxs < first_eoc[:, None])           # [B,T]
 
-        # pen 유효: t <= first_eoc (EOC 프레임 포함) + ✅ absorbing tail (EOC 뒤 K스텝 추가 감독)
-        valid_pen_full   = (idxs <= first_eoc[:, None])  # [B,T]
+        # pen 유효: t <= first_eoc (EOC 프레임 '포함'까지는 유효 프레임으로 보되,
+        #                           CE 계산에서는 EOC 프레임만 제외)
+        valid_pen_full   = (idxs <= first_eoc[:, None])          # [B,T]
         if getattr(self, "eoc_tail", 0) > 0:
             tail = (idxs > first_eoc[:, None]) & (idxs <= first_eoc[:, None] + self.eoc_tail)
             valid_pen_full = valid_pen_full | tail
 
-        class_w = self.pen_class_w.to(device)  # [3]  # EOC 가중(필요시 튜닝)
-        focal_gamma = float(getattr(self, "focal_gamma", 2.0))
-        use_tail = int(getattr(self, "eoc_tail", 0))
+        # ---- 보조 손실 세팅(그대로 유지 가능) ----
+        # Focal은 사용하지 않음(=0.0 → CE)
+        focal_gamma = 0.0
+        # Up가 희소하므로 간단한 가중치(필요시 조정: 2.0~6.0 권장)
+        up_weight = float(getattr(self, "pen_up_weight", 4.0))
+        # (선택) 경계 관용(±pen_up_dilate 스텝 dilate)
+        up_dilate = int(getattr(self, "pen_up_dilate", 0))
         use_dtw  = float(getattr(self, "dtw_weight", 0.0)) > 0.0
         dtw_w    = float(getattr(self, "dtw_weight", 0.0))
         dtw_tau  = float(getattr(self, "dtw_gamma", 0.05))
@@ -295,7 +300,6 @@ class SDT_FlowWrapper(nn.Module):
                 continue
 
             # τ 샘플 + 중간점 생성 (Δ만 사용하므로 Δ마스크 기준 통계)
-            # 통계는 유효 Δ에서만 계산 (없으면 ε-σ 기본값)
             if valid_delta.any():
                 std = A_gt[valid_delta].reshape(-1, 2).std(dim=0, unbiased=False).clamp_min(1e-3).view(1,1,2)
             else:
@@ -337,75 +341,71 @@ class SDT_FlowWrapper(nn.Module):
                     ls = torch.zeros((), device=device)
                 loss_flow += (lf + 0.1 * ls)
 
-            
-            # ---- pen CE (2-class Move/Up; EOC 프레임은 로스에서 제외) ----
-            # GT 2-class 라벨 구성
-            is_up = (P_gt[..., 1] == 1)                                    # Up=1 위치
-            tgt2 = torch.where(is_up, torch.ones_like(is_up, dtype=torch.long), torch.zeros_like(is_up, dtype=torch.long))  # [B,H] in {0,1}
-            ignore2 = (~valid_pen) | (pad_mask == 0) | (P_gt[..., 2] == 1)  # pad/EOC 제외
+            # ---- pen CE (2-class Move/Up; CE에서는 EOC 프레임 제외) ----
+            # (1) 기본 ignore_mask (pad/윈도우 무효만)
+            ignore_mask = (~valid_pen) | (pad_mask == 0)    # [B,H]
+
+            # (2) 2-class 라벨 구성: move=0, up=1 (+선택: ±1 관용)
+            is_up = (P_gt[..., 1] == 1)                     # Up 채널
+            if up_dilate > 0:
+                is_up = is_up | torch.roll(is_up, 1, dims=1) | torch.roll(is_up, -1, dims=1)
+            tgt2 = torch.where(is_up, torch.ones_like(is_up, dtype=torch.long),
+                            torch.zeros_like(is_up, dtype=torch.long))  # [B,H] in {0,1}
+
+            # (3) CE에서만 사용할 마스크: 기본 무효 + EOC 프레임 제외
+            ignore2 = ignore_mask | (P_gt[..., 2] == 1)     # [B,H]
             tgt2 = tgt2.masked_fill(ignore2, -100)
-            # 3-class 로짓에서 앞의 2채널만 사용
+
+            # (4) 3-class 로짓 중 앞의 두 채널만 사용해서 (가중)CE (=focal_gamma=0)
+            class_w2 = torch.tensor([1.0, up_weight], device=device)
             lp = self._focal_ce(
                 pen_logits[...,:2].reshape(-1, 2),
                 tgt2.reshape(-1),
                 ignore_index=-100,
-                class_w=torch.tensor([1.0, 1.0], device=device),
-                gamma=focal_gamma
+                class_w=class_w2,
+                gamma=focal_gamma  # 0.0 => CE
             )
             loss_pen += lp
 
-
-            # 유효 프레임 마스크
+            # ---- EOC soft 위치 보조 (그대로 유지) ----
             m_pen = (~ignore_mask)  # [B,H]
-
-            # 확률과 EOC 채널
             p = pen_logits.softmax(-1)                  # [B,H,3]
             p_eoc = p[..., 2]                           # [B,H]
-
-            # 유효 프레임에서만 정규화(soft-argmax 가중)
             pe = p_eoc * m_pen.float()                  # [B,H]
             Z  = pe.sum(dim=1, keepdim=True).clamp_min(1e-8)
             w_pos = pe / Z                              # [B,H]
 
-            # 예측 EOC 인덱스(연속값)
             idx = torch.arange(H, device=device, dtype=w_pos.dtype).view(1, H)  # [1,H]
             pred_eoc_idx = (w_pos * idx).sum(dim=1)          # [B]
 
-            # GT EOC 인덱스(윈도우 좌표) — 없으면 유효 프레임 마지막으로 대체
             gt_eoc = (P_gt[..., 2] == 1) & m_pen              # [B,H]
             valid_rows = (m_pen.float().sum(dim=1) > 0)       # [B]
-
-            # 각 배치에서 유효 프레임 길이(윈도우 내)
             valid_len = m_pen.float().sum(dim=1)              # [B]
             fallback_idx = (valid_len - 1).clamp_min(0).long()
 
-            # 첫 EOC 위치(없으면 fallback)
-            has_eoc = gt_eoc.any(dim=1)
+            has_eoc_win = gt_eoc.any(dim=1)
             first_eoc_idx = gt_eoc.float().argmax(dim=1)      # [B] (없으면 0)
-            gt_idx_local = torch.where(has_eoc, first_eoc_idx, fallback_idx).float()  # [B]
+            gt_idx_local = torch.where(has_eoc_win, first_eoc_idx, fallback_idx).float()  # [B]
 
-            # L1 위치 손실(유효한 행만)
             if valid_rows.any():
                 loc_loss = F.l1_loss(pred_eoc_idx[valid_rows], gt_idx_local[valid_rows])
                 loss_pen += 0.1 * loc_loss   # <- 가중치(0.05~0.2 권장)
 
-            # ✅ pen acc 집계
+            # ✅ pen acc 집계(2-class 기준; CE와 동일한 마스크 사용)
             with torch.no_grad():
-                valid = (tgt_lbl != -100)                                   # [B,H]
-                if valid.any():
-                    pred = pen_logits.argmax(-1)                            # [B,H]
-                    pen_correct += (pred[valid] == tgt_lbl[valid]).float().sum()
-                    pen_count   += valid.float().sum()
+                valid2 = (tgt2 != -100)                                   # [B,H]
+                if valid2.any():
+                    pred2 = pen_logits[...,:2].argmax(-1)                 # [B,H] in {0,1}
+                    pen_correct += (pred2[valid2] == tgt2[valid2]).float().sum()
+                    pen_count   += valid2.float().sum()
 
             # ---- soft-DTW 보조 손실 (좌표 정렬 압력; 유효 Δ만 사용) ----
             if use_dtw and (m_delta.sum() > 1):
-                # 배치별 유효 길이만큼 잘라 누적 위치(절대좌표) 생성
                 dtw_sum = coords.new_tensor(0.0)
                 dtw_cnt = 0
                 for b in range(B):
                     Lb = int(m_delta[b].sum().item())
                     if Lb > 1:
-                        # 예측 경로: v1(τ=1) 누적합 / GT 경로: A_gt 누적합
                         pred_xy = torch.cumsum(v1[b, :Lb, :], dim=0)   # [Lb,2]
                         gt_xy   = torch.cumsum(A_gt[b, :Lb, :], dim=0) # [Lb,2]
                         dtw_sum = dtw_sum + self._soft_dtw_single(pred_xy, gt_xy, gamma=dtw_tau)

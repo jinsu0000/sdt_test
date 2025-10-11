@@ -94,65 +94,80 @@ def split_strokes(coords, col):
     return spans
 
 def resample_coords_to_K(coords, tag_char, K, rdp_epsilon=0.0, min_pts_per_stroke=3):
-    """
-    coords: [T,5] (abs xy + one-hot(3)) or variant with abs xy first two cols
-    returns: [K,5] (delta xy + one-hot(3)), with last frame EOC=1
-    NOTE: THIS FUNCTION expects absolute xy in 'coords'.
-    """
-    col = detect_cols(coords)
-    xy_abs = to_abs(coords, col)
-    spans = split_strokes(coords, col)
-    # stroke lengths
-    lens = []
-    strokes = []
-    for (s,e) in spans:
-        P = xy_abs[s:e+1]
-        if rdp_epsilon > 0 and len(P) > 3:
-            P = _rdp(P, rdp_epsilon)
-        strokes.append(P)
-        # arc length
-        if len(P) >= 2:
-            L = np.sqrt(((P[1:]-P[:-1])**2).sum(axis=1)).sum()
-        else:
-            L = 0.0
+    P = coords.astype(np.float32)
+    # 1) Δ -> 절대
+    xy_abs = np.cumsum(P[:, :2], axis=0)
+
+    # 2) stroke split: Up 채널(=1) 기준 (고정 포맷 전제)
+    up = (P[:, 3] == 1).astype(np.int32)  # P[:, 2:5] -> [Move, Up, EOC], index 3가 Up
+    spans, s = [], 0
+    for e in np.where(up == 1)[0].tolist():
+        spans.append((s, e))
+        s = e + 1
+    if s < len(xy_abs):
+        spans.append((s, len(xy_abs) - 1))
+    if not spans:
+        spans = [(0, len(xy_abs) - 1)]
+
+    # 3) (옵션) RDP 간략화
+    def _rdp(points, eps):
+        if len(points) < 3 or eps <= 0: return points
+        p0, pn = points[0], points[-1]
+        v = pn - p0; vn = np.linalg.norm(v) + 1e-12
+        idx = -1; md = -1.0
+        for i in range(1, len(points)-1):
+            d = np.linalg.norm(np.cross(np.append(v,0.0), np.append(points[i]-p0,0.0))) / vn
+            if d > md: md, idx = d, i
+        if md > eps:
+            L = _rdp(points[:idx+1], eps)
+            R = _rdp(points[idx:], eps)
+            return np.concatenate([L[:-1], R], axis=0)
+        return np.stack([p0, pn], axis=0)
+
+    strokes, lens = [], []
+    for s,e in spans:
+        seg = xy_abs[s:e+1]
+        if rdp_epsilon > 0 and len(seg) > 3:
+            seg = _rdp(seg, rdp_epsilon)
+        strokes.append(seg)
+        L = 0.0 if len(seg) < 2 else np.sqrt(((seg[1:]-seg[:-1])**2).sum(axis=1)).sum()
         lens.append(L)
-    Lsum = sum(lens) + 1e-8
-    if len(strokes)==0:
-        strokes=[xy_abs]; lens=[1.0]; Lsum=1.0
-    # allocate K per stroke
+    Lsum = float(sum(lens)) + 1e-8
+
+    # 4) K 분배(길이 비례, 최소 길이 보장) + 합 맞추기
     Ks = [max(min_pts_per_stroke, int(round(K * (L/Lsum)))) for L in lens]
-    # fix sum
-    diff = K - sum(Ks)
-    i = 0
-    while diff != 0 and len(Ks)>0:
-        step = 1 if diff>0 else -1
+    diff = K - sum(Ks); i = 0
+    while diff != 0 and Ks:
+        step = 1 if diff > 0 else -1
         if Ks[i] + step >= min_pts_per_stroke:
             Ks[i] += step; diff -= step
-        i = (i+1) % len(Ks)
+        i = (i + 1) % len(Ks)
 
-    # resample and concat
-    canon = []
-    for P,Ki in zip(strokes, Ks):
-        canon.append(_resample_uniform(P, Ki))
-    canon = np.concatenate(canon, axis=0).astype(np.float32) if len(canon)>0 else _resample_uniform(xy_abs, K)
+    # 5) 등간격(arc-length) 보간
+    def _arc_len(P2):
+        if len(P2) <= 1: return np.zeros(len(P2), np.float32)
+        d = np.sqrt(((P2[1:] - P2[:-1])**2).sum(axis=1))
+        s = np.concatenate([[0.0], np.cumsum(d)])
+        s /= max(s[-1], 1e-8)
+        return s.astype(np.float32)
+    def _resample(P2, K2):
+        if len(P2) == 0: return np.zeros((K2,2), np.float32)
+        if len(P2) == 1: return np.repeat(P2.astype(np.float32), K2, axis=0)
+        s = _arc_len(P2); u = np.linspace(0.0, 1.0, K2)
+        X = np.interp(u, s, P2[:,0]); Y = np.interp(u, s, P2[:,1])
+        return np.stack([X,Y], axis=1).astype(np.float32)
 
-    # pen states: move/up only; EOC at last for output
+    canon = np.concatenate([_resample(seg, Ki) for seg,Ki in zip(strokes, Ks)], axis=0).astype(np.float32)
+
+    # 6) pen(one-hot) 구성: stroke 끝 Up=1, 마지막 EOC=1
     pen = np.zeros((K,3), np.float32)
-    # set Up at stroke ends
     off = 0
     for Ki in Ks:
         end = min(off + Ki - 1, K-1)
-        pen[end,1] = 1.0
+        pen[end,1] = 1.0    # Up
         off += Ki
-    # default Move elsewhere
-    pen[:,0] = 1.0 - pen[:,1]
-    # EOC on last frame only
-    pen[-1] = np.array([0,0,1], np.float32)
+    pen[:,0] = 1.0 - pen[:,1]   # Move
+    pen[-1] = np.array([0,0,1], np.float32)  # EOC (마지막 강제)
 
-    # convert to deltas
-    delta = np.zeros_like(canon, dtype=np.float32)
-    if K>1:
-        delta[1:] = canon[1:] - canon[:-1]
-        delta[0] = 0.0
-    out = np.concatenate([delta, pen], axis=1).astype(np.float32)  # [K,5]
-    return out
+    # 7) 절대좌표 + one-hot 반환 (정규화/Δ 변환은 기존 normalize_xys가 수행)
+    return np.concatenate([canon, pen], axis=1).astype(np.float32)

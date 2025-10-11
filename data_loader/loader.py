@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 import os
 import torch
 import numpy as np
+import json
 import pickle
 from torchvision import transforms
 import lmdb
@@ -12,7 +13,9 @@ import codecs
 import glob
 import cv2
 from PIL import ImageDraw, Image
-from datasets.transforms_fixed_points import resample_coords_to_K, detect_cols
+from data_loader.transforms_fixed_points import resample_coords_to_K, detect_cols
+from collections import defaultdict
+
 transform_data = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean = (0.5), std = (0.5))
@@ -66,13 +69,10 @@ class ScriptDataset(Dataset):
         if self.char2K_path is not None:
             # load or build mapping once
             if os.path.exists(self.char2K_path):
-                import json
                 with open(self.char2K_path, 'r', encoding='utf-8') as f:
                     self.char2K = json.load(f)
             else:
                 # build from this LMDB split
-                import json, pickle, numpy as np
-                from collections import defaultdict
                 char_lens = defaultdict(list)
                 with self.lmdb.begin(write=False) as txn2:
                     n2 = int(txn2.get('num_sample'.encode('utf-8')).decode())
@@ -94,14 +94,12 @@ class ScriptDataset(Dataset):
                 all_vals = []
                 for ch, arr in char_lens.items():
                     if len(arr)==0: continue
-                    import numpy as np
                     v = int(np.median(arr))
                     v = max(32, min(128, v))
                     if v % 2 == 1: v += 1
                     char2K[ch] = v
                     all_vals.extend(arr)
                 if '*' not in char2K:
-                    import numpy as np
                     fb = int(np.median(all_vals)) if all_vals else 64
                     fb = max(32, min(128, fb))
                     if fb % 2 == 1: fb += 1
