@@ -66,7 +66,11 @@ dependencies:
   - pip=24.0=py38h06a4308_0
   - pysocks=1.7.1=py38h06a4308_0
   - python=3.8.19=h955ad1f_0
-  - pytorch=1.13.0=py3.8_cuda11.7_cudnn8.5.0_0
+  # H100 (sm_90) 지원을 위해 PyTorch 2.0+ 필요
+  # PyTorch 2.0+는 CUDA 11.8 또는 12.x 필요
+  # 주의: Python 3.8은 PyTorch 2.0+와 호환성 문제가 있을 수 있음
+  # - pytorch=2.0.0=py3.8_cuda11.8_cudnn8.7.0_0  # H100 지원 버전 (주석 해제하여 사용)
+  - pytorch=1.13.0=py3.8_cuda11.7_cudnn8.5.0_0  # 현재 버전 (H100 미지원)
   - pytorch-cuda=11.7=h778d358_5
   - pytorch-mutex=1.0=cuda
   - readline=8.2=h5eee18b_0

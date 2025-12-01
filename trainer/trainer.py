@@ -137,12 +137,20 @@ class Trainer:
             self._vis_genarate_samples(gt_coords, preds, character_id, char_img, step)
 
     def train(self, start_step=0):
-        """start training iterations"""    
+        """start training iterations"""
+        print(f"[Trainer] Starting training from step {start_step} to {cfg.SOLVER.MAX_ITER}")
+        print(f"[Trainer] Creating DataLoader iterator...")
         train_loader_iter = iter(self.data_loader)
+        print(f"[Trainer] DataLoader iterator created. Loading first batch...")
         for step in range(start_step, cfg.SOLVER.MAX_ITER):
             try:
+                if step == start_step:
+                    print(f"[Trainer] Loading first batch (step {step})...")
                 data = next(train_loader_iter)
+                if step == start_step:
+                    print(f"[Trainer] First batch loaded! Starting training iteration...")
             except StopIteration:
+                print(f"[Trainer] StopIteration at step {step}, resetting iterator...")
                 train_loader_iter = iter(self.data_loader)
                 data = next(train_loader_iter)
             self._train_iter(data, step)

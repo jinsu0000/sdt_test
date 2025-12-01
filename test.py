@@ -145,3 +145,8 @@ if __name__ == '__main__':
     parser.add_argument('--sample_size', dest='sample_size', default='500', required=True, help='randomly generate a certain number of characters for each writer')
     opt = parser.parse_args()
     main(opt)
+
+    '''
+    python test.py --cfg configs/English_CASIA.yml --pretrained_model Saved/English_CASIA/English_log-20251124_075009/model/checkpoint-iter199999.pth --store_type online --sample_size 500 --dir Generated/English > inference.log 2>&1 &
+    python test.py --cfg configs/English_CASIA.yml --pretrained_model Saved/English_CASIA/English_log-20251124_075009/model/checkpoint-iter199999.pth --store_type img --sample_size 500 --dir Generated/English > inference.log 2>&1 &
+    '''
